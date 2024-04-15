@@ -12,7 +12,6 @@
         public string Address { get; set; }
         public int Rating { get; set; }
         public string TypeOfAccomodation { get; set; }
-
         public double Cost { get; set; }
         public string Description { get; set; }
     }
