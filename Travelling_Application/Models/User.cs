@@ -15,5 +15,7 @@ namespace Travelling_Application.Models
         public DateTime Birthday { get; set; }
         public int? RoleId { get; set; }
         public string Role { get; set; }
+        public string CountryCode { get; set; }
+        public byte[] UserPhotoUrl { get; set; }
     }
 }

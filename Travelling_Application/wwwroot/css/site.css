@@ -20,3 +20,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.navbar-nav > .nav-item {
+    margin-right: 30px; /* Устанавливаем отступ справа между элементами меню */
+}

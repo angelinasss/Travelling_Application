@@ -9,11 +9,24 @@
   <ItemGroup>
     <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.4.1" />
     <PackageReference Include="bootstrap" Version="5.3.3" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Account\ViewProfile.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Account\ViewProfile.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
 </Project>
