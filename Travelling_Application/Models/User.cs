@@ -17,5 +17,13 @@ namespace Travelling_Application.Models
         public string Role { get; set; }
         public string CountryCode { get; set; }
         public byte[] UserPhotoUrl { get; set; }
+        public List<Accomodation> FavoriteAccomodation { get; set; }
+        public List<Accomodation> BookingAccomodation { get; set; }
+        public List<AirTicket> FavoriteAirTicket { get; set; }
+        public List<AirTicket> BookingAirTicket { get; set; }
+        public List<Car> FavoriteCars { get; set; }
+        public List<Car> BookingCars { get; set; }
+        public List<Entertainment> FavoriteEntertainment { get; set; }
+        public List<Entertainment> BookingEntertainment { get; set; }
     }
 }

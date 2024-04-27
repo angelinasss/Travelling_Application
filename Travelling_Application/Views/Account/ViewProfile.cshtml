@@ -52,14 +52,14 @@
                 <div class="list-group" style="background-color: #343a40;">
                     <a href="#" class="list-group-item style="color: #ffffff;">Account</a>
                     @{
-                        if (User.IsInRole("traveller"))
+                        if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                         {
-                            <a href="#" class="list-group-item style="color: #ffffff;">My Favorite</a>
-                            <a href="#" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
                         }
-                        else if (User.IsInRole("owner"))
+                        else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                         {
-                            <a href="#" class="list-group-item style="color: #ffffff;">Add Object</a>
+                            <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
                             <a href="#" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
                             <a href="#" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
                         }

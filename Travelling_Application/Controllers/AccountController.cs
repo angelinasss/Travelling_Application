@@ -23,7 +23,7 @@ namespace Travelling_Application.Controllers
             _context = context;
             _environment = environment;
         }
-       
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -38,9 +38,24 @@ namespace Travelling_Application.Controllers
                 User user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
                 if (user == null)
                 {
+                    string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\Avatar-Profile-No-Background.png";
+                    byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                    // Обновляем данные пользователя
                     // добавляем пользователя в бд
-                    user = new User { UserName = model.UserName, Password = model.Password, Name = "", Birthday = new DateTime(),
-                    Nationality = "", Email = "", PhoneNumber = "", Sex = "", Role = model.AccountType};
+                    user = new User
+                    {
+                        UserName = model.UserName,
+                        Password = model.Password,
+                        Name = "",
+                        Birthday = new DateTime(),
+                        Nationality = "",
+                        Email = "",
+                        PhoneNumber = "",
+                        Sex = "",
+                        Role = model.AccountType,
+                        CountryCode = "",
+                        UserPhotoUrl = fileBytes
+                };
 
                     _context.Users.Add(user);
                     await _context.SaveChangesAsync();
@@ -270,7 +285,36 @@ namespace Travelling_Application.Controllers
                 await _context.SaveChangesAsync();
             }
 
-                return RedirectToAction("ViewProfile", "Account");
+            return RedirectToAction("ViewProfile", "Account");
+        }
+
+        public async Task<IActionResult> ShowFavoriteItems()
+        {
+            return View("FavoriteItems");
+        }
+
+        public async Task<IActionResult> ShowBookingItems()
+        {
+            return View("BookingItems");
+        }
+
+        public async Task<IActionResult> AddObject()
+        {
+                var entities = new List<EntityModel>
+                {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+                };
+
+            return View("NewObject", entities);
+        }
+        public IActionResult GetEntityInfo(string entityName)
+        {
+            // Здесь вы можете реализовать логику для получения информации о выбранной сущности
+            // В данном примере просто возвращается строка с названием сущности
+            return Content($"You selected {entityName}");
         }
     }
 }

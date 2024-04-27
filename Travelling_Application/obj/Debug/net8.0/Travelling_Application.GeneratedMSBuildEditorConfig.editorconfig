@@ -18,8 +18,20 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application
 build_property._RazorSourceGeneratorDebug = 
 
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/BookingItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxCb29raW5nSXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/FavoriteItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxGYXZvcml0ZUl0ZW1zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/NewObject.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxOZXdPYmplY3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/Register.cshtml]

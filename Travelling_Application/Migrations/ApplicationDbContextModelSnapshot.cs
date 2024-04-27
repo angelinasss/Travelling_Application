@@ -148,12 +148,230 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.Property<bool>("WheelchairAccessible")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
+
                     b.ToTable("Accomodation");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.AirTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CityFrom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CityTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Cost")
+                        .HasColumnType("float");
+
+                    b.Property<string>("CountryFrom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FlightNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("AirTicket");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.Car", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AmountOfPassengers")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CarCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("CarPhoto")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("CollisionDamageWaiver")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Cost")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ElectricCar")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FreeCancellation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAirCondition")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LiabilityCoverage")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("TheftCoverage")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Transmission")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("UnlimitedMileage")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Car");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.CarAvailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CarsAvailability");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.Entertainment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Cost")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Entertainment");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.Photo", b =>
@@ -397,6 +615,50 @@ namespace Travelling_Application.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Travelling_Application.Models.Accomodation", b =>
+                {
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("BookingAccomodation")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("FavoriteAccomodation")
+                        .HasForeignKey("UserId1");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.AirTicket", b =>
+                {
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("BookingAirTicket")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("FavoriteAirTicket")
+                        .HasForeignKey("UserId1");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.Car", b =>
+                {
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("BookingCars")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("FavoriteCars")
+                        .HasForeignKey("UserId1");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.Entertainment", b =>
+                {
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("BookingEntertainment")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Travelling_Application.Models.User", null)
+                        .WithMany("FavoriteEntertainment")
+                        .HasForeignKey("UserId1");
+                });
+
             modelBuilder.Entity("Travelling_Application.Models.Photo", b =>
                 {
                     b.HasOne("Travelling_Application.Models.Accomodation", null)
@@ -437,6 +699,25 @@ namespace Travelling_Application.Migrations
             modelBuilder.Entity("Travelling_Application.Models.Room", b =>
                 {
                     b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.User", b =>
+                {
+                    b.Navigation("BookingAccomodation");
+
+                    b.Navigation("BookingAirTicket");
+
+                    b.Navigation("BookingCars");
+
+                    b.Navigation("BookingEntertainment");
+
+                    b.Navigation("FavoriteAccomodation");
+
+                    b.Navigation("FavoriteAirTicket");
+
+                    b.Navigation("FavoriteCars");
+
+                    b.Navigation("FavoriteEntertainment");
                 });
 #pragma warning restore 612, 618
         }
