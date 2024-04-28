@@ -10,6 +10,7 @@ using System;
 using System.Security.Claims;
 using Travelling_Application.Models;
 using Travelling_Application.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Travelling_Application.Controllers
 {
@@ -135,7 +136,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.UserPhotoUrl = new byte[10]; // или другое значение по умолчанию
+                    ViewBag.UserPhotoUrl = new byte[10]; 
                 }
                 if (birthday != null)
                 {
@@ -143,7 +144,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultBirthday = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultBirthday = ""; 
                 }
                 if (sex != null)
                 {
@@ -151,7 +152,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultSex = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultSex = ""; 
                 }
                 if (name != null)
                 {
@@ -159,7 +160,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultName = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultName = ""; 
                 }
                 if (email != null)
                 {
@@ -167,7 +168,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultEmail = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultEmail = ""; 
                 }
                 if (phoneNumber != null)
                 {
@@ -175,7 +176,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultPhoneNumber = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultPhoneNumber = ""; 
                 }
                 if (nationality != null)
                 {
@@ -183,7 +184,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultNationality = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultNationality = ""; 
                 }
                 if (countryCode != null)
                 {
@@ -191,7 +192,7 @@ namespace Travelling_Application.Controllers
                 }
                 else
                 {
-                    ViewBag.DefaultCountryCode = ""; // или другое значение по умолчанию
+                    ViewBag.DefaultCountryCode = ""; 
                 }
             }
             return View("ViewProfile");
@@ -308,13 +309,30 @@ namespace Travelling_Application.Controllers
                 new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
                 };
 
-            return View("NewObject", entities);
+                string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+                byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                ViewBag.CarPhoto = fileBytes;
+
+                return View("NewObject", entities);
         }
-        public IActionResult GetEntityInfo(string entityName)
+
+        [HttpPost]
+        public async Task<IActionResult> ClearForm()
         {
-            // Здесь вы можете реализовать логику для получения информации о выбранной сущности
-            // В данном примере просто возвращается строка с названием сущности
-            return Content($"You selected {entityName}");
+            var entities = new List<EntityModel>
+                {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+                };
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+            ViewBag.EntityName = "Car";
+
+            return View("NewObject", entities);
         }
     }
 }

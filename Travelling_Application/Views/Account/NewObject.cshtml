@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Add Objects";
+    ViewData["Title"] = "NewObjects";
 }
 @model List<EntityModel>
 
@@ -7,6 +7,38 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
+        .enlarged-photo-container {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .enlarged-photo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 99999;
+        }
+
         .form-signin > :last-child {
             margin-bottom: 56px; /* 56px - высота футера */
         }
@@ -37,7 +69,7 @@
     }
 </head>
 
-<main class="form-signin w-100 m-auto text-center">
+<main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
     <body>
     <div class="container-fluid">
         <div class="row">
@@ -47,19 +79,19 @@
                     @{
                         if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                         {
-                            <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
-                            <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
                         }
                         else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                         {
-                            <a href="#" class="list-group-item style="color: #ffffff;">Add Object</a>
-                            <a href="#" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
-                            <a href="#" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
                         }
                         else
                         {
-                            <a href="#" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
-                            <a href="#" class="list-group-item style="color: #ffffff;">Unverified Object</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">Unverified Object</a>
                         }
                     }
                 </div>
@@ -67,28 +99,192 @@
             <div class="col-md-9">
                 <div class="row">
                     <div class="col">
-                    <h3>Choose entity for new object</h3>
+                            <h3>Select the entity for the new object</h3>
                             <div class="row" style="margin-top: 20px;">
                         @foreach (var entity in Model)
                         {
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-3">
                                 <button class="btn btn-entity" data-entity="@entity.Name">@entity.Name</button>
                             </div>
                         }
                         </div>
-                        <div id="entity-info" class="mt-5"></div>
+                        <div id="entity-info" class="mt-1"></div>
                             <div id="car-fields" class="mt-5" style="display: none;">
+                               
+                                
+                                <div class="car-info" style="text-align: center;">
+                                    <div class="photo-container" style="position: relative; display: inline-block;">
+                                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(ViewBag.CarPhoto)" class="car-photo" style="margin-right: 20px; margin-bottom: 20px; margin-top: 1px; width: 450px; height: 300px; object-fit: cover;" onclick="openPhoto()" onmouseover="showDeleteButton(event)" onmouseout="hideDeleteButton()">
+                                        <button class="delete-btn" style="display: none; position: absolute; top: 5px; right: 5px; background-color: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;" onclick="deletePhoto()">✖</button>
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                    <input type="file" name="file" id="file" style="display: none;" onchange="handleFileSelect(this)">
+                                    <label for="file" class="btn btn-primary" style="margin-right: 20px; margin-top: -5px;">Upload a Photo</label>
+                                </div>
+
+                                <!-- Скрытый контейнер для увеличенного изображения -->
+                                <div id="enlarged-photo-container" class="enlarged-photo-container">
+                                    <span class="close-btn" onclick="closePhoto()">✕</span>
+                                    <img id="enlarged-photo" class="enlarged-photo">
+                                </div>
+
+                                <script>
+                                    function openPhoto() {
+                                        var imgSrc = document.querySelector('.car-photo').src;
+                                        var enlargedImgContainer = document.getElementById('enlarged-photo-container');
+                                        var enlargedImg = document.getElementById('enlarged-photo');
+                                        enlargedImg.src = imgSrc;
+                                        enlargedImgContainer.style.display = 'block';
+                                    }
+
+                                    function closePhoto() {
+                                        var enlargedImgContainer = document.getElementById('enlarged-photo-container');
+                                        enlargedImgContainer.style.display = 'none';
+                                    }
+                                </script>
+
+                                <script>
+                                    function handleFileSelect(input) {
+                                        if (input.files && input.files[0]) {
+                                            var reader = new FileReader();
+                                            reader.onload = function (e) {
+                                                $('.car-photo').attr('src', e.target.result);
+                                            }
+                                            reader.readAsDataURL(input.files[0]);
+                                        }
+                                    }
+                                </script>
                                 <div class="form-group">
-                                    <label for="carName">Name</label>
-                                    <input type="text" class="form-control" id="carName" placeholder="Enter name">
+                                    <label for="carName" style="margin-top: 15px;">Car Model</label>
+                                    <input type="text" class="form-control" id="modelName" placeholder="Enter the car model" style="margin-top: 10px;">
                                 </div>
                                 <div class="form-group">
-                                    <label for="carCity">City</label>
-                                    <input type="text" class="form-control" id="carCity" placeholder="Enter city">
+                                    <label for="carCountry" style="margin-top: 15px;">Country</label>
+                                    <input type="text" class="form-control" id="carCountry" placeholder="Enter the country" style="margin-top: 10px;">
                                 </div>
                                 <div class="form-group">
-                                    <label for="carCountry">Country</label>
-                                    <input type="text" class="form-control" id="carCountry" placeholder="Enter country">
+                                    <label for="carCity" style="margin-top: 15px;">City</label>
+                                    <input type="text" class="form-control" id="carCity" placeholder="Enter the city" style="margin-top: 10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="carAddress" style="margin-top: 15px;">Address</label>
+                                    <input type="text" class="form-control" id="carAddress" placeholder="Enter the address" style="margin-top: 10px;">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="airConditioner" class="form-label" style="margin-top: 15px;">Air Conditioning</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IsAirCondition" id="Yes" value="Yes">
+                                        <label class="form-check-label" for="True">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IsAirCondition" id="No" value="No">
+                                        <label class="form-check-label" for="False">No</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="transmission" class="form-label" style="margin-top: 15px;">Transmission</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="transmission" name="model.Transmission" type="hidden">
+                                            <option value="Automatic">Automatic</option>
+                                            <option value="Manual">Manual</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="unlimitedMileage" class="form-label" style="margin-top: 15px;">Mileage</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.UnlimitedMileage" id="Unlimited" value="Unlimited">
+                                        <label class="form-check-label" for="True">Unlimited</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.UnlimitedMileage" id="Limited" value="Limited">
+                                        <label class="form-check-label" for="False">Limited</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="electricCar" class="form-label" style="margin-top: 15px;">Electric Car</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.ElectricCar" id="Yes" value="Yes">
+                                        <label class="form-check-label" for="True">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.ElectricCar" id="No" value="No">
+                                        <label class="form-check-label" for="False">No</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="carCategory" class="form-label" style="margin-top: 15px;">Car Category</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="carCategory" name="model.CarCategory" type="hidden">
+                                            <option value="Small">Small</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Large">Large</option>
+                                            <option value="Estate">Estate</option>
+                                            <option value="Premium">Premium</option>
+                                            <option value="People Carriers">People Carriers</option>
+                                            <option value="SUVs">SUVs</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <label for="passengerCapacity" style="margin-top: 15px;">Passenger Capacity</label>
+                                <input type="number" class="form-control" id="passengerCapacity" placeholder="Enter passenger capacity" min="0" max="100" style="margin-top: 10px;">
+                                <div class="mb-3">
+                                    <label for="theftCoverage" class="form-label" style="margin-top: 15px;">Theft Coverage</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.TheftCoverage" id="Yes" value="Yes">
+                                        <label class="form-check-label" for="True">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.TheftCoverage" id="No" value="No">
+                                        <label class="form-check-label" for="False">No</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="collisionDamageWaiver" class="form-label" style="margin-top: 15px;">Collision Damage Waiver</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.CollisionDamageWaiver" id="Yes" value="Yes">
+                                        <label class="form-check-label" for="True">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.CollisionDamageWaiver" id="No" value="No">
+                                        <label class="form-check-label" for="False">No</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="liabilityCoverage" class="form-label" style="margin-top: 15px;">Liability Coverage</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.LiabilityCoverage" id="Yes" value="Yes">
+                                        <label class="form-check-label" for="True">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.LiabilityCoverage" id="No" value="No">
+                                        <label class="form-check-label" for="False">No</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.FreeCancellation" id="Yes" value="Yes">
+                                        <label class="form-check-label" for="True">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.FreeCancellation" id="No" value="No">
+                                        <label class="form-check-label" for="False">No</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description" style="margin-top: 15px;">Car Description</label>
+                                    <textarea class="form-control" id="description" placeholder="Enter the car description" rows="5" style="margin-top: 10px;"></textarea>
+                                </div>
+                                <label for="pricePer1hour" style="margin-top: 15px;">Price Per 1 hour Of Rent</label>
+                                <input type="number" class="form-control" id="pricePer1hour" placeholder="Enter price per 1 hour of rent" step="0.01" min="0" max="10000" style="margin-top: 10px;>
+                                <div class="user-info" style="text-align: center;">
+                                    <form asp-action="ClearForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block; margin-top: 30px;">
+                                        <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: -5px;">Clear</button>
+                                    </form>
+                                    <form asp-action="SaveForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block; margin-top: 30px;">
+                                        <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: -5px;">Save</button>
+                                    </form>
                                 </div>
                             </div>
                     </div>
@@ -96,22 +292,18 @@
             </div>    
 
             @section scripts {
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
                         $(document).ready(function () {
                             $('.btn-entity').click(function () {
                                 $('.btn-entity').removeClass('selected');
                                 $(this).addClass('selected');
                                 var entityName = $(this).data('entity');
-                                $.get('/Account/GetEntityInfo', { entityName: entityName }, function (data) {
-                                    $('#entity-info').html(data);
-                                    // Показать поля для ввода, если выбрана кнопка "Car"
-                                    if (entityName === "Car") {
-                                        $('#car-fields').show();
-                                    } else {
-                                        $('#car-fields').hide();
-                                    }
-                                });
+                                if (entityName === "Car") {
+                                    $('#car-fields').show();
+                                } else {
+                                    $('#car-fields').hide();
+                                }    
                             });
                         });
                 </script>
