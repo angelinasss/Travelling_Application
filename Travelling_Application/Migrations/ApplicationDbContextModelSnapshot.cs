@@ -154,6 +154,9 @@ namespace Travelling_Application.Migrations
                     b.Property<int?>("UserId1")
                         .HasColumnType("int");
 
+                    b.Property<bool>("VerifiedByAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("WheelchairAccessible")
                         .HasColumnType("bit");
 
@@ -205,6 +208,9 @@ namespace Travelling_Application.Migrations
 
                     b.Property<int?>("UserId1")
                         .HasColumnType("int");
+
+                    b.Property<bool>("VerifiedByAdmin")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -259,6 +265,10 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("ElectricCar")
                         .HasColumnType("bit");
 
+                    b.Property<string>("EndDates")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("FreeCancellation")
                         .HasColumnType("bit");
 
@@ -268,8 +278,15 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("LiabilityCoverage")
                         .HasColumnType("bit");
 
+                    b.Property<int>("PublisherId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
+
+                    b.Property<string>("StartDates")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TheftCoverage")
                         .HasColumnType("bit");
@@ -291,6 +308,9 @@ namespace Travelling_Application.Migrations
                     b.Property<int?>("UserId1")
                         .HasColumnType("int");
 
+                    b.Property<bool>("VerifiedByAdmin")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
@@ -298,28 +318,6 @@ namespace Travelling_Application.Migrations
                     b.HasIndex("UserId1");
 
                     b.ToTable("Car");
-                });
-
-            modelBuilder.Entity("Travelling_Application.Models.CarAvailability", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CarId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CarsAvailability");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.Entertainment", b =>
@@ -364,6 +362,9 @@ namespace Travelling_Application.Migrations
 
                     b.Property<int?>("UserId1")
                         .HasColumnType("int");
+
+                    b.Property<bool>("VerifiedByAdmin")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

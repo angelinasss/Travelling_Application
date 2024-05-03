@@ -43,5 +43,6 @@
         public bool PetsAllowed { get; set; }
         public bool DeliveryFoodToTheRoom { get; set; }
         public bool EveryHourFrontDesk { get; set; }
+        public bool VerifiedByAdmin { get; set; }
     }
 }

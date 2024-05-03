@@ -11,5 +11,6 @@
         public int Rating { get; set; }
         public double Cost { get; set; }
         public string Description { get; set; }
+        public bool VerifiedByAdmin { get; set; }
     }
 }

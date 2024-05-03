@@ -10,7 +10,11 @@ namespace Travelling_Application.Models
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Accomodation> Accomodation { get; set; }
 
-        public DbSet<CarAvailability> CarsAvailability { get; set; }
+        public DbSet<Entertainment> Entertainment { get; set; }
+
+        public DbSet<Car> Car { get; set; }
+
+        public DbSet<AirTicket> AirTicket { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

@@ -10,5 +10,6 @@
         public double Cost { get; set; }
         public DateTime DateTime { get; set; }
         public string FlightNumber { get; set; }
+        public bool VerifiedByAdmin { get; set; }
     }
 }

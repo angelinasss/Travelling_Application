@@ -334,5 +334,88 @@ namespace Travelling_Application.Controllers
 
             return View("NewObject", entities);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveForm([Bind("Title, City, Country, Address, IsAirCondition, Transmission, Cost, FreeCancellation, AmountOfPassengers, TheftCoverage, CollisionDamageWaiver, LiabilityCoverage, UnlimitedMileage, CarCategory, ElectricCar, Description, StartDates, EndDates", Prefix = "model")] Car model)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var entities = new List<EntityModel>
+                {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+                };
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            var file = Request.Form.Files["file"]; // Получаем файл из запроса
+            byte[] imageDataa = new byte[fileBytes.Length];
+
+            if (file != null && file.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] imageData = memoryStream.ToArray();
+
+                    if (imageData == null)
+                    {
+                        imageData = fileBytes;
+                    }
+                    ViewBag.CarPhoto = imageData;
+                    imageDataa = imageData;
+                }
+            }
+         
+            // Преобразовать модель представления в объект Car и сохранить его в базе данных
+            var car = new Car
+                    {
+                        Title = model.Title,
+                        City = model.City,
+                        Country = model.Country,
+                        Address = model.Address,
+                        IsAirCondition = model.IsAirCondition,
+                        Transmission = model.Transmission,
+                        Cost = model.Cost,
+                        CarPhoto = imageDataa,
+                        FreeCancellation = model.FreeCancellation,
+                        AmountOfPassengers = model.AmountOfPassengers,
+                        TheftCoverage = model.TheftCoverage,
+                        CollisionDamageWaiver = model.CollisionDamageWaiver,
+                        LiabilityCoverage = model.LiabilityCoverage,
+                        UnlimitedMileage = model.UnlimitedMileage,
+                        CarCategory = model.CarCategory,
+                        ElectricCar = model.ElectricCar,
+                        Description = model.Description,
+                        StartDates = model.StartDates,
+                        EndDates = model.EndDates,
+                        VerifiedByAdmin = false,
+                        PublisherId = currentUser.Id
+            };
+                // добавить сохранение дат в другую БД
+                    _context.Car.Add(car);
+                    await _context.SaveChangesAsync();
+
+            await _context.SaveChangesAsync();
+
+            // Устанавливаем сообщение об успешном изменении в TempData
+            TempData["SuccessMessage"] = "The object was successfully saved and sent for moderation.";
+
+                return View("NewObject", entities);
+
+        }
+        public async Task<IActionResult> UnverifiedObjects()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var unverifiedCars = await _context.Car
+            .Where(c => !c.VerifiedByAdmin && c.PublisherId == currentUser.Id)
+            .ToListAsync();
+
+            return View("UnverifiedItems", unverifiedCars);
+        }
     }
 }

@@ -21,5 +21,9 @@
         public string CarCategory { get; set; }
         public bool ElectricCar { get; set; }
         public string Description { get; set; }
+        public List<DateTime> StartDates { get; set; }
+        public List<DateTime> EndDates { get; set; }
+        public bool VerifiedByAdmin { get; set; }
+        public int PublisherId { get; set; }
     }
 }
