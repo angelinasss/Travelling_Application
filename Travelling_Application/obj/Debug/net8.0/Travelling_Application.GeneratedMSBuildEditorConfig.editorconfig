@@ -38,8 +38,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/RejectedItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWplY3RlZEl0ZW1zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/UnverifiedItems.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVbnZlcmlmaWVkSXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/VerifiedItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxWZXJpZmllZEl0ZW1zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/ViewProfile.cshtml]

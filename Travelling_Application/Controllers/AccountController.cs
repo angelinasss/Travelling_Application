@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Security.Claims;
 using Travelling_Application.Models;
 using Travelling_Application.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Http;
 
 namespace Travelling_Application.Controllers
 {
@@ -352,7 +354,7 @@ namespace Travelling_Application.Controllers
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
 
             var file = Request.Form.Files["file"]; // Получаем файл из запроса
-            byte[] imageDataa = new byte[fileBytes.Length];
+            byte[] imageDataa = fileBytes;
 
             if (file != null && file.Length > 0)
             {
@@ -369,6 +371,7 @@ namespace Travelling_Application.Controllers
                     imageDataa = imageData;
                 }
             }
+            else { ViewBag.CarPhoto = imageDataa; }
          
             // Преобразовать модель представления в объект Car и сохранить его в базе данных
             var car = new Car
@@ -395,27 +398,181 @@ namespace Travelling_Application.Controllers
                         VerifiedByAdmin = false,
                         PublisherId = currentUser.Id
             };
-                // добавить сохранение дат в другую БД
-                    _context.Car.Add(car);
-                    await _context.SaveChangesAsync();
-
+             // добавить сохранение дат в другую БД
+            _context.Car.Add(car);
+                   
             await _context.SaveChangesAsync();
 
             // Устанавливаем сообщение об успешном изменении в TempData
-            TempData["SuccessMessage"] = "The object was successfully saved and sent for moderation.";
+            TempData["SuccessMessage"] = "The object Car was successfully saved and sent for moderation.";
 
                 return View("NewObject", entities);
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveEntertainmentForm(Entertainment model, IFormFileCollection photos)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var entities = new List<EntityModel>
+                {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+                };
+
+            if (photos.Count > 0)
+            {
+                foreach (var photo in photos)
+                {
+                    // Обработка каждого файла, например, сохранение в базу данных
+                }
+            }
+
+            var entertainment = new Entertainment
+            {
+                Title = model.Title,
+                City = model.City,
+                Country = model.Country,
+                Address = model.Address,
+                Languages = model.Languages,
+                TimeOfDay = model.TimeOfDay,
+                Cost = model.Cost,
+                FreeCancellation = model.FreeCancellation,
+                Category = model.Category,
+                Description = model.Description,
+                AvailableDates = model.AvailableDates,
+                AmountOfTickets = model.AmountOfTickets,
+                VerifiedByAdmin = false,
+                PublisherId = currentUser.Id
+            };
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+            // добавить сохранение дат в другую БД
+            _context.Entertainment.Add(entertainment);
+            await _context.SaveChangesAsync();
+
+            // Устанавливаем сообщение об успешном изменении в TempData
+            TempData["SuccessMessage"] = "The object Attraction was successfully saved and sent for moderation.";
+
+            return View("NewObject", entities);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveFlightForm([Bind("CityFrom, CountryFrom, CityTo, CountryTo, FlightNumber, CostEC, CostBC, CostFC, ArrivalTime, DepartureTime, AmountOfTicketsEC, AmountOfTicketsBC, AmountOfTicketsFC, FreeCancellation, IncludeLuggageEC, IncludeLuggageBC, IncludeLuggageFC, ArrivalCountryCode, DepartureCountryCode", Prefix = "model")] AirTicket model)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var entities = new List<EntityModel>
+                {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+                };
+
+            var airticket = new AirTicket
+            {
+                CityFrom = model.CityFrom,
+                CountryFrom = model.CountryFrom,
+                CityTo = model.CityTo,
+                CountryTo = model.CountryTo,
+                FlightNumber = model.FlightNumber,
+                CostEC = model.CostEC,
+                CostBC = model.CostBC,
+                CostFC = model.CostFC,
+                ArrivalTime = model.ArrivalTime,
+                DepartureTime = model.DepartureTime,
+                AmountOfTicketsEC = model.AmountOfTicketsEC,
+                AmountOfTicketsBC = model.AmountOfTicketsBC,
+                AmountOfTicketsFC = model.AmountOfTicketsFC,
+                FreeCancellation = model.FreeCancellation,
+                IncludeLuggageEC = model.IncludeLuggageEC,
+                IncludeLuggageBC = model.IncludeLuggageBC,
+                IncludeLuggageFC = model.IncludeLuggageFC,
+                ArrivalCountryCode = model.ArrivalCountryCode,
+                DepartureCountryCode = model.DepartureCountryCode,
+                VerifiedByAdmin = false,
+                PublisherId = currentUser.Id
+            };
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+            // добавить сохранение дат в другую БД
+            _context.AirTicket.Add(airticket);
+            await _context.SaveChangesAsync();
+
+            // Устанавливаем сообщение об успешном изменении в TempData
+            TempData["SuccessMessage"] = "The object AirTicket was successfully saved and sent for moderation.";
+
+            return View("NewObject", entities);
+        }
+
         public async Task<IActionResult> UnverifiedObjects()
         {
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
             var unverifiedCars = await _context.Car
-            .Where(c => !c.VerifiedByAdmin && c.PublisherId == currentUser.Id)
+            .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin && c.PublisherId == currentUser.Id)
             .ToListAsync();
 
-            return View("UnverifiedItems", unverifiedCars);
+            var unverifiedAirTickets = await _context.AirTicket
+           .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin && c.PublisherId == currentUser.Id)
+           .ToListAsync();
+
+            var model = new UnverifiedObjectsViewModel
+            {
+                UnverifiedCars = unverifiedCars,
+                UnverifiedAirTickets = unverifiedAirTickets
+            };
+
+            return View("UnverifiedItems", model);
+        }
+
+        public async Task<IActionResult> VerifiedObjects()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var verifiedCars = await _context.Car
+            .Where(c => c.VerifiedByAdmin && c.PublisherId == currentUser.Id)
+            .ToListAsync();
+
+            var verifiedAirTickets = await _context.AirTicket
+           .Where(c => c.VerifiedByAdmin && c.PublisherId == currentUser.Id)
+           .ToListAsync();
+
+            var model = new VerifiedObjectsViewModel
+            {
+                VerifiedCars = verifiedCars,
+                VerifiedAirTickets = verifiedAirTickets
+            };
+
+            return View("VerifiedItems", model);
+        }
+
+        public async Task<IActionResult> RejectedObjects()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var unverifiedCars = await _context.Car
+            .Where(c => !c.VerifiedByAdmin && c.RejectedByAdmin && c.PublisherId == currentUser.Id)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.AirTicket
+           .Where(c => !c.VerifiedByAdmin && c.RejectedByAdmin && c.PublisherId == currentUser.Id)
+           .ToListAsync();
+
+            var model = new UnverifiedObjectsViewModel
+            {
+                UnverifiedCars = unverifiedCars,
+                UnverifiedAirTickets = unverifiedAirTickets
+            };
+
+            return View("RejectedItems", model);
         }
     }
 }

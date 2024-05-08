@@ -113,6 +113,9 @@ namespace Travelling_Application.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
+                    b.Property<bool>("RejectedByAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Restaurants")
                         .HasColumnType("int");
 
@@ -177,6 +180,22 @@ namespace Travelling_Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AmountOfTicketsBC")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AmountOfTicketsEC")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AmountOfTicketsFC")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ArrivalCountryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ArrivalTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CityFrom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -185,7 +204,13 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Cost")
+                    b.Property<double>("CostBC")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CostEC")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CostFC")
                         .HasColumnType("float");
 
                     b.Property<string>("CountryFrom")
@@ -196,12 +221,34 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<string>("DepartureCountryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FlightNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("FreeCancellation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludeLuggageBC")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludeLuggageEC")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IncludeLuggageFC")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PublisherId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RejectedByAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -284,6 +331,9 @@ namespace Travelling_Application.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
+                    b.Property<bool>("RejectedByAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("StartDates")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -332,6 +382,18 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AmountOfTickets")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvailableDates")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -343,15 +405,33 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EntertainmentPhotos")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("FreeCancellation")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Languages")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PublisherId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
+
+                    b.Property<bool>("RejectedByAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TimeOfDay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

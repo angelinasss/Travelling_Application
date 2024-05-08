@@ -2,8 +2,14 @@
     ViewData["Title"] = "NewObjects";
 }
 @model List<EntityModel>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
@@ -31,6 +37,38 @@
                 box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             }
 
+            .enlarged-photo-container1 {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo1 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-btnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
             .close-btn {
                 position: absolute;
                 top: 10px;
@@ -39,6 +77,24 @@
                 font-size: 20px;
                 cursor: pointer;
                 z-index: 99999;
+            }
+
+            .photo-item {
+                width: 150px;
+                height: 150px;
+                margin: 5px;
+                position: relative;
+            }
+
+            .delete-btn {
+                top: 5px;
+                right: 5px;
+            }
+
+            .img-thumbnail {
+                max-height: 150px; /* Устанавливаем максимальную высоту */
+                width: auto; /* Автоматически масштабируем ширину */
+                max-width: 150%; /* Не допускаем переполнение родительского контейнера */
             }
 
             .form-signin > :last-child {
@@ -81,6 +137,20 @@
                 border-radius: 5px;
             }
 
+            #notificationAttraction {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notificationAirTicket {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
             .success-notification {
                 background-color: #d4edda;
                 color: #155724;
@@ -91,6 +161,16 @@
                 background-color: #f8d7da;
                 color: #721c24;
                 border-color: #f5c6cb;
+            }
+
+            .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
             }
         </style>
     }
@@ -181,6 +261,219 @@
                 $('#notification1').hide();
             });
         });
+
+        function validateAttractionForm() {
+            // Проверка текстовых полей
+            var attractionName = $('#attractionName').val();
+            var attractionCountry = $('#attractionCountry').val();
+            var attractionCity = $('#attractionCity').val();
+            var attractionAddress = $('#attractionAddress').val();
+            var description = $('#descriptionAttraction').val();
+            var cost = $('#cost').val();
+
+            // Проверка выбранных радиокнопок
+            var freeCancellation = $('#freeCancellationYes').is(':checked');
+            if (!freeCancellation) {
+                freeCancellation = $('#freeCancellationNo').is(':checked');
+            }
+
+            // Проверка выбранных чекбоксов
+            var languages = $('input[name="model.Languages[]"]:checked').length > 0;
+
+            // Проверка загруженных фотографий
+            var photoCount = $('#photoContainer').children().length;
+
+            // Проверка всех динамически добавленных полей
+            var dynamicFieldsFilled = true;
+            $('.booking-date-attraction').each(function () {
+                var date = $(this).find('input[name="model.AvailableDates[]"]').val();
+                var tickets = $(this).find('input[name="model.AmountOfTickets[]"]').val();
+                if (date === '' || tickets === '') {
+                    dynamicFieldsFilled = false;
+                    return false; // Выход из цикла each
+                }
+            });
+            var isValid = true;
+            // Проверка всех условий
+            if (attractionName === '' || attractionCountry === '' || attractionCity === '' || attractionAddress === '' || description === '' || cost === '' || !freeCancellation || !languages || photoCount === 0 || !dynamicFieldsFilled) {
+                $('#notificationAttraction').text('Please fill in all required fields.').addClass('text-danger').show();
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        function showSuccessMessage(message) {
+            $('#notification1').text(message).addClass('success-notification').show();
+        }
+
+        $(document).ready(function () {
+            var successMessage = '@TempData["SuccessMessage"]'; // Получение сообщения об успешном сохранении с сервера
+            if (successMessage) {
+                showSuccessMessage(successMessage); // Отображение уведомления об успешном сохранении
+            }
+        });
+        $(document).ready(function () {
+            // Обработчик события клика на кнопки сущностей
+            $('.btn-entity').click(function () {
+                // Скрываем уведомление
+                $('#notification1').hide();
+            });
+        });
+
+        function validateAirTicketForm() {
+            // Проверка текстовых полей
+            var airTicketDepartureCountry = $('#departureCountry').val();
+            var airTicketDepartureCity = $('#departureCity').val();
+            var airTicketArrivalCountry = $('#arrivalCountry').val();
+            var airTicketArrivalCity = $('#arrivalCity').val();
+            var flightNumber = $('#flightNumber').val();
+            var costEC = $('#ticketCostEC').val();
+            var costBC = $('#ticketCostBC').val();
+            var costFC = $('#ticketCostFC').val();
+            var amountOfTicketsEC = $('#amountOfTicketsEC').val();
+            var amountOfTicketsBC = $('#amountOfTicketsBC').val();
+            var amountOfTicketsFC = $('#amountOfTicketsFC').val();
+            var departureCountryCode = $('#departureCountryCode').val();
+            var arrivalCountryCode = $('#arrivalCountryCode').val();
+
+            // Проверка выбранных радиокнопок
+            var freeCancellation = $('#freeCancellationYesAirTicket').is(':checked');
+            if (!freeCancellation) {
+                freeCancellation = $('#freeCancellationNoAirTicket').is(':checked');
+            }
+            var includeLuggageEC = $('#includeLuggageForEconomyClassYes').is(':checked');
+            if (!includeLuggageEC) {
+                includeLuggageEC = $('#includeLuggageForEconomyClassNo').is(':checked');
+            }
+            var includeLuggageBC = $('#includeLuggageForBusinessClassYes').is(':checked');
+            if (!includeLuggageBC) {
+                includeLuggageBC = $('#includeLuggageForBusinessClassNo').is(':checked');
+            }
+            var includeLuggageFC = $('#includeLuggageForFirstClassYes').is(':checked');
+            if (!includeLuggageFC) {
+                includeLuggageFC = $('#includeLuggageForFirstClassNo').is(':checked');
+            }
+
+            var isValid = true;
+            if (!freeCancellation || !includeLuggageEC || !includeLuggageBC || !includeLuggageFC) {
+                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger').show();
+                isValid = false;
+            }
+            if (departureCountryCode === '') {
+                $('#departureCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCountryCode').removeClass('invalid-field');
+            }
+            if (arrivalCountryCode === '') {
+                $('#arrivalCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCountryCode').removeClass('invalid-field');
+            }
+            if (airTicketDepartureCountry === '') {
+                $('#departureCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCountry').removeClass('invalid-field');
+            }
+            if (airTicketDepartureCity === '') {
+                $('#departureCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCity').removeClass('invalid-field');
+            }
+            if (airTicketArrivalCountry === '') {
+                $('#arrivalCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCountry').removeClass('invalid-field');
+            }
+            if (airTicketArrivalCity === '') {
+                $('#arrivalCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCity').removeClass('invalid-field');
+            }
+            if (flightNumber === '') {
+                $('#flightNumber').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#flightNumber').removeClass('invalid-field');
+            }
+            if (costEC === '') {
+                $('#ticketCostEC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#ticketCostEC').removeClass('invalid-field');
+            }
+            if (costBC === '') {
+                $('#ticketCostBC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#ticketCostBC').removeClass('invalid-field');
+            }
+            if (costFC === '') {
+                $('#ticketCostFC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#ticketCostFC').removeClass('invalid-field');
+            }
+            if (amountOfTicketsEC === '') {
+                $('#amountOfTicketsEC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#amountOfTicketsEC').removeClass('invalid-field');
+            }
+            if (amountOfTicketsBC === '') {
+                $('#amountOfTicketsBC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#amountOfTicketsBC').removeClass('invalid-field');
+            }
+            if (amountOfTicketsFC === '') {
+                $('#amountOfTicketsFC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#amountOfTicketsFC').removeClass('invalid-field');
+            }
+            if (isValid) {
+                $('#departureCity, #arrivalCountry, #arrivalCity, #flightNumber, #ticketCostEC, #ticketCostBC, #ticketCostFC, #amountOfTicketsEC, #amountOfTicketsBC, #amountOfTicketsFC, #arrivalCountryCode, #departureCountryCode').removeClass('invalid-field');
+                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger1').show();
+            }
+            return isValid;
+        }
+
+        function showSuccessMessage(message) {
+            $('#notification1').text(message).addClass('success-notification').show();
+        }
+
+        $(document).ready(function () {
+            var successMessage = '@TempData["SuccessMessage"]'; // Получение сообщения об успешном сохранении с сервера
+            if (successMessage) {
+                showSuccessMessage(successMessage); // Отображение уведомления об успешном сохранении
+            }
+        });
+        $(document).ready(function () {
+            // Обработчик события клика на кнопки сущностей
+            $('.btn-entity').click(function () {
+                // Скрываем уведомление
+                $('#notification1').hide();
+            });
+        });
     </script>
 </head>
 
@@ -194,20 +487,20 @@
                     @{
                         if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                         {
-                                    <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
-                                    <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
                         }
                         else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                         {
                                 <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
-                                    <a href="#" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
                                 <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
-                                <a href="#" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                                <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
                         }
                         else
                         {
-                                    <a href="#" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
-                                    <a href="#" class="list-group-item style="color: #ffffff;">Unverified Object</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">Unverified Object</a>
                         }
                     }
                 </div>
@@ -382,11 +675,11 @@
                                 <div class="mb-3">
                                     <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
                                     <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYes" value="true">
+                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYesAttraction" value="true">
                                             <label class="form-check-label" for="freeCancellationYes">Yes</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNo" value="false">
+                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNoAttraction" value="false">
                                             <label class="form-check-label" for="freeCancellationNo">No</label>
                                     </div>
                                 </div>
@@ -412,16 +705,323 @@
                                 </button>
                                 <div class="user-info" style="text-align: center;">
                                         <button id="save-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+
                                     </form>
                                     <form asp-action="ClearForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;">
                                         <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
                                     </form>
-                                </div>
-                                <div id="notification" class="text-danger" style="display:none;"></div>
+
                             </div>
+                                 <div id="notification" class="text-danger" style="display:none;"></div>
                     </div>
+                        <div id="entertainment-fields" class="mt-5" style="display: none;">
+                            <form id="entertainment-form" asp-action="SaveEntertainmentForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAttractionForm()">
+                                <div id="photoContainer" class="d-flex flex-wrap"></div>
+                                <div class="form-group">
+                                    <input type="file" name="photos" id="photoUpload" multiple style="display:none;">
+                                    <button type="button" class="btn btn-primary" id="uploadBtn">Upload Photos</button>
+                                </div>
+                                <script>
+                                    $(document).ready(function () {
+                                        $("#uploadBtn").click(function () {
+                                            $("#photoUpload").click();
+                                        });
+
+                                        $("#photoUpload").change(function () {
+                                            var files = this.files;
+                                            var container = $("#photoContainer");
+
+                                           // var input = $("photoUpload");
+
+                                            //input.files.append(files[0]);
+
+                                            $.each(files, function (index, file) {
+                                                var reader = new FileReader();
+                                                reader.onload = function (e) {
+                                                    var imageSrc = e.target.result;
+                                                    var image = $('<div class="photo-item d-flex align-items-center justify-content-center position-relative"></div>').append(
+                                                        $('<img class="img-thumbnail">').attr({ 'src': imageSrc, 'data-src': imageSrc }).click(function () {
+                                                            openPhoto1($(this).attr('data-src'));
+                                                        }),
+                                                        $('<button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>').click(function () {
+                                                            $(this).parent().remove();
+                                                        })
+                                                    );
+                                                    container.append(image);
+                                                };
+                                                reader.readAsDataURL(file);
+                                            });
+                                        });
+                                    });
+
+                                    // Функция для отображения увеличенного изображения
+                                    function openPhoto1(imgSrc) {
+                                        var enlargedImgContainer = document.getElementById('enlarged-photo-container1');
+                                        var enlargedImg = document.getElementById('enlarged-photo1');
+                                        enlargedImg.src = imgSrc;
+                                        enlargedImgContainer.style.display = 'block';
+                                    }
+
+                                    // Функция для закрытия увеличенного изображения
+                                    function closePhoto1() {
+                                        var enlargedImgContainer = document.getElementById('enlarged-photo-container1');
+                                        enlargedImgContainer.style.display = 'none';
+                                    }
+                                </script>
+
+                                <!-- Скрытый контейнер для увеличенного изображения -->
+                                <div id="enlarged-photo-container1" class="enlarged-photo-container1">
+                                    <span class="close-btnn" onclick="closePhoto1()">✕</span>
+                                    <img id="enlarged-photo1" class="enlarged-photo1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="attractionName" style="margin-top: 15px;">Attraction Name</label>
+                                    <input type="text" name="model.Title" class="form-control" id="attractionName" placeholder="Enter the attraction name" style="margin-top: 10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="attractionCountry" style="margin-top: 15px;">Country Of Location</label>
+                                    <input type="text" name="model.Country" class="form-control" id="attractionCountry" placeholder="Enter the country of location" style="margin-top: 10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="attractionCity" style="margin-top: 15px;">City Of Location</label>
+                                    <input type="text" name="model.City" class="form-control" id="attractionCity" placeholder="Enter the city of location" style="margin-top: 10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="attractionAddress" style="margin-top: 15px;">Address Of Location</label>
+                                    <input type="text" name="model.Address" class="form-control" id="attractionAddress" placeholder="Enter the address of location" style="margin-top: 10px;">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="language" class="form-label" style="margin-top: 15px;">Language</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="EnglishLang" value="English">
+                                        <label class="form-check-label" for="language">English</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="DutchLang" value="Dutch">
+                                        <label class="form-check-label" for="language">Dutch</label>
+                                    </div>
+                                     <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="GermanLang" value="German">
+                                        <label class="form-check-label" for="language">German</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="SpanishLang" value="Spanish">
+                                        <label class="form-check-label" for="language">Spanish</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="FrenchLang" value="French">
+                                        <label class="form-check-label" for="language">French</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="ItalianLang" value="Italian">
+                                        <label class="form-check-label" for="language">Italian</label>
+                                    </div>
+                                     <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="PortugueseLang" value="Portuguese">
+                                        <label class="form-check-label" for="language">Portuguese</label>
+                                    </div>
+                                     <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="ChineseLang" value="Chinese">
+                                        <label class="form-check-label" for="language">Chinese</label>
+                                    </div>
+                                     <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="RussianLang" value="Russian">
+                                        <label class="form-check-label" for="language">Russian</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="JapaneseLang" value="Japanese">
+                                        <label class="form-check-label" for="language">Japanese</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="ArabicLang" value="Arabic">
+                                        <label class="form-check-label" for="language">Arabic</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="model.Languages[]" id="FilipinoLang" value="Filipino">
+                                        <label class="form-check-label" for="language">Filipino</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="attractionCategory" class="form-label" style="margin-top: 15px;">Attraction Category</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="attractionCategory" name="model.Category" type="hidden">
+                                            <option value="Tours">Tours</option>
+                                            <option value="Museum, arts & culture">Museum, arts & culture</option>
+                                            <option value="Nature & outdoor">Nature & outdoor</option>
+                                            <option value="Entertainment & tickets">Entertainment & tickets</option>
+                                            <option value="Food & drink">Food & drink</option>
+                                            <option value="Workshops & classes">Workshops & classes</option>
+                                            <option value="Travel services & rentals">Travel services & rentals</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="timeOfDay" class="form-label" style="margin-top: 15px;">Time Of Day</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="timeOfDay" name="model.TimeOfDay" type="hidden">
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                            <option value="Evening & Night">Evening & Night</option>
+                                            <option value="All Day">All Day</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYes" value="true">
+                                        <label class="form-check-label" for="freeCancellationYes">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNo" value="false">
+                                        <label class="form-check-label" for="freeCancellationNo">No</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="descriptionAttraction" style="margin-top: 15px;">Attraction Description</label>
+                                    <textarea class="form-control" id="descriptionAttraction" name="model.Description" placeholder="Enter the attraction description" rows="5" style="margin-top: 10px;"></textarea>
+                                </div>
+                                <label for="cost" style="margin-top:15px;">Price Per 1 Person</label>
+                                <input type="number" class="form-control" name="model.Cost" id="cost" placeholder="Enter price per 1 person" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                <div id="booking-dates-attraction">
+                                    <div class="booking-date-attraction" style="margin-top: 15px;">
+                                        <label for="availableDatesAttraction" style="margin-top: 15px;">Available Dates For Booking & Amount Of Tickets</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" name="model.AvailableDates[]" required min="{{minDate}}">
+                                            <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button id="add-booking-date-attraction" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
+                                        <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
+                                    </svg>
+                                </button>
+                                <div class="attraction-info" style="text-align: center;">
+                                    <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+                            </form>
+                            <form asp-action="ClearForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;">
+                                <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
+                            </form>
+                        </div>
+                        <div id="notificationAttraction" class="text-danger1" style="display:none;"></div>
                 </div>
-            </div>    
+                    <div id="flight-fields" class="mt-5" style="display: none;">
+                        <form id="flight-form" asp-action="SaveFlightForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAirTicketForm()">    
+                            <div class="form-group">
+                                <label for="departureCountry" style="margin-top: 15px;">Departure Country</label>
+                                <input type="text" name="model.CountryFrom" class="form-control" id="departureCountry" placeholder="Enter departure country" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="departureCountryCode" style="margin-top: 15px;">Departure City Code</label>
+                                <input type="text" name="model.DepartureCountryCode" class="form-control" id="departureCountryCode" placeholder="Enter departure country code" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="departureCity" style="margin-top: 15px;">Departure City</label>
+                                <input type="text" name="model.CityFrom" class="form-control" id="departureCity" placeholder="Enter departure city" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="arrivalCountry" style="margin-top: 15px;">Country of Arrival</label>
+                                <input type="text" name="model.CountryTo" class="form-control" id="arrivalCountry" placeholder="Enter country of arrival" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="arrivalCountryCode" style="margin-top: 15px;">City Code of Arrival</label>
+                                <input type="text" name="model.ArrivalCountryCode" class="form-control" id="arrivalCountryCode" placeholder="Enter country code of arrival" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="arrivalCity" style="margin-top: 15px;">City of Arrival</label>
+                                <input type="text" name="model.CityTo" class="form-control" id="arrivalCity" placeholder="Enter city of arrival" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="flightNumber" style="margin-top: 15px;">Flight Number</label>
+                                <input type="text" name="model.FlightNumber" class="form-control" id="flightNumber" placeholder="Enter flight number" style="margin-top: 10px;">
+                            </div>
+                            <div class="mb-3">
+                                <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYesAirTicket" value="true">
+                                    <label class="form-check-label" for="freeCancellationYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNoAirTicket" value="false">
+                                    <label class="form-check-label" for="freeCancellationNo">No</label>
+                                </div>
+                            </div>
+                            <div id="booking-dates-flight">
+                                <div class="booking-date-flight" style="margin-top: 15px;">
+                                    <label for="availableDatesFlight" style="margin-top: 15px;">Departure Time & Arrival Time</label>
+                                    <div class="input-group">
+                                        <input type="datetime-local" class="form-control" name="model.DepartureTime" required min="{{minDateFlight}}">
+                                        <input type="datetime-local" class="form-control" name="model.ArrivalTime" required min="{{minDateFlight}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3" style="margin-top: 15px;">
+                                <h4>Economy Class</h4>
+                            <label for="amountOfTicketsEC" style="margin-top:15px;">Amount Of AirTickets</label>
+                            <input type="number" class="form-control" name="model.AmountOfTicketsEC" id="amountOfTicketsEC" placeholder="Enter amount of airtickets" min="0" max="1000" style="margin-top: 10px;">
+                            <label for="ticketCostEC" style="margin-top:15px;">Price Per 1 Ticket</label>
+                            <input type="number" class="form-control" name="model.CostEC" id="ticketCostEC" placeholder="Enter price per 1 ticket" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                <div class="mb-3">
+                                    <label for="includeLuggageForEconomyClass" class="form-label" style="margin-top: 15px;">Include Luggage</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IncludeLuggageEC" id="includeLuggageForEconomyClassYes" value="true">
+                                        <label class="form-check-label" for="includeLuggageForEconomyClassYes">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IncludeLuggageEC" id="includeLuggageForEconomyClassNo" value="false">
+                                        <label class="form-check-label" for="includeLuggageForEconomyClassNo">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h4>Business Class</h4>
+                                <label for="amountOfTicketsBC" style="margin-top:15px;">Amount Of AirTickets</label>
+                            <input type="number" class="form-control" name="model.AmountOfTicketsBC" id="amountOfTicketsBC" placeholder="Enter amount of airtickets" min="0" max="1000" style="margin-top: 10px;">
+                            <label for="ticketCostBC" style="margin-top:15px;">Price Per 1 Ticket</label>
+                            <input type="number" class="form-control" name="model.CostBC" id="ticketCostBC" placeholder="Enter price per 1 ticket" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                <div class="mb-3">
+                                    <label for="includeLuggageForBusinessClass" class="form-label" style="margin-top: 15px;">Include Luggage</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IncludeLuggageBC" id="includeLuggageForBusinessClassYes" value="true">
+                                        <label class="form-check-label" for="includeLuggageForBusinessClassYes">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IncludeLuggageBC" id="includeLuggageForBusinessClassNo" value="false">
+                                        <label class="form-check-label" for="includeLuggageForBusinessClassNo">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h4>First Class</h4>
+                                <label for="amountOfTicketsFC" style="margin-top:15px;">Amount Of AirTickets</label>
+                                <input type="number" class="form-control" name="model.AmountOfTicketsFC" id="amountOfTicketsFC" placeholder="Enter amount of airtickets" min="0" max="1000" style="margin-top: 10px;">
+                                <label for="ticketCostFC" style="margin-top:15px;">Price Per 1 Ticket</label>
+                                <input type="number" class="form-control" name="model.CostFC" id="ticketCostFC" placeholder="Enter price per 1 ticket" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                <div class="mb-3">
+                                    <label for="includeLuggageForFirstClass" class="form-label" style="margin-top: 15px;">Include Luggage</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IncludeLuggageFC" id="includeLuggageForFirstClassYes" value="true">
+                                        <label class="form-check-label" for="includeLuggageForFirstClassYes">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="model.IncludeLuggageFC" id="includeLuggageForFirstClassNo" value="false">
+                                        <label class="form-check-label" for="includeLuggageForFirstClassNo">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="attraction-info" style="text-align: center;">
+                                <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+                        </form>
+                        <form asp-action="ClearForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;">
+                            <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
+                        </form>
+                    </div>
+                    <div id="notificationAirTicket" class="text-danger1" style="display:none; margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>    
 
             @section scripts {
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -433,10 +1033,29 @@
                                 var entityName = $(this).data('entity');
                                 if (entityName === "Car") {
                                     $('#car-fields').show();
+                                    $('#entertainment-fields').hide();
+                                    $('#flight-fields').hide();
+                                }
+                                else if (entityName === "Attraction") {
+                                    $('#entertainment-fields').show();
+                                    $('#car-fields').hide();
+                                    $('#flight-fields').hide();
+                                }
+                                else if (entityName === "Accommodation") {
+                                    $('#entertainment-fields').hide();
+                                    $('#car-fields').hide();
+                                    $('#flight-fields').hide();
+                                }
+                                else if (entityName === "Flight") {
+                                    $('#entertainment-fields').hide();
+                                    $('#car-fields').hide();
+                                    $('#flight-fields').show();
                                 } else {
                                     $('#car-fields').hide();
-                                }    
-                            });
+                                    $('#entertainment-fields').hide();
+                                    $('#flight-fields').hide();
+                                }
+                    });
                         });
                 </script>
                 <script>
@@ -477,38 +1096,75 @@
                             // Обновить минимальную дату конечной даты
                             $(this).closest('.booking-date').find('input[name="model.endDates[]"]').attr('min', formatDate(minEndDateAfterStart));
                         });
+
+                        // Функция для форматирования даты в формат yyyy-MM-ddThh:mm для поля ввода datetime-local
+                        function formatDate(date) {
+                            var year = date.getFullYear();
+                            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            var day = date.getDate().toString().padStart(2, '0');
+                            var hours = date.getHours().toString().padStart(2, '0');
+                            var minutes = date.getMinutes().toString().padStart(2, '0');
+                            return `${year}-${month}-${day}T${hours}:${minutes}`;
+                        }
                     });
                 </script>
                 <script>
-                    // Получить текущую дату и время
-                    var currentDate = new Date();
-                    // Добавить 1 час к текущей дате для минимальной даты старта
-                    var minStartDate = new Date(currentDate.getTime() + (1 * 60 * 60 * 1000));
-                    // Добавить 2 часа к текущей дате для минимальной даты финиша
-                    var minEndDate = new Date(currentDate.getTime() + (2 * 60 * 60 * 1000));
+                    $(document).ready(function () {
+                        var currentDate = new Date();
+                        var minDate = new Date(currentDate.getTime());
 
-                    // Функция для форматирования даты в формат yyyy-MM-ddThh:mm для поля ввода datetime-local
-                    function formatDate(date) {
+                    // Устанавливаем значение атрибута min для поля ввода даты
+
+                        document.querySelector('input[name="model.AvailableDates[]"]').setAttribute('min', formatDatee(minDate));
+
+                        $('#add-booking-date-attraction').click(function () {
+                            var newBookingDateHtmlAttr = `
+                                                    <div class="booking-date-attraction" style="margin-top: 15px;">
+                                                        <div class="input-group">
+                                                            <input type="date" name="model.AvailableDates[]" required min="${formatDatee(minDate)}" class="form-control">
+                                                            <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000">
+                                                        </div>
+                                                    </div>
+                                                    `;
+                            $('#booking-dates-attraction').append(newBookingDateHtmlAttr);
+                        });
+                    });
+
+                    function formatDatee(date) {
                         var year = date.getFullYear();
                         var month = (date.getMonth() + 1).toString().padStart(2, '0');
                         var day = date.getDate().toString().padStart(2, '0');
-                        var hours = date.getHours().toString().padStart(2, '0');
-                        var minutes = date.getMinutes().toString().padStart(2, '0');
-                        return `${year}-${month}-${day}T${hours}:${minutes}`;
+                        return `${year}-${month}-${day}`;
+                    }
+                </script>
+                <script>
+                    $(document).ready(function () {
+                        var currentDate = new Date();
+                        var minDate = new Date(currentDate.getTime());
+
+                        // Устанавливаем значение атрибута min для поля ввода даты
+
+                    document.querySelector('input[name="model.DepartureTime"]').setAttribute('min', formatDateee(minDate));
+                    document.querySelector('input[name="model.ArrivalTime"]').setAttribute('min', formatDateee(minDate));
+                    });
+
+                    function formatDateee(date) {
+                    var year = date.getFullYear();
+                    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    var day = date.getDate().toString().padStart(2, '0');
+                    var hours = date.getHours().toString().padStart(2, '0');
+                    var minutes = date.getMinutes().toString().padStart(2, '0');
+                    return `${year}-${month}-${day}T${hours}:${minutes}`;
                     }
 
-                    // Установить значения атрибутов min для полей ввода datetime-local
-                    document.querySelector('input[name="model.startDates[]"]').setAttribute('min', formatDate(minStartDate));
-                    document.querySelector('input[name="model.endDates[]"]').setAttribute('min', formatDate(minEndDate));
-
                     // Обработчик события input для поля ввода начальной даты
-                    document.querySelector('input[name="model.startDates[]"]').addEventListener('input', function () {
+                    $(document).on('input', 'input[name="model.DepartureTime"]', function () {
                         // Получить выбранную начальную дату
-                        var selectedStartDate = new Date(this.value);
+                        var selectedDepartureTime = new Date(this.value);
                         // Добавить 1 час к выбранной начальной дате для минимальной даты конечной даты
-                        var minEndDateAfterStart = new Date(selectedStartDate.getTime() + (1 * 60 * 60 * 1000));
+                    var minArrivalDateAfterStart = new Date(selectedDepartureTime.getTime() + (1 * 60 * 60 * 1000));
                         // Обновить минимальную дату конечной даты
-                        document.querySelector('input[name="model.endDates[]"]').setAttribute('min', formatDate(minEndDateAfterStart));
+                    $(this).closest('.booking-date-flight').find('input[name="model.ArrivalTime"]').attr('min', formatDateee(minArrivalDateAfterStart));
                     });
                 </script>
                }

@@ -145,3 +145,4 @@ D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application\bin\Deb
 D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application\bin\Debug\net8.0\runtimes\win-x86\native\sni.dll
 D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application\bin\Debug\net8.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
 D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application\bin\Debug\net8.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application\bin\Debug\net8.0\Newtonsoft.Json.dll

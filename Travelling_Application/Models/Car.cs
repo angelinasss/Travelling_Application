@@ -25,5 +25,6 @@
         public List<DateTime> EndDates { get; set; }
         public bool VerifiedByAdmin { get; set; }
         public int PublisherId { get; set; }
+        public bool RejectedByAdmin { get; set; }
     }
 }

@@ -44,5 +44,6 @@
         public bool DeliveryFoodToTheRoom { get; set; }
         public bool EveryHourFrontDesk { get; set; }
         public bool VerifiedByAdmin { get; set; }
+        public bool RejectedByAdmin { get; set; }
     }
 }
