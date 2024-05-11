@@ -1,0 +1,371 @@
+﻿<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    @section styles {
+        <style>
+             .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+        </style>
+        <style>
+
+            #notification1 {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notificationAirTicket {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            .success-notification {
+                background-color: #d4edda;
+                color: #155724;
+                border-color: #c3e6cb;
+            }
+
+            .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
+            }
+        </style>
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function validateAirTicketForm() {
+            // Проверка текстовых полей
+            var airTicketDepartureCountry = $('#departureCountry').val();
+            var airTicketDepartureCity = $('#departureCity').val();
+            var airTicketArrivalCountry = $('#arrivalCountry').val();
+            var airTicketArrivalCity = $('#arrivalCity').val();
+            var flightNumber = $('#flightNumber').val();
+            var costEC = $('#ticketCostEC').val();
+            var costBC = $('#ticketCostBC').val();
+            var costFC = $('#ticketCostFC').val();
+            var amountOfTicketsEC = $('#amountOfTicketsEC').val();
+            var amountOfTicketsBC = $('#amountOfTicketsBC').val();
+            var amountOfTicketsFC = $('#amountOfTicketsFC').val();
+            var departureCountryCode = $('#departureCountryCode').val();
+            var arrivalCountryCode = $('#arrivalCountryCode').val();
+
+            // Проверка выбранных радиокнопок
+            var freeCancellation = $('#freeCancellationYesAirTicket').is(':checked');
+            if (!freeCancellation) {
+                freeCancellation = $('#freeCancellationNoAirTicket').is(':checked');
+            }
+            var includeLuggageEC = $('#includeLuggageForEconomyClassYes').is(':checked');
+            if (!includeLuggageEC) {
+                includeLuggageEC = $('#includeLuggageForEconomyClassNo').is(':checked');
+            }
+            var includeLuggageBC = $('#includeLuggageForBusinessClassYes').is(':checked');
+            if (!includeLuggageBC) {
+                includeLuggageBC = $('#includeLuggageForBusinessClassNo').is(':checked');
+            }
+            var includeLuggageFC = $('#includeLuggageForFirstClassYes').is(':checked');
+            if (!includeLuggageFC) {
+                includeLuggageFC = $('#includeLuggageForFirstClassNo').is(':checked');
+            }
+
+            var isValid = true;
+            if (!freeCancellation || !includeLuggageEC || !includeLuggageBC || !includeLuggageFC) {
+                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger').show();
+                isValid = false;
+            }
+            if (departureCountryCode === '') {
+                $('#departureCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCountryCode').removeClass('invalid-field');
+            }
+            if (arrivalCountryCode === '') {
+                $('#arrivalCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCountryCode').removeClass('invalid-field');
+            }
+            if (airTicketDepartureCountry === '') {
+                $('#departureCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCountry').removeClass('invalid-field');
+            }
+            if (airTicketDepartureCity === '') {
+                $('#departureCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCity').removeClass('invalid-field');
+            }
+            if (airTicketArrivalCountry === '') {
+                $('#arrivalCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCountry').removeClass('invalid-field');
+            }
+            if (airTicketArrivalCity === '') {
+                $('#arrivalCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCity').removeClass('invalid-field');
+            }
+            if (flightNumber === '') {
+                $('#flightNumber').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#flightNumber').removeClass('invalid-field');
+            }
+            if (costEC === '') {
+                $('#ticketCostEC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#ticketCostEC').removeClass('invalid-field');
+            }
+            if (costBC === '') {
+                $('#ticketCostBC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#ticketCostBC').removeClass('invalid-field');
+            }
+            if (costFC === '') {
+                $('#ticketCostFC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#ticketCostFC').removeClass('invalid-field');
+            }
+            if (amountOfTicketsEC === '') {
+                $('#amountOfTicketsEC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#amountOfTicketsEC').removeClass('invalid-field');
+            }
+            if (amountOfTicketsBC === '') {
+                $('#amountOfTicketsBC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#amountOfTicketsBC').removeClass('invalid-field');
+            }
+            if (amountOfTicketsFC === '') {
+                $('#amountOfTicketsFC').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#amountOfTicketsFC').removeClass('invalid-field');
+            }
+            if (!isValid) {
+                $('#departureCity, #arrivalCountry, #arrivalCity, #flightNumber, #ticketCostEC, #ticketCostBC, #ticketCostFC, #amountOfTicketsEC, #amountOfTicketsBC, #amountOfTicketsFC, #arrivalCountryCode, #departureCountryCode').removeClass('invalid-field');
+                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger1').show();
+            }
+            return isValid;
+        }
+    </script>
+
+    <main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+        <body>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="list-group" style="background-color: #343a40;">
+                            <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
+                            @{
+                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                {
+                                    <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                    <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                                }
+                                else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                {
+                                    <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                    <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                    <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                    <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                                }
+                                else
+                                {
+                                    <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
+                                    <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
+                                    <a href="#" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div id="flight-fields" class="mt-5">
+                                <form id="flight-form" asp-action="UpdateFlightForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAirTicketForm()">
+                                    <div class="form-group">
+                                        <label for="departureCountry" style="margin-top: 15px;">Departure Country</label>
+                                        <input type="text" value="@ViewBag.DepartureCountry" name="model.CountryFrom" class="form-control" id="departureCountry" placeholder="Enter departure country" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="departureCountryCode" style="margin-top: 15px;">Departure City Code</label>
+                                        <input type="text" value="@ViewBag.DepartureCityCode" name="model.DepartureCountryCode" class="form-control" id="departureCountryCode" placeholder="Enter departure country code" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="departureCity" style="margin-top: 15px;">Departure City</label>
+                                        <input type="text" value="@ViewBag.DepartureCity" name="model.CityFrom" class="form-control" id="departureCity" placeholder="Enter departure city" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arrivalCountry" style="margin-top: 15px;">Country of Arrival</label>
+                                        <input type="text" value="@ViewBag.ArrivalCountry" name="model.CountryTo" class="form-control" id="arrivalCountry" placeholder="Enter country of arrival" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arrivalCountryCode" style="margin-top: 15px;">City Code of Arrival</label>
+                                        <input type="text" value="@ViewBag.ArrivalCityCode" name="model.ArrivalCountryCode" class="form-control" id="arrivalCountryCode" placeholder="Enter country code of arrival" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arrivalCity" style="margin-top: 15px;">City of Arrival</label>
+                                        <input type="text" value="@ViewBag.ArrivalCity" name="model.CityTo" class="form-control" id="arrivalCity" placeholder="Enter city of arrival" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="flightNumber" style="margin-top: 15px;">Flight Number</label>
+                                        <input type="text" value="@ViewBag.FlightNumber" name="model.FlightNumber" class="form-control" id="flightNumber" placeholder="Enter flight number" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYesAirTicket" value="true" @(ViewBag.FreeCancellation == true ? "checked" : "")>
+                                            <label class="form-check-label" for="freeCancellationYes">Yes</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNoAirTicket" value="false" @(ViewBag.FreeCancellation == false ? "checked" : "")>
+                                            <label class="form-check-label" for="freeCancellationNo">No</label>
+                                        </div>
+                                    </div>
+                                    <div id="booking-dates-flight">
+                                        <div class="booking-date-flight" style="margin-top: 15px;">
+                                            <label for="availableDatesFlight" style="margin-top: 15px;">Departure Time & Arrival Time</label>
+                                            <div class="input-group">
+                                                <input type="datetime-local" class="form-control" name="model.DepartureTime" required min="{{minDateFlight}}" value="@ViewBag.DepartureTime.ToString("yyyy-MM-ddTHH:mm")">
+                                                <input type="datetime-local" class="form-control" name="model.ArrivalTime" required min="{{minDateFlight}}" value="@ViewBag.ArrivalTime.ToString("yyyy-MM-ddTHH:mm")">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3" style="margin-top: 15px;">
+                                        <h4>Economy Class</h4>
+                                        <label for="amountOfTicketsEC" style="margin-top:15px;">Amount Of AirTickets</label>
+                                        <input type="number" value="@ViewBag.AmountOfTicketsEC" class="form-control" name="model.AmountOfTicketsEC" id="amountOfTicketsEC" placeholder="Enter amount of airtickets" min="0" max="1000" style="margin-top: 10px;">
+                                        <label for="ticketCostEC" style="margin-top:15px;">Price Per 1 Ticket</label>
+                                        <input type="number" value="@ViewBag.CostEC" class="form-control" name="model.CostEC" id="ticketCostEC" placeholder="Enter price per 1 ticket" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                        <div class="mb-3">
+                                            <label for="includeLuggageForEconomyClass" class="form-label" style="margin-top: 15px;">Include Luggage</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.IncludeLuggageEC" id="includeLuggageForEconomyClassYes" value="true" @(ViewBag.IncludeLuggageEC == true ? "checked" : "")>
+                                                <label class="form-check-label" for="includeLuggageForEconomyClassYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.IncludeLuggageEC" id="includeLuggageForEconomyClassNo" value="false" @(ViewBag.IncludeLuggageEC == false ? "checked" : "")>
+                                                <label class="form-check-label" for="includeLuggageForEconomyClassNo">No</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h4>Business Class</h4>
+                                        <label for="amountOfTicketsBC" style="margin-top:15px;">Amount Of AirTickets</label>
+                                        <input type="number" value="@ViewBag.AmountOfTicketsBC" class="form-control" name="model.AmountOfTicketsBC" id="amountOfTicketsBC" placeholder="Enter amount of airtickets" min="0" max="1000" style="margin-top: 10px;">
+                                        <label for="ticketCostBC" style="margin-top:15px;">Price Per 1 Ticket</label>
+                                        <input type="number" value="@ViewBag.CostBC" class="form-control" name="model.CostBC" id="ticketCostBC" placeholder="Enter price per 1 ticket" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                        <div class="mb-3">
+                                            <label for="includeLuggageForBusinessClass" class="form-label" style="margin-top: 15px;">Include Luggage</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.IncludeLuggageBC" id="includeLuggageForBusinessClassYes" value="true" @(ViewBag.IncludeLuggageBC == true ? "checked" : "")>
+                                                <label class="form-check-label" for="includeLuggageForBusinessClassYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.IncludeLuggageBC" id="includeLuggageForBusinessClassNo" value="false" @(ViewBag.IncludeLuggageBC == false ? "checked" : "")>
+                                                <label class="form-check-label" for="includeLuggageForBusinessClassNo">No</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h4>First Class</h4>
+                                        <label for="amountOfTicketsFC" style="margin-top:15px;">Amount Of AirTickets</label>
+                                        <input type="number" value="@ViewBag.AmountOfTicketsFC" class="form-control" name="model.AmountOfTicketsFC" id="amountOfTicketsFC" placeholder="Enter amount of airtickets" min="0" max="1000" style="margin-top: 10px;">
+                                        <label for="ticketCostFC" style="margin-top:15px;">Price Per 1 Ticket</label>
+                                        <input type="number" value="@ViewBag.CostFC" class="form-control" name="model.CostFC" id="ticketCostFC" placeholder="Enter price per 1 ticket" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                        <div class="mb-3">
+                                            <label for="includeLuggageForFirstClass" class="form-label" style="margin-top: 15px;">Include Luggage</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.IncludeLuggageFC" id="includeLuggageForFirstClassYes" value="true" @(ViewBag.IncludeLuggageFC == true ? "checked" : "")>
+                                                <label class="form-check-label" for="includeLuggageForFirstClassYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.IncludeLuggageFC" id="includeLuggageForFirstClassNo" value="false" @(ViewBag.IncludeLuggageFC == false ? "checked" : "")>
+                                                <label class="form-check-label" for="includeLuggageForFirstClassNo">No</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="airticket-info" style="text-align: center;">
+                                        <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+                                        <input type="hidden" name="editAirticketId" value="@ViewBag.editAirticketId" />
+                                </form>
+                            </div>
+                            <div id="notificationAirTicket" class="text-danger1" style="display:none; margin-top: 20px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                @section scripts {
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $(document).ready(function () {
+                            var currentDate = new Date();
+                            var minDate = new Date(currentDate.getTime());
+
+                            // Устанавливаем значение атрибута min для поля ввода даты
+
+                            document.querySelector('input[name="model.DepartureTime"]').setAttribute('min', formatDateee(minDate));
+                            document.querySelector('input[name="model.ArrivalTime"]').setAttribute('min', formatDateee(minDate));
+                        });
+
+                        function formatDateee(date) {
+                            var year = date.getFullYear();
+                            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            var day = date.getDate().toString().padStart(2, '0');
+                            var hours = date.getHours().toString().padStart(2, '0');
+                            var minutes = date.getMinutes().toString().padStart(2, '0');
+                            return `${year}-${month}-${day}T${hours}:${minutes}`;
+                        }
+
+                        // Обработчик события input для поля ввода начальной даты
+                        $(document).on('input', 'input[name="model.DepartureTime"]', function () {
+                            // Получить выбранную начальную дату
+                            var selectedDepartureTime = new Date(this.value);
+                            // Добавить 1 час к выбранной начальной дате для минимальной даты конечной даты
+                            var minArrivalDateAfterStart = new Date(selectedDepartureTime.getTime() + (1 * 60 * 60 * 1000));
+                            // Обновить минимальную дату конечной даты
+                            $(this).closest('.booking-date-flight').find('input[name="model.ArrivalTime"]').attr('min', formatDateee(minArrivalDateAfterStart));
+                        });
+                    </script>
+                }
+            </div>
+        </body>
+    </main>
+</head>

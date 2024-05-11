@@ -1,0 +1,546 @@
+﻿
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    @section styles {
+        <style>
+            .enlarged-photo-container {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .enlarged-photo-container1 {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo1 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-btnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .photo-item {
+                width: 150px;
+                height: 150px;
+                margin: 5px;
+                position: relative;
+            }
+
+            .delete-btn {
+                top: 5px;
+                right: 5px;
+            }
+
+            .img-thumbnail {
+                max-height: 150px; /* Устанавливаем максимальную высоту */
+                width: auto; /* Автоматически масштабируем ширину */
+                max-width: 150%; /* Не допускаем переполнение родительского контейнера */
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+        </style>
+        <style>
+            .btn-entity {
+                background-color: #f1f1f1;
+                color: #333;
+                transition: background-color 0.3s, color 0.3s;
+                border: none;
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+                .btn-entity:hover {
+                    background-color: #ddd;
+                    color: #222;
+                }
+
+                .btn-entity.selected {
+                    background-color: #007bff;
+                    color: #fff;
+                }
+        </style>
+        <style>
+            #notification {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notification1 {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            .success-notification {
+                background-color: #d4edda;
+                color: #155724;
+                border-color: #c3e6cb;
+            }
+
+            .text-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
+            }
+        </style>
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function validateForm() {
+            var isValid = true;
+
+            // Проверка каждого обязательного поля
+            if (!$('#modelName').val()) {
+                isValid = false;
+            }
+            if (!$('#carCountry').val()) {
+                isValid = false;
+            }
+            if (!$('#carCity').val()) {
+                isValid = false;
+            }
+            if (!$('#carAddress').val()) {
+                isValid = false;
+            }
+            if (!$('#passengerCapacity').val()) {
+                isValid = false;
+            }
+            if (!$('#description').val()) {
+                isValid = false;
+            }
+            if (!$('#pricePer1hour').val()) {
+                isValid = false;
+            }
+
+            // Проверка радиокнопок
+            if (!$('input[name="model.IsAirCondition"]:checked').length) {
+                isValid = false;
+            }
+            if (!$('input[name="model.UnlimitedMileage"]:checked').length) {
+                isValid = false;
+            }
+            if (!$('input[name="model.ElectricCar"]:checked').length) {
+                isValid = false;
+            }
+            if (!$('input[name="model.TheftCoverage"]:checked').length) {
+                isValid = false;
+            }
+            if (!$('input[name="model.CollisionDamageWaiver"]:checked').length) {
+                isValid = false;
+            }
+            if (!$('input[name="model.LiabilityCoverage"]:checked').length) {
+                isValid = false;
+            }
+            if (!$('input[name="model.FreeCancellation"]:checked').length) {
+                isValid = false;
+            }
+
+            // Проверка дат
+            $('.booking-date').each(function () {
+                var startDate = $(this).find('input[name="model.startDates[]"]').val();
+                var endDate = $(this).find('input[name="model.endDates[]"]').val();
+                if (!startDate || !endDate) {
+                    isValid = false;
+                    return false; // Выход из цикла each
+                }
+            });
+
+            // Вывод уведомления
+            if (!isValid) {
+                $('#notification').text('Please fill in all required fields.').addClass('text-danger').show();
+            }
+            else {
+    
+            }
+
+            return isValid;
+        }
+        function showSuccessMessage(message) {
+            $('#notification1').text(message).addClass('success-notification').show();
+        }
+        $(document).ready(function () {
+            var successMessage = '@TempData["SuccessMessage"]'; // Получение сообщения об успешном сохранении с сервера
+            if (successMessage) {
+                showSuccessMessage(successMessage); // Отображение уведомления об успешном сохранении
+            }
+        });
+        $(document).ready(function () {
+            // Обработчик события клика на кнопки сущностей
+            $('.btn-entity').click(function () {
+                // Скрываем уведомление
+                $('#notification1').hide();
+            });
+        });
+    </script>
+</head>
+
+
+<main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="list-group" style="background-color: #343a40;">
+                        <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
+                        @{
+                            if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                            {
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                            }
+                            else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                            {
+                                <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                            }
+                            else
+                            {
+                                <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
+                                <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
+                                <a href="#" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col">
+                                <div id="car-fields" class="mt-5">
+                                        <form id="car-form" asp-action="DeleteCarPhotoEdit" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data">
+                                       
+                                            <div class="photo-container" style="position: relative; display: inline-block;">
+                                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(ViewBag.CarPhoto)" class="car-photo" style="margin-right: 20px; margin-bottom: 20px; margin-top: 1px; width: 450px; height: 300px; object-fit: cover;" onclick="openPhoto()" onmouseover="showDeleteButton(event)" onmouseout="hideDeleteButton()">
+                                                <button class="delete-btn" style="display: none; position: absolute; top: 5px; right: 5px; background-color: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;" onclick="deletePhoto()">✖</button>
+                                            </div>
+                                            <div style="clear: both;"></div>
+                                            <button id="delete-photo-button" type="submit" class="btn btn-primary" style="margin-left: 120px">Delete Photo</button>
+                                            <input type="hidden" name="editCarId" value="@ViewBag.editCarId" />
+                                        </form>
+
+                                    <form id="car-form" asp-action="UpdateForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateForm()">
+                                        <input type="file" name="file" id="file" style="display: none;" onchange="handleFileSelect(this)">
+                                        <label for="file" class="btn btn-primary" style="margin-right: 180px; margin-top: -59px;">Upload Photo</label>
+                          
+                                        <!-- Скрытый контейнер для увеличенного изображения -->
+                                        <div id="enlarged-photo-container" class="enlarged-photo-container">
+                                            <span class="close-btn" onclick="closePhoto()">✕</span>
+                                            <img id="enlarged-photo" class="enlarged-photo">
+                                        </div>
+
+                                        <script>
+                                            function openPhoto() {
+                                                var imgSrc = document.querySelector('.car-photo').src;
+                                                var enlargedImgContainer = document.getElementById('enlarged-photo-container');
+                                                var enlargedImg = document.getElementById('enlarged-photo');
+                                                enlargedImg.src = imgSrc;
+                                                enlargedImgContainer.style.display = 'block';
+                                            }
+
+                                            function closePhoto() {
+                                                var enlargedImgContainer = document.getElementById('enlarged-photo-container');
+                                                enlargedImgContainer.style.display = 'none';
+                                            }
+                                        </script>
+
+                                        <script>
+                                            function handleFileSelect(input) {
+                                                if (input.files && input.files[0]) {
+                                                    var reader = new FileReader();
+                                                    reader.onload = function (e) {
+                                                        $('.car-photo').attr('src', e.target.result);
+                                                    }
+                                                    reader.readAsDataURL(input.files[0]);
+                                                }
+                                            }
+                                        </script>
+
+                                        <div class="form-group">
+                                            <label for="carName" style="margin-top: 10px;">Car Model</label>
+                                        <input type="text" value="@ViewBag.CarModel" name="model.Title" class="form-control" id="modelName" placeholder="Enter the car model" style="margin-top: 10px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="carCountry" style="margin-top: 15px;">Country</label>
+                                        <input type="text" value="@ViewBag.CarCountry" name="model.Country" class="form-control" id="carCountry" placeholder="Enter the country" style="margin-top: 10px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="carCity" style="margin-top: 15px;">City</label>
+                                        <input type="text" value="@ViewBag.City" name="model.City" class="form-control" id="carCity" placeholder="Enter the city" style="margin-top: 10px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="carAddress" style="margin-top: 15px;">Address</label>
+                                        <input type="text" value="@ViewBag.CarAddress" name="model.Address" class="form-control" id="carAddress" placeholder="Enter the address" style="margin-top: 10px;">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="airConditioner" class="form-label" style="margin-top: 15px;">Air Conditioning</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" name="model.IsAirCondition" type="radio" id="isAirConditionYes" value="true" @(ViewBag.IsAirCondition == true ? "checked" : "")>
+                                                <label class="form-check-label" for="isAirConditionYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" name="model.IsAirCondition" type="radio" id="isAirConditionNo" value="false" @(ViewBag.IsAirCondition == false ? "checked" : "")>
+                                                <label class="form-check-label" for="isAirConditionNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="transmission" class="form-label" style="margin-top: 15px;">Transmission</label>
+                                            <div class="input-group">
+                                            <select class="form-select" name="model.Transmission" id="transmission" type="hidden">
+                                                    <option value="Automatic">Automatic</option>
+                                                    <option value="Manual">Manual</option>
+                                                </select>
+                                            </div>
+                                        <script>
+                                            // Устанавливаем выбранное значение для элемента select на основе значения из ViewBag
+                                            document.getElementById("transmission").value = "@ViewBag.CarTransmission";
+                                        </script>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="unlimitedMileage" class="form-label" style="margin-top: 15px;">Mileage</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.UnlimitedMileage" id="unlimitedMileageYes" value="true" @(ViewBag.UnlimitedMileage == true ? "checked" : "")>
+                                                <label class="form-check-label" for="unlimitedMileageYes">Unlimited</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.UnlimitedMileage" id="unlimitedMileageNo" value="false" @(ViewBag.UnlimitedMileage == false ? "checked" : "")>
+                                                <label class="form-check-label" for="unlimitedMileageNo">Limited</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="electricCar" class="form-label" style="margin-top: 15px;">Electric Car</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.ElectricCar" id="electricCarYes" value="true" @(ViewBag.ElectricCar == true ? "checked" : "")>
+                                                <label class="form-check-label" for="electricCarYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.ElectricCar" id="electricCarNo" value="false" @(ViewBag.ElectricCar == false ? "checked" : "")>
+                                                <label class="form-check-label" for="electricCarNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="carCategory" class="form-label" style="margin-top: 15px;">Car Category</label>
+                                            <div class="input-group">
+                                            <select class="form-select" id="carCategory" name="model.CarCategory" type="hidden">
+                                                    <option value="Small">Small</option>
+                                                    <option value="Medium">Medium</option>
+                                                    <option value="Large">Large</option>
+                                                    <option value="Estate">Estate</option>
+                                                    <option value="Premium">Premium</option>
+                                                    <option value="People Carriers">People Carriers</option>
+                                                    <option value="SUVs">SUVs</option>
+                                                </select>
+                                            </div>
+                                        <script>
+                                            // Устанавливаем выбранное значение для элемента select на основе значения из ViewBag
+                                            document.getElementById("carCategory").value = "@ViewBag.CarCategory";
+                                        </script>
+                                        </div>
+                                        <label for="passengerCapacity" style="margin-top: 15px;">Passenger Capacity</label>
+                                    <input type="number" value="@ViewBag.CarPassengerCapacity" class="form-control" name="model.AmountOfPassengers" id="passengerCapacity" placeholder="Enter passenger capacity" min="0" max="100" style="margin-top: 10px;">
+                                        <div class="mb-3">
+                                            <label for="theftCoverage" class="form-label" style="margin-top: 15px;">Theft Coverage</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.TheftCoverage" id="theftCoverageYes" value="true" @(ViewBag.TheftCoverage == true ? "checked" : "")>
+                                                <label class="form-check-label" for="theftCoverageYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.TheftCoverage" id="theftCoverageNo" value="false" @(ViewBag.TheftCoverage == false ? "checked" : "")>
+                                                <label class="form-check-label" for="theftCoverageNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="collisionDamageWaiver" class="form-label" style="margin-top: 15px;">Collision Damage Waiver</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.CollisionDamageWaiver" id="collisionDamageWaiverYes" value="true" @(ViewBag.CollisionDamage == true ? "checked" : "")>
+                                                <label class="form-check-label" for="collisionDamageWaiverYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.CollisionDamageWaiver" id="collisionDamageWaiverNo" value="false" @(ViewBag.CollisionDamage == false ? "checked" : "")>
+                                                <label class="form-check-label" for="collisionDamageWaiverNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="liabilityCoverage" class="form-label" style="margin-top: 15px;">Liability Coverage</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.LiabilityCoverage" id="liabilityCoverageYes" value="true" @(ViewBag.LiabilityCoverage == true ? "checked" : "")>
+                                                <label class="form-check-label" for="liabilityCoverageYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.LiabilityCoverage" id="liabilityCoverageNo" value="false" @(ViewBag.LiabilityCoverage == false ? "checked" : "")>
+                                                <label class="form-check-label" for="liabilityCoverageNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYesAttraction" value="true" @(ViewBag.FreeCancellation == true ? "checked" : "")>
+                                                <label class="form-check-label" for="freeCancellationYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNoAttraction" value="false" @(ViewBag.FreeCancellation == false ? "checked" : "")>
+                                                <label class="form-check-label" for="freeCancellationNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="description" style="margin-top: 15px;">Car Description</label>
+                                            <textarea class="form-control" id="description" name="model.Description" placeholder="Enter the car description" rows="5" style="margin-top: 10px;">@ViewBag.CarDescription</textarea>
+                                        </div>
+                                        <label for="pricePer1hour" style="margin-top:15px;">Price Per 1 hour Of Rent</label>
+                                        <input type="number" value="@ViewBag.CarPrice" class="form-control" name="model.Cost" id="pricePer1hour" placeholder="Enter price per 1 hour of rent" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+                                        <label for="availableDates" style="margin-top: 15px;">All Available Dates For Booking</label>
+                                        <div id="booking-dates">
+                                        @for (int i = 0; i < ViewBag.DatesStart.Count; i++)
+                                        {
+                                                <div class="booking-date" style="margin-top: 15px;">
+                                                    <label style="margin-right: 10px;">Start Date:</label>
+                                                <input type="datetime-local" name="model.startDates[]" required min="{{minStartDate}}" value="@ViewBag.DatesStart[i].ToString("yyyy-MM-ddTHH:mm")">
+                                                    <label style="margin-left: 10px;">Finish Date:</label>
+                                                <input type="datetime-local" name="model.endDates[]" required min="{{minEndDate}}" value="@ViewBag.DatesEnd[i].ToString("yyyy-MM-ddTHH:mm")">
+                                                </div>
+                                        }
+                                        </div>
+                                        <button id="add-booking-date" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
+                                                <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="user-info" style="text-align: center;">
+                                            <button id="save-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+                                        <input type="hidden" name="editCarId" value="@ViewBag.editCarId" />
+                                    </form>
+
+                                </div>
+                                <div id="notification" class="text-danger" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+            @section scripts {
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                // Получить текущую дату и время
+                var currentDate = new Date();
+                // Добавить 1 час к текущей дате для минимальной даты старта
+                var minStartDate = new Date(currentDate.getTime() + (1 * 60 * 60 * 1000));
+                // Добавить 2 часа к текущей дате для минимальной даты финиша
+                var minEndDate = new Date(currentDate.getTime() + (2 * 60 * 60 * 1000));
+
+                // Установить значения атрибутов min для полей ввода datetime-local
+                document.querySelector('input[name="model.startDates[]"]').setAttribute('min', formatDate(minStartDate));
+                document.querySelector('input[name="model.endDates[]"]').setAttribute('min', formatDate(minEndDate));
+
+                // Обработчик клика на кнопку "Добавить промежуток дат"
+                $('#add-booking-date').click(function () {
+                    // Создаем HTML для нового промежутка дат
+                    var newBookingDateHtml = `
+                                                <div class="booking-date" style="margin-top: 15px;">
+                                                    <label style="margin-right: 10px;">Start Date:</label>
+                                                    <input type="datetime-local" name="model.startDates[]" required min="${formatDate(minStartDate)}">
+                                                    <label style="margin-left: 10px;">Finish Date:</label>
+                                                    <input type="datetime-local" name="model.endDates[]" required min="${formatDate(minEndDate)}">
+                                                </div>
+                                            `;
+
+                    // Добавляем новый промежуток дат в список
+                    $('#booking-dates').append(newBookingDateHtml);
+                });
+
+                // Обработчик события input для поля ввода начальной даты
+                $(document).on('input', 'input[name="model.startDates[]"]', function () {
+                    // Получить выбранную начальную дату
+                    var selectedStartDate = new Date(this.value);
+                    // Добавить 1 час к выбранной начальной дате для минимальной даты конечной даты
+                    var minEndDateAfterStart = new Date(selectedStartDate.getTime() + (1 * 60 * 60 * 1000));
+                    // Обновить минимальную дату конечной даты
+                    $(this).closest('.booking-date').find('input[name="model.endDates[]"]').attr('min', formatDate(minEndDateAfterStart));
+                });
+
+                // Функция для форматирования даты в формат yyyy-MM-ddThh:mm для поля ввода datetime-local
+                function formatDate(date) {
+                    var year = date.getFullYear();
+                    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    var day = date.getDate().toString().padStart(2, '0');
+                    var hours = date.getHours().toString().padStart(2, '0');
+                    var minutes = date.getMinutes().toString().padStart(2, '0');
+                    return `${year}-${month}-${day}T${hours}:${minutes}`;
+                }
+            });
+              </script>
+}
+            </div>
+        </div>
+    </body>
+</main>

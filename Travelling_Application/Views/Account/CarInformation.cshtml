@@ -1,0 +1,214 @@
+﻿@using Travelling_Application.ViewModels
+@model ShowCarInformationViewModel
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <title>Car Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    @section styles {
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .car-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
+            .car-image {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .enlarged-photo-container {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-btnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .photo-item {
+                width: 150px;
+                height: 150px;
+                margin: 5px;
+                position: relative;
+            }
+
+            .car-title {
+                margin-top: 0;
+            }
+
+            .car-price {
+                font-weight: bold;
+            }
+
+           
+
+            .mini-info {
+                margin-top: 5px;
+            }
+
+            .mini-info-item {
+                display: inline-block;
+                margin-right: 10px;
+                padding: 5px 10px;
+                background-color: #f0f0f0;
+                color: #333;
+                border-radius: 5px;
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+        </style>
+    }
+</head>
+
+<main class="text-center" style="padding-bottom: 30px;">
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="data:image;base64,@(Convert.ToBase64String(Model.CarPhoto))" alt="Car Image" onclick="openPhoto()" class="car-image" />
+                    <button class="delete-btn" style="display: none; position: absolute; top: 5px; right: 5px; background-color: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;" onclick="deletePhoto()">✖</button>
+                </div>
+                <div class="col-md-6">
+                    <h2>@Model.Title</h2>
+                    <h6 style="margin-top: 30px;"><i class="fa-solid fa-earth-americas"></i>  @Model.Country, @Model.City</h6>
+                    <h6 style="margin-top: 20px;"><i class="fa-solid fa-map-location-dot"></i>  @Model.Address</h6>
+                    <p class="mini-info" style="margin-top: 20px">
+                        @if (Model.UnlimitedMileage)
+                        {
+                            <span class="mini-info-item"><i class="fa fa-road"></i> Unlimited Mileage</span>
+                        }
+                        else
+                        {
+                            <span class="mini-info-item"><i class="fa fa-road"></i> Limited Mileage</span>
+                        }
+                        <span class="mini-info-item"><i class="fa fa-gear"></i> @Model.Transmission</span>
+                        <span class="mini-info-item"><i class="fa fa-users"></i> @Model.AmountOfPassengers seats</span>
+                        @if (Model.IsAirCondition)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-fan"></i> Air Condition</span>
+                        }
+                    </p>
+                    @if (Model.ElectricCar)
+                    {
+                        <span class="mini-info-item"><i class="fa-solid fa-bolt"></i> Electric Car</span>
+                    }
+                    <span class="mini-info-item"><i class="fa-solid fa-car"></i>  @Model.CarCategory Car</span>
+                    <h4 style="margin-top: 30px">Included in the price</h4>
+                    @if (Model.TheftCoverage)
+                    {
+                        <span class="mini-info-item" style="margin-top: 10px"><i class="fa-solid fa-check" style="color: green;"></i>  Theft Protection with €950 excess</span>
+                    }
+                    @if (Model.CollisionDamageWaiver)
+                    {
+                        <span class="mini-info-item" style="margin-top: 10px"><i class="fa-solid fa-check" style="color: green;"></i>  Collision Damage Waiver with €950 deductible</span>
+                    }
+                    @if (Model.LiabilityCoverage)
+                    {
+                        <span class="mini-info-item" style="margin-top: 10px"><i class="fa-solid fa-check" style="color: green;"></i>  Liability Coverage with €950 deductible</span>
+                    }
+                    @if (Model.FreeCancellation)
+                    {
+                        <span class="mini-info-item" style="margin-top: 10px"><i class="fa-solid fa-check" style="color: green;"></i>  Free cancellation up to 48 hours before pick-up</span>
+                    }
+                   
+                </div>
+                <h6 style="font-weight: normal; margin-top: 20px;">@Model.Description</h6>
+                <h4 style="margin-top: 20px;">Available Dates For Booking:</h4>
+                @for (int i = 0; i < Model.StartDates.Count && i < Model.EndDates.Count; i++)
+                {
+                    <p class="mini-info" style="margin-top: 5px">
+                        <div class="booking-date">
+                            <label style="margin-right: 10px;">Start Date:</label>
+                            <input type="datetime-local" name="model.startDates[]" value="@Model.StartDates[i].ToString("yyyy-MM-ddTHH:mm")" readonly>
+                            <label style="margin-left: 10px;">Finish Date:</label>
+                            <input type="datetime-local" name="model.endDates[]" value="@Model.EndDates[i].ToString("yyyy-MM-ddTHH:mm")" readonly>
+                        </div>
+                    </p>
+                }
+                <h2 style="margin-top: 20px;">Cost: $@Model.Cost Per 1 Hour</h2>
+            </div>
+        </div>
+
+        <!-- Скрытый контейнер для увеличенного изображения -->
+        <div id="enlarged-photo-container" class="enlarged-photo-container">
+            <span class="close-btn" onclick="closePhoto()">✕</span>
+            <img id="enlarged-photo" class="enlarged-photo">
+        </div>
+        <script>
+            function openPhoto() {
+                var imgSrc = document.querySelector('.car-photo').src;
+                var enlargedImgContainer = document.getElementById('enlarged-photo-container');
+                var enlargedImg = document.getElementById('enlarged-photo');
+                enlargedImg.src = imgSrc;
+                enlargedImgContainer.style.display = 'block';
+            }
+
+            function closePhoto() {
+                var enlargedImgContainer = document.getElementById('enlarged-photo-container');
+                enlargedImgContainer.style.display = 'none';
+            }
+        </script>
+    </body>
+</main>
+

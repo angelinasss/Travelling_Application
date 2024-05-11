@@ -13,6 +13,7 @@ using Travelling_Application.Models;
 using Travelling_Application.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics.Metrics;
 
 namespace Travelling_Application.Controllers
 {
@@ -574,5 +575,479 @@ namespace Travelling_Application.Controllers
 
             return View("RejectedItems", model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCarUnverified(int deleteCarId)
+        {
+            var car = _context.Car.Find(deleteCarId); // Находим автомобиль по его ID
+
+            if (car != null)
+            {
+                _context.Car.Remove(car); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCarVerified(int deleteCarId)
+        {
+            var car = _context.Car.Find(deleteCarId); // Находим автомобиль по его ID
+
+            if (car != null)
+            {
+                _context.Car.Remove(car); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await VerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCarRejected(int deleteCarId)
+        {
+            var car = _context.Car.Find(deleteCarId); // Находим автомобиль по его ID
+
+            if (car != null)
+            {
+                _context.Car.Remove(car); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await RejectedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketECUnverified(int deleteAirTicketECId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketECId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsEC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketBCUnverified(int deleteAirTicketBCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketBCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsBC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync();// Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketFCUnverified(int deleteAirTicketFCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketFCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsFC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketECVerified(int deleteAirTicketECId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketECId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsEC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync();// Сохраняем изменения в базе данных
+            return await VerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketBCVerified(int deleteAirTicketBCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketBCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsBC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await VerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketFCVerified(int deleteAirTicketFCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketFCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsFC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync();// Сохраняем изменения в базе данных
+            return await VerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketECRejected(int deleteAirTicketECId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketECId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsEC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await RejectedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketBCRejected(int deleteAirTicketBCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketBCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsBC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await RejectedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAirTicketFCRejected(int deleteAirTicketFCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketFCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsFC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await RejectedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCarUnverified(int editCarId)
+        {
+            var car = _context.Car.Find(editCarId); // Находим автомобиль по его ID
+            ViewBag.CarPhoto = car.CarPhoto;
+            ViewBag.CarModel = car.Title;
+            ViewBag.CarCountry = car.Country;
+            ViewBag.City = car.City;
+            ViewBag.CarAddress = car.Address;
+            ViewBag.IsAirCondition = car.IsAirCondition;
+            ViewBag.CarTransmission = car.Transmission;
+            ViewBag.UnlimitedMileage = car.UnlimitedMileage;
+            ViewBag.ElectricCar = car.ElectricCar;
+            ViewBag.CarCategory = car.CarCategory;
+            ViewBag.CarPassengerCapacity = car.AmountOfPassengers;
+            ViewBag.TheftCoverage = car.TheftCoverage;
+            ViewBag.CollisionDamage = car.CollisionDamageWaiver;
+            ViewBag.LiabilityCoverage = car.LiabilityCoverage;
+            ViewBag.FreeCancellation = car.FreeCancellation;
+            ViewBag.CarDescription = car.Description;
+            ViewBag.CarPrice = car.Cost;
+
+            List<DateTime> DatesStart = car.StartDates;
+            List<DateTime> DatesEnd = car.EndDates;
+
+            ViewBag.DatesStart = DatesStart;
+            ViewBag.DatesEnd = DatesEnd;
+
+            ViewBag.editCarId = car.Id;
+
+            return View("EditCarPage");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAirTicketECUnverified(int editAirticketId)
+        {
+            var airticket = _context.AirTicket.Find(editAirticketId);
+            ViewBag.DepartureCountry = airticket.CountryFrom;
+            ViewBag.DepartureCityCode = airticket.DepartureCountryCode;
+            ViewBag.DepartureCity = airticket.CityFrom;
+            ViewBag.ArrivalCountry = airticket.CountryTo;
+            ViewBag.ArrivalCityCode = airticket.ArrivalCountryCode;
+            ViewBag.ArrivalCity = airticket.CityTo;
+            ViewBag.FlightNumber = airticket.FlightNumber;
+            ViewBag.FreeCancellation = airticket.FreeCancellation;
+            ViewBag.AmountOfTicketsEC = airticket.AmountOfTicketsEC;
+            ViewBag.CostEC = airticket.CostEC;
+            ViewBag.IncludeLuggageEC = airticket.IncludeLuggageEC;
+            ViewBag.AmountOfTicketsBC = airticket.AmountOfTicketsBC;
+            ViewBag.CostBC = airticket.CostBC;
+            ViewBag.IncludeLuggageBC = airticket.IncludeLuggageBC;
+            ViewBag.AmountOfTicketsFC = airticket.AmountOfTicketsFC;
+            ViewBag.CostFC = airticket.CostFC;
+            ViewBag.IncludeLuggageFC = airticket.IncludeLuggageFC;
+
+            ViewBag.DepartureTime = airticket.DepartureTime;
+            ViewBag.ArrivalTime = airticket.ArrivalTime;
+
+            ViewBag.editAirticketId = airticket.Id;
+
+            return View("EditAirTicketPage");
+        }
+
+       [HttpPost]
+        public async Task<IActionResult> UpdateForm(int editCarId, [Bind("Title, City, Country, Address, IsAirCondition, Transmission, Cost, FreeCancellation, AmountOfPassengers, TheftCoverage, CollisionDamageWaiver, LiabilityCoverage, UnlimitedMileage, CarCategory, ElectricCar, Description, StartDates, EndDates", Prefix = "model")] Car model)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var car = _context.Car.Find(editCarId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            var file = Request.Form.Files["file"]; // Получаем файл из запроса
+            byte[] imageDataa = fileBytes;
+
+            if (file != null && file.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] imageData = memoryStream.ToArray();
+                    ViewBag.CarPhoto = imageData;
+                    imageDataa = imageData;
+                }
+            }
+            else {
+                ViewBag.CarPhoto = car.CarPhoto;
+                imageDataa = car.CarPhoto;
+            }
+
+            car.Title = model.Title;
+            car.City = model.City;
+            car.Country = model.Country;
+            car.Address = model.Address;
+            car.IsAirCondition = model.IsAirCondition;
+            car.Transmission = model.Transmission;
+            car.Cost = model.Cost;
+            car.CarPhoto = imageDataa;
+            car.FreeCancellation = model.FreeCancellation;
+            car.AmountOfPassengers = model.AmountOfPassengers;
+            car.TheftCoverage = model.TheftCoverage;
+            car.CollisionDamageWaiver = model.CollisionDamageWaiver;
+            car.LiabilityCoverage = model.LiabilityCoverage;
+            car.UnlimitedMileage = model.UnlimitedMileage;
+            car.CarCategory = model.CarCategory;
+            car.ElectricCar = model.ElectricCar;
+            car.Description = model.Description;
+            car.StartDates = model.StartDates;
+            car.EndDates = model.EndDates;
+            car.PublisherId = currentUser.Id;
+            car.VerifiedByAdmin = false;
+            car.RejectedByAdmin = false;
+
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateFlightForm(int editAirticketId, [Bind("CountryFrom, DepartureCountryCode, CityFrom, CountryTo, ArrivalCountryCode, CityTo, FlightNumber, FreeCancellation, DepartureTime, ArrivalTime, AmountOfTicketsEC, AmountOfTicketsBC, AmountOfTicketsFC, CostEC, CostBC, CostFC, IncludeLuggageEC, IncludeLuggageBC, IncludeLuggageFC", Prefix = "model")] AirTicket model)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var airticket = _context.AirTicket.Find(editAirticketId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            airticket.CountryFrom = model.CountryFrom;
+            airticket.DepartureCountryCode = model.DepartureCountryCode;
+            airticket.CityFrom = model.CityFrom;
+            airticket.CountryTo = model.CountryTo;
+            airticket.ArrivalCountryCode = model.ArrivalCountryCode;
+            airticket.CityTo = model.CityTo;
+            airticket.FlightNumber = model.FlightNumber;
+            airticket.DepartureTime = model.DepartureTime;
+            airticket.ArrivalTime = model.ArrivalTime;
+            airticket.AmountOfTicketsEC = model.AmountOfTicketsEC;
+            airticket.AmountOfTicketsBC = model.AmountOfTicketsBC;
+            airticket.AmountOfTicketsFC = model.AmountOfTicketsFC;
+            airticket.CostEC = model.CostEC;
+            airticket.CostBC = model.CostBC;
+            airticket.CostFC = model.CostFC;
+            airticket.IncludeLuggageEC = model.IncludeLuggageEC;
+            airticket.IncludeLuggageBC = model.IncludeLuggageBC;
+            airticket.IncludeLuggageFC = model.IncludeLuggageFC;
+            airticket.PublisherId = currentUser.Id;
+            airticket.VerifiedByAdmin = false;
+            airticket.RejectedByAdmin = false;
+
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCarPhotoEdit(int editCarId)
+        {
+            var car = _context.Car.Find(editCarId); 
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            car.CarPhoto = fileBytes;
+            await _context.SaveChangesAsync();
+
+            return await EditCarUnverified(editCarId);
+        }
+
+       
+        public async Task<IActionResult> ShowCarInformation(int carId)
+        {
+            var car = _context.Car.Find(carId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            var model = new ShowCarInformationViewModel
+            {
+                Title = car.Title,
+                City = car.City,
+                Country = car.Country,
+                IsAirCondition = car.IsAirCondition,
+                Transmission = car.Transmission,
+                Address = car.Address,
+                Cost = car.Cost,
+                CarPhoto = car.CarPhoto,
+                FreeCancellation = car.FreeCancellation,
+                AmountOfPassengers = car.AmountOfPassengers,
+                TheftCoverage = car.TheftCoverage,
+                CollisionDamageWaiver = car.CollisionDamageWaiver,
+                LiabilityCoverage = car.LiabilityCoverage,
+                UnlimitedMileage = car.UnlimitedMileage,
+                CarCategory = car.CarCategory,
+                ElectricCar = car.ElectricCar,
+                Description = car.Description,
+                StartDates = car.StartDates,
+                EndDates = car.EndDates
+            };
+
+            return View("CarInformation", model);
+        }
+
+        public async Task<IActionResult> AllVerifiedObjects()
+        {
+
+            var verifiedCars = await _context.Car
+            .Where(c => c.VerifiedByAdmin)
+            .ToListAsync();
+
+            var verifiedAirTickets = await _context.AirTicket
+           .Where(c => c.VerifiedByAdmin)
+           .ToListAsync();
+
+            var model = new VerifiedObjectsViewModel
+            {
+                VerifiedCars = verifiedCars,
+                VerifiedAirTickets = verifiedAirTickets
+            };
+
+            return View("VerifiedItems", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCar(int deleteCarId)
+        {
+            var car = _context.Car.Find(deleteCarId); // Находим автомобиль по его ID
+
+            if (car != null)
+            {
+                _context.Car.Remove(car); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await AllVerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAllAirTicketECVerified(int deleteAirTicketECId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketECId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsEC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync();// Сохраняем изменения в базе данных
+            return await AllVerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAllAirTicketBCVerified(int deleteAirTicketBCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketBCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsBC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await AllVerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAllAirTicketFCVerified(int deleteAirTicketFCId)
+        {
+            var airticket = _context.AirTicket.Find(deleteAirTicketFCId); // Находим автомобиль по его ID
+            airticket.AmountOfTicketsFC = 0;
+
+            if (airticket.AmountOfTicketsEC == 0 && airticket.AmountOfTicketsBC == 0 && airticket.AmountOfTicketsFC == 0)
+            {
+                _context.AirTicket.Remove(airticket); // Удаляем автомобиль из контекста
+            }
+            await _context.SaveChangesAsync();// Сохраняем изменения в базе данных
+            return await AllVerifiedObjects();
+        }
+
+        public async Task<IActionResult> AllUnverifiedObjects()
+        {
+            var unverifiedCars = await _context.Car
+            .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.AirTicket
+           .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin)
+           .ToListAsync();
+
+            var model = new UnverifiedObjectsViewModel
+            {
+                UnverifiedCars = unverifiedCars,
+                UnverifiedAirTickets = unverifiedAirTickets
+            };
+
+            return View("UnverifiedItems", model);
+        }
+
+        //public async Task<IActionResult> VerifyCar()
+        //{
+
+        //}
     }
 }

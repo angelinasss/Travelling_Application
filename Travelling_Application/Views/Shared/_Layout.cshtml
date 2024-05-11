@@ -34,14 +34,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-map-marker-alt"></i> Attractions</a>
                         </li>
-                        @{
-                            if (User.IsInRole("admin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                                </li>
-                            }
-                        }
                     </ul>
                     <ul class="navbar-nav">
                         @if (!User.Identity.IsAuthenticated)
@@ -75,7 +67,7 @@
 
     <footer class="footer text-muted">
         <div class="container">
-            &copy; 2024 - Booking.com - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - Booking.com
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
