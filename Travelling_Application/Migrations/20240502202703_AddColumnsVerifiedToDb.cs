@@ -26,13 +26,6 @@ namespace Travelling_Application.Migrations
 
             migrationBuilder.AddColumn<bool>(
                 name: "VerifiedByAdmin",
-                table: "AirTicket",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "VerifiedByAdmin",
                 table: "Accomodation",
                 type: "bit",
                 nullable: false,
@@ -49,10 +42,6 @@ namespace Travelling_Application.Migrations
             migrationBuilder.DropColumn(
                 name: "VerifiedByAdmin",
                 table: "Car");
-
-            migrationBuilder.DropColumn(
-                name: "VerifiedByAdmin",
-                table: "AirTicket");
 
             migrationBuilder.DropColumn(
                 name: "VerifiedByAdmin",

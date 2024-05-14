@@ -26,5 +26,6 @@
         public bool VerifiedByAdmin { get; set; }
         public int PublisherId { get; set; }
         public bool RejectedByAdmin { get; set; }
+        public string RejectedMessage { get; set; }
     }
 }

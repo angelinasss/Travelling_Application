@@ -501,7 +501,7 @@
                         {
                                 <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
                                 <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
-                                <a href="#" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
                         }
                     }
                 </div>
@@ -718,12 +718,15 @@
                         <div id="entertainment-fields" class="mt-5" style="display: none;">
                             <form id="entertainment-form" asp-action="SaveEntertainmentForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAttractionForm()">
                                 <div id="photoContainer" class="d-flex flex-wrap"></div>
+                                <input type="hidden" id="photoData" name="photoData" />
                                 <div class="form-group">
                                     <input type="file" name="photos" id="photoUpload" multiple style="display:none;">
                                     <button type="button" class="btn btn-primary" id="uploadBtn">Upload Photos</button>
                                 </div>
                                 <script>
                                     $(document).ready(function () {
+                                        let photoArray = [];
+
                                         $("#uploadBtn").click(function () {
                                             $("#photoUpload").click();
                                         });
@@ -731,10 +734,6 @@
                                         $("#photoUpload").change(function () {
                                             var files = this.files;
                                             var container = $("#photoContainer");
-
-                                           // var input = $("photoUpload");
-
-                                            //input.files.append(files[0]);
 
                                             $.each(files, function (index, file) {
                                                 var reader = new FileReader();
@@ -746,9 +745,13 @@
                                                         }),
                                                         $('<button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>').click(function () {
                                                             $(this).parent().remove();
+                                                            photoArray = photoArray.filter(src => src !== imageSrc);
+                                                            $("#photoData").val(JSON.stringify(photoArray));
                                                         })
                                                     );
                                                     container.append(image);
+                                                    photoArray.push(imageSrc);
+                                                    $("#photoData").val(JSON.stringify(photoArray));
                                                 };
                                                 reader.readAsDataURL(file);
                                             });

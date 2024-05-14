@@ -1,5 +1,5 @@
 ﻿@using Travelling_Application.ViewModels
-@model UnverifiedObjectsViewModel
+@model RejectedObjectsViewModel
 
 <head>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -33,10 +33,27 @@
                 margin-bottom: 20px;
             }
 
+            .attraction-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
             .car-image {
                 width: 100%;
                 height: auto;
                 display: block;
+            }
+
+            .attraction-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border-radius: 10px 20px 30px 40px;
             }
 
             .car-details {
@@ -48,6 +65,18 @@
             }
 
             .car-price {
+                font-weight: bold;
+            }
+
+            .attraction-details {
+                padding: 15px;
+            }
+
+            .attraction-title {
+                margin-top: 0;
+            }
+
+            .attraction-price {
                 font-weight: bold;
             }
 
@@ -70,6 +99,7 @@
                 background-color: #f0f0f0;
                 color: #333;
                 border-radius: 5px;
+                margin-bottom: 10px;
             }
 
             .form-signin > :last-child {
@@ -163,7 +193,7 @@
                         {
                             <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
                             <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
-                            <a href="#" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
                         }
                     }
                 </div>
@@ -171,9 +201,9 @@
             <div class="col-md-9">
                 <div class="row">
                     <div class="col">
-                        <h3>My Rejected Objects</h3>
+                        <h3>Rejected Objects</h3>
                         <div class="car-list" style="margin-top: 20px;">
-                            @foreach (var car in Model.UnverifiedCars.Where(c => !c.VerifiedByAdmin))
+                            @foreach (var car in Model.RejectedCars.Where(c => (!c.VerifiedByAdmin && c.RejectedByAdmin)))
                             {
                                 <div class="car-card">
                                     <div class="row">
@@ -202,15 +232,35 @@
                                                     }
                                                     <span class="mini-info-item"><i class="fa fa-gear"></i> @car.Transmission</span>
                                                     <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
+                                                    <h4>Cause of Reject:</h4>
                                                 </p>
-                                                    <form asp-action="EditCarUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="editCarId" value="@car.Id" />
-                                                        <button class="btn btn-primary" type="submit">Edit</button>
-                                                    </form>
-                                                    <form asp-action="DeleteCarRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="deleteCarId" value="@car.Id" />
-                                                        <button class="btn btn-danger" type="submit">Delete</button>
-                                                    </form>
+                                                    <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @car.RejectedMessage
+                                                    </div>
+                                                    @{
+                                                        if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                                        {
+                                                            <form asp-action="EditCarUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="editCarId" value="@car.Id" />
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                            <form asp-action="DeleteCarRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteCarId" value="@car.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                        else if (User.IsInRole("admin") || User.IsInRole("Admin"))
+                                                        {
+                                                            <form asp-action="VerifyRejectedCar" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="verifyCarId" value="@car.Id" />
+                                                                <button class="btn btn-success" type="submit">Verify</button>
+                                                            </form>
+                                                            <form asp-action="DeleteCarAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteCarId" value="@car.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                    }
                                             </div>
                                         </div>
                                     </div>
@@ -218,9 +268,9 @@
                             }
                         </div>
                         <div class="airticket-list" style="margin-top: 20px;">
-                            @foreach (var airticket in Model.UnverifiedAirTickets.Where(c => !c.VerifiedByAdmin))
+                                @foreach (var airticket in Model.RejectedAirTickets.Where(c => (!c.VerifiedByAdminECTicket && c.RejectedByAdminEC) || (!c.VerifiedByAdminBCTicket && c.RejectedByAdminBC) || (!c.VerifiedByAdminFCTicket)))
                             {
-                                    @if (airticket.AmountOfTicketsEC > 0)
+                                    @if (airticket.AmountOfTicketsEC > 0 && !airticket.VerifiedByAdminECTicket && airticket.RejectedByAdminEC)
                                     {
                                         <div class="car-card">
                                             <div class="row">
@@ -358,20 +408,40 @@
                                                         </p>
                                                     </div>
                                                 </div>
+                                                <h4>Cause of Reject:</h4>
+                                                <div class="rejected-messageEC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                    @airticket.RejectedMessageEC
+                                                </div>
                                                 <div class="col-md-12 text-center" style="margin-bottom: 20px;">
-                                                    <form asp-action="EditAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="editAirticketId" value="@airticket.Id" />
-                                                        <button class="btn btn-primary" type="submit">Edit</button>
-                                                    </form>
-                                                    <form asp-action="DeleteAirTicketECRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="deleteAirTicketECId" value="@airticket.Id" />
-                                                        <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
-                                                    </form>
+                                                    @{
+                                                        if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                                        {
+                                                            <form asp-action="EditAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="editAirticketId" value="@airticket.Id" />
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAirTicketECRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAirTicketECId" value="@airticket.Id" />
+                                                                <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                        else if (User.IsInRole("admin") || User.IsInRole("Admin"))
+                                                        {
+                                                            <form asp-action="VerifyRejectedAirTicketEC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="verifyAirTicketId" value="@airticket.Id" />
+                                                                <button class="btn btn-success" type="submit">Verify</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAirTicketECAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAirTicketECId" value="@airticket.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                     }
-                                    @if (airticket.AmountOfTicketsBC > 0)
+                                    @if (airticket.AmountOfTicketsBC > 0 && !airticket.VerifiedByAdminBCTicket && airticket.RejectedByAdminBC)
                                     {
                                         <div class="car-card">
                                             <div class="row">
@@ -509,20 +579,40 @@
                                                         </p>
                                                     </div>
                                                 </div>
+                                                <h4>Cause of Reject:</h4>
+                                                <div class="rejected-messageBC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                    @airticket.RejectedMessageBC
+                                                </div>
                                                 <div class="col-md-12 text-center" style="margin-bottom: 20px;">
-                                                    <form asp-action="EditAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="editAirticketId" value="@airticket.Id" />
-                                                        <button class="btn btn-primary" type="submit">Edit</button>
-                                                    </form>
-                                                    <form asp-action="DeleteAirTicketBCRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="deleteAirTicketBCId" value="@airticket.Id" />
-                                                        <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
-                                                    </form>
+                                                    @{
+                                                        if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                                        {
+                                                            <form asp-action="EditAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="editAirticketId" value="@airticket.Id" />
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAirTicketBCRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAirTicketBCId" value="@airticket.Id" />
+                                                                <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                        else if (User.IsInRole("admin") || User.IsInRole("Admin"))
+                                                        {
+                                                            <form asp-action="VerifyRejectedAirTicketBC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="verifyAirTicketId" value="@airticket.Id" />
+                                                                <button class="btn btn-success" type="submit">Verify</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAirTicketBCAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAirTicketBCId" value="@airticket.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                     }
-                                    @if (airticket.AmountOfTicketsFC > 0)
+                                    @if (airticket.AmountOfTicketsFC > 0 && !airticket.VerifiedByAdminFCTicket && airticket.RejectedByAdminFC)
                                     {
                                         <div class="car-card">
                                             <div class="row">
@@ -660,21 +750,109 @@
                                                         </p>
                                                     </div>
                                                 </div>
+                                                <h4>Cause of Reject:</h4>
+                                                <div class="rejected-messageFC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                    @airticket.RejectedMessageFC
+                                                </div>
                                                 <div class="col-md-12 text-center" style="margin-bottom: 20px;">
-                                                    <form asp-action="EditAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="editAirticketId" value="@airticket.Id" />
-                                                        <button class="btn btn-primary" type="submit">Edit</button>
-                                                    </form>
-                                                    <form asp-action="DeleteAirTicketFCRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="deleteAirTicketFCId" value="@airticket.Id" />
-                                                        <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
-                                                    </form>
+                                                    @{
+                                                        if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                                        {
+                                                            <form asp-action="EditAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="editAirticketId" value="@airticket.Id" />
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAirTicketFCRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAirTicketFCId" value="@airticket.Id" />
+                                                                <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                        else if (User.IsInRole("admin") || User.IsInRole("Admin"))
+                                                        {
+                                                            <form asp-action="VerifyRejectedAirTicketFC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="verifyAirTicketId" value="@airticket.Id" />
+                                                                <button class="btn btn-success" type="submit">Verify</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAirTicketFCAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAirTicketFCId" value="@airticket.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                     }
                             }
                         </div>
+                            <div class="attraction-list" style="margin-top: 20px;">
+                                @foreach (var attraction in Model.RejectedAttractions.Where(c => (!c.VerifiedByAdmin && c.RejectedByAdmin)))
+                                {
+                                    <div class="attraction-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(attraction.MainPhoto))" alt="Attraction Image" class="attraction-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="attraction-details">
+                                                    <h3 class="attraction-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowAttractionInformation?carId=@attraction.Id">@attraction.Title</a>
+                                                    </h3>
+                                                    <p class="attraction-features" style="text-align: left;">@attraction.City, @attraction.Country</p>
+                                                    <div class="row">
+                                                        <div class="text-right">
+                                                            <p class="attraction-price">Price per 1 person: $@attraction.Cost</p>
+                                                            @if (attraction.FreeCancellation)
+                                                            {
+                                                                <p class="text-success">Free cancellation</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <p class="mini-info">
+                                                        <span class="mini-info-item"><i class="fa-solid fa-clock"></i> @attraction.TimeOfDay</span>
+                                                    </p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            foreach (var language in attraction.Languages)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
+                                                            }
+                                                        }
+                                                        <h4>Cause of Reject:</h4>
+                                                    </p>
+                                                    <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @attraction.RejectedMessage
+                                                    </div>
+                                                    @{
+                                                        if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                                        {
+                                                            <form asp-action="EditAttractionUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="editAttractionId" value="@attraction.Id" />
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAttractionRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAttractionId" value="@attraction.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                        else if (User.IsInRole("admin") || User.IsInRole("Admin"))
+                                                        {
+                                                            <form asp-action="VerifyRejectedAttraction" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="verifyAttractionId" value="@attraction.Id" />
+                                                                <button class="btn btn-success" type="submit">Verify</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAttractionAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAttractionId" value="@attraction.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                     </div>
                 </div>
             </div>

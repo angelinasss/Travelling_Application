@@ -7,6 +7,7 @@ namespace Travelling_Application.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<Photos> ObjectPhotos { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Accomodation> Accomodation { get; set; }
 

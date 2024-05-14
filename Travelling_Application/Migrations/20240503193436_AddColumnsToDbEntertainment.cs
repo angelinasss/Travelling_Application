@@ -19,13 +19,6 @@ namespace Travelling_Application.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.AddColumn<string>(
-                name: "EntertainmentPhotos",
-                table: "Entertainment",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "[]");
-
             migrationBuilder.AddColumn<bool>(
                 name: "FreeCancellation",
                 table: "Entertainment",
@@ -54,10 +47,6 @@ namespace Travelling_Application.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Category",
-                table: "Entertainment");
-
-            migrationBuilder.DropColumn(
-                name: "EntertainmentPhotos",
                 table: "Entertainment");
 
             migrationBuilder.DropColumn(

@@ -23,7 +23,14 @@
         public bool IncludeLuggageFC { get; set; }
         public string DepartureCountryCode { get; set; }
         public string ArrivalCountryCode { get; set; }
-        public bool VerifiedByAdmin { get; set; }
-        public bool RejectedByAdmin { get; set; }
+        public bool VerifiedByAdminECTicket { get; set; }
+        public bool VerifiedByAdminBCTicket { get; set; }
+        public bool VerifiedByAdminFCTicket { get; set; }
+        public bool RejectedByAdminEC { get; set; }
+        public bool RejectedByAdminBC { get; set; }
+        public bool RejectedByAdminFC { get; set; }
+        public string RejectedMessageEC { get; set; }
+        public string RejectedMessageBC { get; set; }
+        public string RejectedMessageFC { get; set; }
     }
 }

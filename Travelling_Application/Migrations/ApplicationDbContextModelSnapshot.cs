@@ -247,8 +247,26 @@ namespace Travelling_Application.Migrations
                     b.Property<int>("PublisherId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("RejectedByAdmin")
+                    b.Property<bool>("RejectedByAdminBC")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("RejectedByAdminEC")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RejectedByAdminFC")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RejectedMessageBC")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RejectedMessageEC")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RejectedMessageFC")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -256,7 +274,13 @@ namespace Travelling_Application.Migrations
                     b.Property<int?>("UserId1")
                         .HasColumnType("int");
 
-                    b.Property<bool>("VerifiedByAdmin")
+                    b.Property<bool>("VerifiedByAdminBCTicket")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("VerifiedByAdminECTicket")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("VerifiedByAdminFCTicket")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -334,6 +358,10 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("RejectedByAdmin")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StartDates")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -409,16 +437,16 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EntertainmentPhotos")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("FreeCancellation")
                         .HasColumnType("bit");
 
                     b.Property<string>("Languages")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("MainPhoto")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("PublisherId")
                         .HasColumnType("int");
@@ -428,6 +456,10 @@ namespace Travelling_Application.Migrations
 
                     b.Property<bool>("RejectedByAdmin")
                         .HasColumnType("bit");
+
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TimeOfDay")
                         .IsRequired()
@@ -480,6 +512,26 @@ namespace Travelling_Application.Migrations
                     b.HasIndex("RoomID");
 
                     b.ToTable("Photos");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.Photos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ObjectId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("PhotoArray")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ObjectPhotos");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.Role", b =>

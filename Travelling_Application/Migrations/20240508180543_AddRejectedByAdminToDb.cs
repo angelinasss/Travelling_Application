@@ -26,13 +26,6 @@ namespace Travelling_Application.Migrations
 
             migrationBuilder.AddColumn<bool>(
                 name: "RejectedByAdmin",
-                table: "AirTicket",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "RejectedByAdmin",
                 table: "Accomodation",
                 type: "bit",
                 nullable: false,
@@ -49,10 +42,6 @@ namespace Travelling_Application.Migrations
             migrationBuilder.DropColumn(
                 name: "RejectedByAdmin",
                 table: "Car");
-
-            migrationBuilder.DropColumn(
-                name: "RejectedByAdmin",
-                table: "AirTicket");
 
             migrationBuilder.DropColumn(
                 name: "RejectedByAdmin",
