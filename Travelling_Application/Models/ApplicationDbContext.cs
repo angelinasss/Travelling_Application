@@ -12,6 +12,9 @@ namespace Travelling_Application.Models
         public DbSet<Accomodation> Accomodation { get; set; }
 
         public DbSet<Entertainment> Entertainment { get; set; }
+        public DbSet<AccomodationPhotos> AccomodationPhotos { get; set; }
+        public DbSet<RoomPhotos> RoomPhotos { get; set; }
+
 
         public DbSet<Car> Car { get; set; }
 

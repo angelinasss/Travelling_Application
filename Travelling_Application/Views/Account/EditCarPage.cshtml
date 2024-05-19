@@ -466,7 +466,7 @@
                                         {
                                                 <div class="booking-date" style="margin-top: 15px;">
                                                     <label style="margin-right: 10px;">Start Date:</label>
-                                                <input type="datetime-local" name="model.startDates[]" required min="{{minStartDate}}" value="@ViewBag.DatesStart[i].ToString("yyyy-MM-ddTHH:mm")">
+                                                <input type="datetime-local" name="model.startDates[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.DatesStart[i].ToString("yyyy-MM-ddTHH:mm")">
                                                     <label style="margin-left: 10px;">Finish Date:</label>
                                                 <input type="datetime-local" name="model.endDates[]" required min="{{minEndDate}}" value="@ViewBag.DatesEnd[i].ToString("yyyy-MM-ddTHH:mm")">
                                                 </div>
@@ -481,7 +481,6 @@
                                             <button id="save-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
                                         <input type="hidden" name="editCarId" value="@ViewBag.editCarId" />
                                     </form>
-
                                 </div>
                                 <div id="notification" class="text-danger" style="display:none;"></div>
                         </div>

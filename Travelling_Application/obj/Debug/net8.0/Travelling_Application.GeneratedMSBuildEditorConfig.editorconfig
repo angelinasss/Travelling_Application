@@ -18,12 +18,24 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = D:\BSUIR 4 SEM\OOP PROJECT\Travelling_Application\Travelling_Application
 build_property._RazorSourceGeneratorDebug = 
 
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/AddRoomPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBZGRSb29tUGFnZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/AttractionInformation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBdHRyYWN0aW9uSW5mb3JtYXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/BookingItems.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxCb29raW5nSXRlbXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/CarInformation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxDYXJJbmZvcm1hdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/EditAccomodationPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxFZGl0QWNjb21vZGF0aW9uUGFnZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/EditAirTicketPage.cshtml]
@@ -76,6 +88,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Home/SearchAttractions.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZWFyY2hBdHRyYWN0aW9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Home/SearchCars.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZWFyY2hDYXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Home/SearchFlights.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZWFyY2hGbGlnaHRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Shared/Error.cshtml]

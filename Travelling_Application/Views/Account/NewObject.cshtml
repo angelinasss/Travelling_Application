@@ -26,6 +26,20 @@
                 background-color: rgba(0, 0, 0, 0.8);
             }
 
+            #add-booking-date-room {
+                display: block;
+                margin: 0 auto;
+            }
+
+                #add-booking-date-room + div {
+                    text-align: center;
+                }
+
+            #roomCost {
+                width: 50%;
+                margin: 10px auto;
+            }
+
             .enlarged-photo {
                 position: absolute;
                 top: 50%;
@@ -49,6 +63,50 @@
             }
 
             .enlarged-photo1 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .enlarged-photo-container2 {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo2 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .enlarged-photo-container3 {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo3 {
                 position: absolute;
                 top: 50%;
                 left: 50%;
@@ -144,6 +202,13 @@
                 border-radius: 5px;
             }
 
+            #notificationAccomodation {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
             #notificationAirTicket {
                 display: none;
                 padding: 10px;
@@ -164,6 +229,12 @@
             }
 
             .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .text-danger11 {
                 background-color: #f8d7da;
                 color: #721c24;
                 border-color: #f5c6cb;
@@ -453,6 +524,134 @@
             if (!isValid) {
                 $('#departureCity, #arrivalCountry, #arrivalCity, #flightNumber, #ticketCostEC, #ticketCostBC, #ticketCostFC, #amountOfTicketsEC, #amountOfTicketsBC, #amountOfTicketsFC, #arrivalCountryCode, #departureCountryCode').removeClass('invalid-field');
                 $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger1').show();
+            }
+            return isValid;
+        }
+
+        function showSuccessMessage(message) {
+            $('#notification1').text(message).addClass('success-notification').show();
+        }
+
+        $(document).ready(function () {
+            var successMessage = '@TempData["SuccessMessage"]'; // Получение сообщения об успешном сохранении с сервера
+            if (successMessage) {
+                showSuccessMessage(successMessage); // Отображение уведомления об успешном сохранении
+            }
+        });
+        $(document).ready(function () {
+            // Обработчик события клика на кнопки сущностей
+            $('.btn-entity').click(function () {
+                // Скрываем уведомление
+                $('#notification1').hide();
+            });
+        });
+
+        function validateAccomodationForm() {
+            // Проверка текстовых полей
+            var accomodationName = $('#accomodationName').val();
+            var accomodationCountry = $('#accomodationCountry').val();
+            var accomodationCity = $('#accomodationCity').val();
+            var accomodationAddress = $('#accomodationAddress').val();
+            var amountOfRestaurants = $('#restaurants').val();
+            var accomodationDescription = $('#descriptionAccomodation').val();
+            var swimmingpools = $('#swimmingpools').val();
+
+            var nutrition = $('input[name="model.TypesOfNutrition[]"]:checked').length > 0;
+
+            // Проверка загруженных фотографий
+            var photoCount = $('#photoContainerAccomodation').children().length;
+
+            // Проверка выбранных радиокнопок
+            var features = [
+                'parking',
+                'freeWIFI',
+                'privateBeach',
+                'SPA',
+                'Bar',
+                'garden',
+                'transferToAirport',
+                'tactileSigns',
+                'smookingRooms',
+                'familyRooms',
+                'carChargingStation',
+                'wheelchairAccessible',
+                'fitnessCentre',
+                'petsAllowed',
+                'deliveryFoodToTheRoom',
+                'everyHourFrontDesk'
+            ];
+
+            var isValid = true;
+
+            features.forEach(function (feature) {
+                var yesChecked = $('#' + feature + 'Yes').is(':checked');
+                var noChecked = $('#' + feature + 'No').is(':checked');
+
+                if (!yesChecked && !noChecked) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+            }
+
+            if (accomodationName === '') {
+                $('#accomodationName').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationName').removeClass('invalid-field');
+            }
+            if (swimmingpools === '') {
+                $('#swimmingpools').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#swimmingpools').removeClass('invalid-field');
+            }
+            if (accomodationCountry === '') {
+                $('#accomodationCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationCountry').removeClass('invalid-field');
+            }
+            if (accomodationCity === '') {
+                $('#accomodationCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationCity').removeClass('invalid-field');
+            }
+            if (accomodationAddress === '') {
+                $('#accomodationAddress').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationAddress').removeClass('invalid-field');
+            }
+            if (amountOfRestaurants === '') {
+                $('#restaurants').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#restaurants').removeClass('invalid-field');
+            }
+            if (accomodationDescription === '') {
+                $('#descriptionAccomodation').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#descriptionAccomodation').removeClass('invalid-field');
+            }
+
+            if (!nutrition || photoCount === 0) {
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
             }
             return isValid;
         }
@@ -1024,6 +1223,322 @@
                     </div>
                     <div id="notificationAirTicket" class="text-danger1" style="display:none; margin-top: 20px;"></div>
             </div>
+                    <div id="accomodation-fields" class="mt-5" style="display: none;">
+                        <form id="accomodation-form" asp-action="SaveAccomodationForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAccomodationForm()">
+                            <div id="photoContainerAccomodation" class="d-flex flex-wrap"></div>
+                            <input type="hidden" id="photoDataAccomodation" name="photoDataAccomodation" />
+                            <div class="form-group">
+                                <input type="file" name="photosAccomodation" id="photoUploadAccomodation" multiple style="display:none;">
+                                <button type="button" class="btn btn-primary" id="uploadBtnAccomodation">Upload Photos</button>
+                            </div>
+                            <script>
+                                $(document).ready(function () {
+                                    let photoArrayAccomodation = [];
+
+                                    $("#uploadBtnAccomodation").click(function () {
+                                        $("#photoUploadAccomodation").click();
+                                    });
+
+                                    $("#photoUploadAccomodation").change(function () {
+                                        var files = this.files;
+                                        var container = $("#photoContainerAccomodation");
+
+                                        $.each(files, function (index, file) {
+                                            var reader = new FileReader();
+                                            reader.onload = function (e) {
+                                                var imageSrc = e.target.result;
+                                                var image = $('<div class="photo-item d-flex align-items-center justify-content-center position-relative"></div>').append(
+                                                    $('<img class="img-thumbnail">').attr({ 'src': imageSrc, 'data-src': imageSrc }).click(function () {
+                                                        openPhotoAccomodation($(this).attr('data-src'));
+                                                    }),
+                                                    $('<button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>').click(function () {
+                                                        $(this).parent().remove();
+                                                        photoArrayAccomodation = photoArrayAccomodation.filter(src => src !== imageSrc);
+                                                        $("#photoDataAccomodation").val(JSON.stringify(photoArrayAccomodation));
+                                                    })
+                                                );
+                                                container.append(image);
+                                                photoArrayAccomodation.push(imageSrc);
+                                                $("#photoDataAccomodation").val(JSON.stringify(photoArrayAccomodation));
+                                            };
+                                            reader.readAsDataURL(file);
+                                        });
+                                    });
+                                });
+
+                                // Функция для отображения увеличенного изображения
+                                function openPhotoAccomodation(imgSrc) {
+                                    var enlargedImgContainer = document.getElementById('enlarged-photo-container2');
+                                    var enlargedImg = document.getElementById('enlarged-photo2');
+                                    enlargedImg.src = imgSrc;
+                                    enlargedImgContainer.style.display = 'block';
+                                }
+
+                                // Функция для закрытия увеличенного изображения
+                                function closePhotoAccomodation() {
+                                    var enlargedImgContainer = document.getElementById('enlarged-photo-container2');
+                                    enlargedImgContainer.style.display = 'none';
+                                }
+                            </script>
+
+                            <!-- Скрытый контейнер для увеличенного изображения -->
+                            <div id="enlarged-photo-container2" class="enlarged-photo-container2">
+                                <span class="close-btnn" onclick="closePhotoAccomodation()">✕</span>
+                                <img id="enlarged-photo2" class="enlarged-photo2">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="accomodationName" style="margin-top: 15px;">Accomodation Name</label>
+                                <input type="text" name="model.Name" class="form-control" id="accomodationName" placeholder="Enter the accomodation name" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="accomodationCountry" style="margin-top: 15px;">Country Of Accomodation</label>
+                                <input type="text" name="model.Country" class="form-control" id="accomodationCountry" placeholder="Enter the country of accomodation" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="accomodationCity" style="margin-top: 15px;">City Of Accomodation</label>
+                                <input type="text" name="model.City" class="form-control" id="accomodationCity" placeholder="Enter the city of accomodation" style="margin-top: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="accomodationAddress" style="margin-top: 15px;">Address Of Accomodation</label>
+                                <input type="text" name="model.Address" class="form-control" id="accomodationAddress" placeholder="Enter the address of accomodation" style="margin-top: 10px;">
+                            </div>
+                            <div class="mb-3">
+                                <label for="accomodationType" class="form-label" style="margin-top: 15px;">Type Of Accomodation</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="accomodationType" name="model.TypeOfAccomodation" type="hidden">
+                                        <option value="Hotel">Hotel</option>
+                                        <option value="Hostel">Hostel</option>
+                                        <option value="Apartment">Apartment</option>
+                                        <option value="Flat">Flat</option>
+                                        <option value="House">House</option>
+                                        <option value="Villa">Villa</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nutritionType" class="form-label" style="margin-top: 15px;">Types Of Nutrition</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="model.TypesOfNutrition[]" id="BreakfastIncl" value="Breakfast">
+                                    <label class="form-check-label" for="nutritionType">Breakfast Included</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="model.TypesOfNutrition[]" id="BreakfastDinnerIncl" value="Breakfast & Dinner">
+                                    <label class="form-check-label" for="nutritionType">Breakfast & Dinner Included</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="model.TypesOfNutrition[]" id="AllIncl" value="All Inclusive">
+                                    <label class="form-check-label" for="nutritionType">All Inclusive</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="model.TypesOfNutrition[]" id="WithoutIncl" value="Without Nutrition">
+                                    <label class="form-check-label" for="nutritionType">Without Nutrition</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="parking" class="form-label" style="margin-top: 15px;">Parking</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Parking" id="parkingYes" value="true">
+                                    <label class="form-check-label" for="parkingYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Parking" id="parkingNo" value="false">
+                                    <label class="form-check-label" for="parkingNo">No</label>
+                                </div>
+                            </div>
+                        <label for="swimmingpools" style="margin-top:15px;">Amount Of Swimming Pools</label>
+                        <input type="number" class="form-control" name="model.SwimmingPool" id="swimmingpools" placeholder="Enter amount of swimming pools" min="0" max="20" style="margin-top: 10px;">
+                        <div class="mb-3">
+                                <label for="freeWIFI" class="form-label" style="margin-top: 15px;">Free WIFI</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FreeWIFI" id="freeWIFIYes" value="true">
+                                    <label class="form-check-label" for="freeWIFIYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FreeWIFI" id="freeWIFINo" value="false">
+                                    <label class="form-check-label" for="freeWIFINo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="privateBeach" class="form-label" style="margin-top: 15px;">Private Beach</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.PrivateBeach" id="privateBeachYes" value="true">
+                                    <label class="form-check-label" for="privateBeachYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.PrivateBeach" id="privateBeachNo" value="false">
+                                    <label class="form-check-label" for="privateBeachNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lineOfBeach" class="form-label" style="margin-top: 15px;">Line Of Beach</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="lineOfBeach" name="model.LineOfBeach" type="hidden">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="0">Without Beach Around</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="SPA" class="form-label" style="margin-top: 15px;">SPA</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SPA" id="SPAYes" value="true">
+                                    <label class="form-check-label" for="SPAYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SPA" id="SPANo" value="false">
+                                    <label class="form-check-label" for="SPANo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="Bar" class="form-label" style="margin-top: 15px;">Bar</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Bar" id="BarYes" value="true">
+                                    <label class="form-check-label" for="BarYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Bar" id="BarNo" value="false">
+                                    <label class="form-check-label" for="BarNo">No</label>
+                                </div>
+                            </div>
+                            <label for="restaurants" style="margin-top:15px;">Amount Of Restaurants</label>
+                            <input type="number" class="form-control" name="model.Restaurants" id="restaurants" placeholder="Enter amount of restaurants" min="0" max="10" style="margin-top: 10px;">
+                            <div class="mb-3">
+                                <label for="garden" class="form-label" style="margin-top: 15px;">Garden</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Garden" id="gardenYes" value="true">
+                                    <label class="form-check-label" for="gardenYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Garden" id="gardenNo" value="false">
+                                    <label class="form-check-label" for="gardenNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="transferToAirport" class="form-label" style="margin-top: 15px;">Transfer To Airport</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TransferToAirport" id="transferToAirportYes" value="true">
+                                    <label class="form-check-label" for="transferToAirportYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TransferToAirport" id="transferToAirportNo" value="false">
+                                    <label class="form-check-label" for="transferToAirportNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tactileSigns" class="form-label" style="margin-top: 15px;">Tactile Signs</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TactileSigns" id="tactileSignsYes" value="true">
+                                    <label class="form-check-label" for="tactileSignsYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TactileSigns" id="tactileSignsNo" value="false">
+                                    <label class="form-check-label" for="tactileSignsNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="smookingRooms" class="form-label" style="margin-top: 15px;">Smooking Rooms</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SmookingRooms" id="smookingRoomsYes" value="true">
+                                    <label class="form-check-label" for="smookingRoomsYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SmookingRooms" id="smookingRoomsNo" value="false">
+                                    <label class="form-check-label" for="smookingRoomsNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="familyRooms" class="form-label" style="margin-top: 15px;">Family Rooms</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FamilyRooms" id="familyRoomsYes" value="true">
+                                    <label class="form-check-label" for="familyRoomsYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FamilyRooms" id="familyRoomsNo" value="false">
+                                    <label class="form-check-label" for="familyRoomsNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="carChargingStation" class="form-label" style="margin-top: 15px;">Car Charging Station</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.CarChargingStation" id="carChargingStationYes" value="true">
+                                    <label class="form-check-label" for="carChargingStationYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.CarChargingStation" id="carChargingStationNo" value="false">
+                                    <label class="form-check-label" for="carChargingStationNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="wheelchairAccessible" class="form-label" style="margin-top: 15px;">Wheelchair Accessible</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.WheelchairAccessible" id="wheelchairAccessibleYes" value="true">
+                                    <label class="form-check-label" for="wheelchairAccessibleYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.WheelchairAccessible" id="wheelchairAccessibleNo" value="false">
+                                    <label class="form-check-label" for="wheelchairAccessibleNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fitnessCentre" class="form-label" style="margin-top: 15px;">Fitness Centre</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FitnessCentre" id="fitnessCentreYes" value="true">
+                                    <label class="form-check-label" for="fitnessCentreYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FitnessCentre" id="fitnessCentreNo" value="false">
+                                    <label class="form-check-label" for="fitnessCentreNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="petsAllowed" class="form-label" style="margin-top: 15px;">Pets Allowed</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.PetsAllowed" id="petsAllowedYes" value="true">
+                                    <label class="form-check-label" for="petsAllowedYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.PetsAllowed" id="petsAllowedNo" value="false">
+                                    <label class="form-check-label" for="petsAllowedNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="deliveryFoodToTheRoom" class="form-label" style="margin-top: 15px;">Delivery Food To The Room</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.DeliveryFoodToTheRoom" id="deliveryFoodToTheRoomYes" value="true">
+                                    <label class="form-check-label" for="deliveryFoodToTheRoomYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.DeliveryFoodToTheRoom" id="deliveryFoodToTheRoomNo" value="false">
+                                    <label class="form-check-label" for="deliveryFoodToTheRoomNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="everyHourFrontDesk" class="form-label" style="margin-top: 15px;">Every Hour Front Desk</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.EveryHourFrontDesk" id="everyHourFrontDeskYes" value="true">
+                                    <label class="form-check-label" for="everyHourFrontDeskYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.EveryHourFrontDesk" id="everyHourFrontDeskNo" value="false">
+                                    <label class="form-check-label" for="everyHourFrontDeskNo">No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="descriptionAccomodation" style="margin-top: 15px;">Accomodation Description</label>
+                                <textarea class="form-control" id="descriptionAccomodation" name="model.Description" placeholder="Enter the accomodation description" rows="5" style="margin-top: 10px;"></textarea>
+                            </div>
+                            <div class="accomodation-info" style="text-align: center;">
+                                <button id="save-button-accomodation" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+                            </form>
+                        <form asp-action="ClearForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;">
+                            <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
+                        </form>
+                    </div>
+                    <div id="notificationAccomodation" class="text-danger11" style="display:none;"></div>
+            </div>
         </div>
     </div>    
 
@@ -1039,25 +1554,30 @@
                                     $('#car-fields').show();
                                     $('#entertainment-fields').hide();
                                     $('#flight-fields').hide();
+                                    $('#accomodation-fields').hide();
                                 }
                                 else if (entityName === "Attraction") {
                                     $('#entertainment-fields').show();
                                     $('#car-fields').hide();
                                     $('#flight-fields').hide();
+                                    $('#accomodation-fields').hide();
                                 }
                                 else if (entityName === "Accommodation") {
                                     $('#entertainment-fields').hide();
                                     $('#car-fields').hide();
                                     $('#flight-fields').hide();
+                                    $('#accomodation-fields').show();
                                 }
                                 else if (entityName === "Flight") {
                                     $('#entertainment-fields').hide();
                                     $('#car-fields').hide();
                                     $('#flight-fields').show();
+                                    $('#accomodation-fields').hide();
                                 } else {
                                     $('#car-fields').hide();
                                     $('#entertainment-fields').hide();
                                     $('#flight-fields').hide();
+                                    $('#accomodation-fields').hide();
                                 }
                     });
                         });
@@ -1171,6 +1691,73 @@
                     $(this).closest('.booking-date-flight').find('input[name="model.ArrivalTime"]').attr('min', formatDateee(minArrivalDateAfterStart));
                     });
                 </script>
+            <script>
+                $(document).ready(function () {
+
+
+                    $('#add-booking-date-room').click(function () {
+                        var newBookingDateHtmlAttr = `
+                                                        <div class="booking-date-room" style="margin-top: 15px;">
+                                                            <div class="input-group">
+                                                                <input type="date" class="form-control" name="model.AvailableDatesRoom[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                                <input type="number" class="form-control" name="model.AmountOfAvailableSameRooms[]" placeholder="Enter amount of same available rooms" min="0" max="100">
+                                                            </div>
+                                                        </div>
+                                                                    `;
+                        $('#booking-dates-room').append(newBookingDateHtmlAttr);
+                    });
+                });
+
+            </script>
+            <script>
+                $(document).ready(function () {
+                    let photoArrayRoom = [];
+
+                    $("#uploadBtnRoom").click(function () {
+                        $("#photoUploadRoom").click();
+                    });
+
+                    $("#photoUploadRoom").change(function () {
+                        var files = this.files;
+                        var container = $("#photoContainerRoom");
+
+                        $.each(files, function (index, file) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                var imageSrc = e.target.result;
+                                var image = $('<div class="photo-item d-flex align-items-center justify-content-center position-relative"></div>').append(
+                                    $('<img class="img-thumbnail">').attr({ 'src': imageSrc, 'data-src': imageSrc }).click(function () {
+                                        openPhotoRoom($(this).attr('data-src'));
+                                    }),
+                                    $('<button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>').click(function () {
+                                        $(this).parent().remove();
+                                        photoArrayRoom = photoArrayRoom.filter(src => src !== imageSrc);
+                                        $("#photoDataRoom").val(JSON.stringify(photoArrayRoom));
+                                    })
+                                );
+                                container.append(image);
+                                photoArrayRoom.push(imageSrc);
+                                $("#photoDataRoom").val(JSON.stringify(photoArrayRoom));
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    });
+                });
+
+                // Функция для отображения увеличенного изображения
+                function openPhotoRoom(imgSrc) {
+                    var enlargedImgContainer = document.getElementById('enlarged-photo-container3');
+                    var enlargedImg = document.getElementById('enlarged-photo3');
+                    enlargedImg.src = imgSrc;
+                    enlargedImgContainer.style.display = 'block';
+                }
+
+                // Функция для закрытия увеличенного изображения
+                function closePhotoRoom() {
+                    var enlargedImgContainer = document.getElementById('enlarged-photo-container3');
+                    enlargedImgContainer.style.display = 'none';
+                }
+            </script>
                }
         </div>
     </div>

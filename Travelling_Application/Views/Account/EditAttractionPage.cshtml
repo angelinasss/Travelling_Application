@@ -1,4 +1,6 @@
-﻿<html lang="en">
+﻿@using System.Web
+
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -238,8 +240,25 @@
                     <div class="col-md-9">
                         <div class="row">
                             <div id="entertainment-fields" class="mt-5">
-                                <form id="entertainment-form" asp-action="SaveEntertainmentForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAttractionForm()">
-                                    <div id="photoContainer" class="d-flex flex-wrap"></div>
+                                <form id="entertainment-form" asp-action="UpdateEntertainmentForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAttractionForm()">
+                                    <input type="hidden" name="editAttractionId" value="@ViewBag.editAttractionId" />
+                                    @{
+                                        var photoArrays = ViewBag.AttractionPhotos as List<byte[]>;
+                                    }
+                                    <div id="photoContainer" class="d-flex flex-wrap">
+                                        @if (photoArrays != null)
+                                        {
+                                            foreach (var photoArray in photoArrays)
+                                            {
+                                                var base64String = Convert.ToBase64String(photoArray);
+                                                var imgSrc = $"data:image/png;base64,{base64String}";
+                                                <div class="photo-item d-flex align-items-center justify-content-center position-relative">
+                                                    <img class="img-thumbnail" src="@imgSrc" data-src="@imgSrc" onclick="openPhoto1('@imgSrc')" />
+                                                    <button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
                                     <input type="hidden" id="photoData" name="photoData" />
                                     <div class="form-group">
                                         <input type="file" name="photos" id="photoUpload" multiple style="display:none;">
@@ -248,6 +267,11 @@
                                     <script>
                                         $(document).ready(function () {
                                             let photoArray = [];
+
+                                            // Добавляем изначально загруженные фото в массив photoArray
+                                            $('#photoContainer img').each(function () {
+                                                photoArray.push($(this).attr('data-src'));
+                                            });
 
                                             $("#uploadBtn").click(function () {
                                                 $("#photoUpload").click();
@@ -277,6 +301,20 @@
                                                     };
                                                     reader.readAsDataURL(file);
                                                 });
+                                            });
+
+                                            // Обработчик удаления для всех кнопок удаления
+                                            $(document).on('click', '.delete-btn', function () {
+                                                var imageSrc = $(this).siblings('img').attr('data-src');
+                                                $(this).parent().remove();
+                                                photoArray = photoArray.filter(src => src !== imageSrc);
+                                                $("#photoData").val(JSON.stringify(photoArray));
+                                            });
+
+                                            // Обновляем скрытое поле photoData перед отправкой формы
+                                            $("#entertainment-form").submit(function () {
+                                                $("#photoData").val(JSON.stringify(photoArray));
+                                                return validateAttractionForm();
                                             });
                                         });
 
@@ -317,57 +355,41 @@
                                         <label for="attractionAddress" style="margin-top: 15px;">Address Of Location</label>
                                         <input type="text" name="model.Address" value="@ViewBag.AttractionAddress" class="form-control" id="attractionAddress" placeholder="Enter the address of location" style="margin-top: 10px;">
                                     </div>
+                                    @{
+                                        var selectedLanguages = ViewBag.Languages as List<string> ?? new List<string>();
+                                    }
                                     <div class="mb-3">
                                         <label for="language" class="form-label" style="margin-top: 15px;">Language</label><br>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="EnglishLang" value="English">
-                                            <label class="form-check-label" for="language">English</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="DutchLang" value="Dutch">
-                                            <label class="form-check-label" for="language">Dutch</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="GermanLang" value="German">
-                                            <label class="form-check-label" for="language">German</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="SpanishLang" value="Spanish">
-                                            <label class="form-check-label" for="language">Spanish</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="FrenchLang" value="French">
-                                            <label class="form-check-label" for="language">French</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="ItalianLang" value="Italian">
-                                            <label class="form-check-label" for="language">Italian</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="PortugueseLang" value="Portuguese">
-                                            <label class="form-check-label" for="language">Portuguese</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="ChineseLang" value="Chinese">
-                                            <label class="form-check-label" for="language">Chinese</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="RussianLang" value="Russian">
-                                            <label class="form-check-label" for="language">Russian</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="JapaneseLang" value="Japanese">
-                                            <label class="form-check-label" for="language">Japanese</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="ArabicLang" value="Arabic">
-                                            <label class="form-check-label" for="language">Arabic</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="model.Languages[]" id="FilipinoLang" value="Filipino">
-                                            <label class="form-check-label" for="language">Filipino</label>
-                                        </div>
+                                        @{
+                                            var languages = new Dictionary<string, string>
+                                        {
+                                        {"English", "EnglishLang"},
+                                        {"Dutch", "DutchLang"},
+                                        {"German", "GermanLang"},
+                                        {"Spanish", "SpanishLang"},
+                                        {"French", "FrenchLang"},
+                                        {"Italian", "ItalianLang"},
+                                        {"Portuguese", "PortugueseLang"},
+                                        {"Chinese", "ChineseLang"},
+                                        {"Russian", "RussianLang"},
+                                        {"Japanese", "JapaneseLang"},
+                                        {"Arabic", "ArabicLang"},
+                                        {"Filipino", "FilipinoLang"}
+                                        };
+
+                                            foreach (var language in languages)
+                                            {
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox" name="model.Languages[]" id="@language.Value" value="@language.Key" @(selectedLanguages.Contains(language.Key) ? "checked" : "")>
+                                                    <label class="form-check-label" for="@language.Value">@language.Key</label>
+                                                </div>
+                                            }
+                                        }
                                     </div>
+                                    @{
+                                        var selectedCategory = ViewBag.AttractionCategory as string;
+                                    }
+
                                     <div class="mb-3">
                                         <label for="attractionCategory" class="form-label" style="margin-top: 15px;">Attraction Category</label>
                                         <div class="input-group">
@@ -381,11 +403,16 @@
                                                 <option value="Travel services & rentals">Travel services & rentals</option>
                                             </select>
                                         </div>
-                                        <script>
-                                            // Устанавливаем выбранное значение для элемента select на основе значения из ViewBag
-                                            document.getElementById("attractionCategory").value = "@ViewBag.AttractionCategory";
-                                        </script>
                                     </div>
+
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            var selectedCategory = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(selectedCategory))';
+                                            var selectElement = document.getElementById('attractionCategory');
+                                            selectElement.value = selectedCategory;
+                                        });
+                                    </script>
+
                                     <div class="mb-3">
                                         <label for="timeOfDay" class="form-label" style="margin-top: 15px;">Time Of Day</label>
                                         <div class="input-group">
@@ -419,13 +446,16 @@
                                     <label for="cost" style="margin-top:15px;">Price Per 1 Person</label>
                                     <input type="number" value="@ViewBag.AttractionPrice" class="form-control" name="model.Cost" id="cost" placeholder="Enter price per 1 person" step="0.01" min="0" max="10000" style="margin-top: 10px;">
                                     <div id="booking-dates-attraction">
-                                        <div class="booking-date-attraction" style="margin-top: 15px;">
                                             <label for="availableDatesAttraction" style="margin-top: 15px;">Available Dates For Booking & Amount Of Tickets</label>
+                                            @for (int i = 0; i < ViewBag.Dates.Count; i++)
+                                        {
+                                            <div class="booking-date-attraction" style="margin-top: 15px;">
                                             <div class="input-group">
-                                                <input type="date" class="form-control" name="model.AvailableDates[]" required min="{{minDate}}">
-                                                <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000">
+                                                    <input type="date" class="form-control" name="model.AvailableDates[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.Dates[i].ToString("yyyy-MM-dd")">
+                                                    <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000" value="@ViewBag.AmountOfTickets[i].ToString()">
                                             </div>
-                                        </div>
+                                            </div>
+                                        }
                                     </div>
                                     <button id="add-booking-date-attraction" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
                                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
@@ -433,10 +463,7 @@
                                         </svg>
                                     </button>
                                     <div class="attraction-info" style="text-align: center;">
-                                        <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
-                                </form>
-                                <form asp-action="ClearForm" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;">
-                                    <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
+                                        <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-top: 30px;">Save</button>
                                 </form>
                             </div>
                             <div id="notificationAttraction" class="text-danger1" style="display:none;"></div>

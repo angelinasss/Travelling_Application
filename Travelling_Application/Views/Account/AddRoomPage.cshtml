@@ -1,0 +1,740 @@
+﻿@using System.Web
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    @section styles {
+        <style>
+            .enlarged-photo-container {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            #add-booking-date-room {
+                display: block;
+                margin: 0 auto;
+            }
+
+                #add-booking-date-room + div {
+                    text-align: center;
+                }
+
+            #roomCost {
+                width: 50%;
+                margin: 10px auto;
+            }
+
+
+            .enlarged-photo {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .enlarged-photo-container1 {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo1 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-btnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .photo-item {
+                width: 150px;
+                height: 150px;
+                margin: 5px;
+                position: relative;
+            }
+
+            .delete-btn {
+                top: 5px;
+                right: 5px;
+            }
+
+            .img-thumbnail {
+                max-height: 150px; /* Устанавливаем максимальную высоту */
+                width: auto; /* Автоматически масштабируем ширину */
+                max-width: 150%; /* Не допускаем переполнение родительского контейнера */
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+        </style>
+        <style>
+            .btn-entity {
+                background-color: #f1f1f1;
+                color: #333;
+                transition: background-color 0.3s, color 0.3s;
+                border: none;
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+                .btn-entity:hover {
+                    background-color: #ddd;
+                    color: #222;
+                }
+
+                .btn-entity.selected {
+                    background-color: #007bff;
+                    color: #fff;
+                }
+        </style>
+        <style>
+            #notification {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notification1 {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notificationAccomodation {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notificationRoom {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            .success-notification {
+                background-color: #d4edda;
+                color: #155724;
+                border-color: #c3e6cb;
+            }
+
+            .text-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
+            }
+        </style>
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function validateRoomForm() {
+            // Проверка текстовых полей
+            var roomName = $('#roomName').val();
+            var description = $('#roomDescription').val();
+            var cost = $('#roomCost').val();
+
+            // Проверка загруженных фотографий
+            var photoCount = $('#photoContainer').children().length;
+
+            var isValid = true;
+
+            if (roomName === '') {
+                $('#roomName').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#roomName').removeClass('invalid-field');
+            }
+            if (description === '') {
+                $('#roomDescription').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#roomDescription').removeClass('invalid-field');
+            }
+            if (cost === '') {
+                $('#roomCost').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#roomCost').removeClass('invalid-field');
+            }
+
+            var features = [
+                'washingMachine',
+                'kitchen',
+                'wheelchairAccessibleRoom',
+                'toiletWithGrabBars',
+                'bathtubWithgrabbars',
+                'barrierFreeShower',
+                'showerWithoutEdge',
+                'highToilet',
+                'lowSink',
+                'bathroomEmergencyButton',
+                'showerChair',
+                'coffeeMachine',
+                'coffeeOrTea',
+                'electricKettle',
+                'soundproofing',
+                'patio',
+                'flatScreenTV',
+                'balcony',
+                'terrace',
+                'privatePool',
+                'bath',
+                'placeToWorkOnALaptop',
+                'airConditioner',
+                'privateBathroom',
+                'freeCancellation'
+            ];
+
+            var isValid = true;
+
+            features.forEach(function (feature) {
+                var yesChecked = $('#' + feature + 'Yes').is(':checked');
+                var noChecked = $('#' + feature + 'No').is(':checked');
+
+                if (!yesChecked && !noChecked) {
+                    isValid = false;
+                }
+            });
+
+
+            var dynamicFieldsFilled = true;
+            $('.booking-date-room').each(function () {
+                var date = $(this).find('input[name="model.AvailableDatesRoom[]"]').val();
+                var amountOfRooms = $(this).find('input[name="model.AmountOfAvailableSameRooms[]"]').val();
+                if (date === '' || amountOfRooms === '') {
+                    dynamicFieldsFilled = false;
+                    return false; // Выход из цикла each
+                }
+            });
+
+            if (photoCount === 0 || !dynamicFieldsFilled) {
+                isValid = false;
+            }
+
+            if (!isValid) {
+                $('#notificationRoom').text('Please fill in all required fields.').addClass('text-danger11').show();
+            }
+            return isValid;
+        }
+    </script>
+    </head>
+    
+ <main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+        <body>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="list-group" style="background-color: #343a40;">
+                            <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
+                            @{
+                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                {
+                                    <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                    <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                                }
+                                else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                {
+                                    <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                    <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                    <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                    <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                                }
+                                else
+                                {
+                                    <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
+                                    <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
+                                    <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div id="accomodation-fields" class="mt-5">
+                                <form id="accomodation-form" asp-action="SaveRoomForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateRoomForm()">
+                                <input type="hidden" name="addRoomAccomodationId" value="@ViewBag.addRoomAccomodationId" />
+                                <h4 style="margin-bottom: 20px; margin-top: -30px;">New Room</h4>
+                                    <div id="photoContainer" class="d-flex flex-wrap"></div>
+                                    <input type="hidden" id="photoData" name="photoData" />
+                                    <div class="form-group">
+                                        <input type="file" name="photos" id="photoUpload" multiple style="display:none;">
+                                        <button type="button" class="btn btn-primary" id="uploadBtn">Upload Photos</button>
+                                    </div>
+                                    <script>
+                                        $(document).ready(function () {
+                                            let photoArray = [];
+
+                                            $("#uploadBtn").click(function () {
+                                                $("#photoUpload").click();
+                                            });
+
+                                            $("#photoUpload").change(function () {
+                                                var files = this.files;
+                                                var container = $("#photoContainer");
+
+                                                $.each(files, function (index, file) {
+                                                    var reader = new FileReader();
+                                                    reader.onload = function (e) {
+                                                        var imageSrc = e.target.result;
+                                                        var image = $('<div class="photo-item d-flex align-items-center justify-content-center position-relative"></div>').append(
+                                                            $('<img class="img-thumbnail">').attr({ 'src': imageSrc, 'data-src': imageSrc }).click(function () {
+                                                                openPhoto1($(this).attr('data-src'));
+                                                            }),
+                                                            $('<button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>').click(function () {
+                                                                $(this).parent().remove();
+                                                                photoArray = photoArray.filter(src => src !== imageSrc);
+                                                                $("#photoData").val(JSON.stringify(photoArray));
+                                                            })
+                                                        );
+                                                        container.append(image);
+                                                        photoArray.push(imageSrc);
+                                                        $("#photoData").val(JSON.stringify(photoArray));
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                });
+                                            });
+                                        });
+
+                                        // Функция для отображения увеличенного изображения
+                                        function openPhoto1(imgSrc) {
+                                            var enlargedImgContainer = document.getElementById('enlarged-photo-container1');
+                                            var enlargedImg = document.getElementById('enlarged-photo1');
+                                            enlargedImg.src = imgSrc;
+                                            enlargedImgContainer.style.display = 'block';
+                                        }
+
+                                        // Функция для закрытия увеличенного изображения
+                                        function closePhoto1() {
+                                            var enlargedImgContainer = document.getElementById('enlarged-photo-container1');
+                                            enlargedImgContainer.style.display = 'none';
+                                        }
+                                    </script>
+
+                                    <!-- Скрытый контейнер для увеличенного изображения -->
+                                    <div id="enlarged-photo-container1" class="enlarged-photo-container1">
+                                        <span class="close-btnn" onclick="closePhoto1()">✕</span>
+                                        <img id="enlarged-photo1" class="enlarged-photo1">
+                                    </div>
+
+                                        <div class="form-group">
+                                            <label for="roomName" style="margin-top: 15px;">Room Name</label>
+                                            <input type="text" name="model.RoomName" class="form-control" id="roomName" placeholder="Enter the room name" style="margin-top: 10px;">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="washingMachine" class="form-label" style="margin-top: 15px;">Washing Machine</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.WashingMachine" id="washingMachineYes" value="true">
+                                                <label class="form-check-label" for="washingMachineYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.WashingMachine" id="washingMachineNo" value="false">
+                                                <label class="form-check-label" for="washingMachineNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="kitchen" class="form-label" style="margin-top: 15px;">Kitchen</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Kitchen" id="kitchenYes" value="true">
+                                                <label class="form-check-label" for="kitchenYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Kitchen" id="kitchenNo" value="false">
+                                                <label class="form-check-label" for="kitchenNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="wheelchairAccessibleRoom" class="form-label" style="margin-top: 15px;">Wheelchair Accessible</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.WheelchairAccessibleRoom" id="wheelchairAccessibleRoomYes" value="true">
+                                                <label class="form-check-label" for="wheelchairAccessibleRoomYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.WheelchairAccessibleRoom" id="wheelchairAccessibleRoomNo" value="false">
+                                                <label class="form-check-label" for="wheelchairAccessibleRoomNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="toiletWithGrabBars" class="form-label" style="margin-top: 15px;">Toilet With Grab Bars</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ToiletWithGrabBars" id="toiletWithGrabBarsYes" value="true">
+                                                <label class="form-check-label" for="toiletWithGrabBarsYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ToiletWithGrabBars" id="toiletWithGrabBarsNo" value="false">
+                                                <label class="form-check-label" for="toiletWithGrabBarsNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="bathtubWithgrabbars" class="form-label" style="margin-top: 15px;">Bathtub With Grabbars</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.BathtubWithgrabbars" id="bathtubWithgrabbarsYes" value="true">
+                                                <label class="form-check-label" for="bathtubWithgrabbarsYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.BathtubWithgrabbars" id="bathtubWithgrabbarsNo" value="false">
+                                                <label class="form-check-label" for="bathtubWithgrabbarsNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="barrierFreeShower" class="form-label" style="margin-top: 15px;">Barrier Free Shower</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.BarrierFreeShower" id="barrierFreeShowerYes" value="true">
+                                                <label class="form-check-label" for="barrierFreeShowerYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.BarrierFreeShower" id="barrierFreeShowerNo" value="false">
+                                                <label class="form-check-label" for="barrierFreeShowerNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="showerWithoutEdge" class="form-label" style="margin-top: 15px;">Shower Without Edge</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ShowerWithoutEdge" id="showerWithoutEdgeYes" value="true">
+                                                <label class="form-check-label" for="showerWithoutEdgeYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ShowerWithoutEdge" id="showerWithoutEdgeNo" value="false">
+                                                <label class="form-check-label" for="showerWithoutEdgeNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="highToilet" class="form-label" style="margin-top: 15px;">High Toilet</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.HighToilet" id="highToiletYes" value="true">
+                                                <label class="form-check-label" for="highToiletYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.HighToilet" id="highToiletNo" value="false">
+                                                <label class="form-check-label" for="highToiletNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="lowSink" class="form-label" style="margin-top: 15px;">Low Sink</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.LowSink" id="lowSinkYes" value="true">
+                                                <label class="form-check-label" for="lowSinkYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.LowSink" id="lowSinkNo" value="false">
+                                                <label class="form-check-label" for="lowSinkNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="bathroomEmergencyButton" class="form-label" style="margin-top: 15px;">Bathroom Emergency Button</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.BathroomEmergencyButton" id="bathroomEmergencyButtonYes" value="true">
+                                                <label class="form-check-label" for="bathroomEmergencyButtonYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.BathroomEmergencyButton" id="bathroomEmergencyButtonNo" value="false">
+                                                <label class="form-check-label" for="bathroomEmergencyButtonNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="showerChair" class="form-label" style="margin-top: 15px;">Shower Chair</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ShowerChair" id="showerChairYes" value="true">
+                                                <label class="form-check-label" for="showerChairYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ShowerChair" id="showerChairNo" value="false">
+                                                <label class="form-check-label" for="showerChairNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="typeOfNutritionRoom" class="form-label" style="margin-top: 15px;">Type Of Nutrition</label>
+                                            <div class="input-group">
+                                                <select class="form-select" id="typeOfNutritionRoom" name="model.TypeOfNutritionRoom" type="hidden">
+                                                    <option value="Breakfast">Breakfast Included</option>
+                                                    <option value="Breakfast & Dinner">Breakfast & Dinner Included</option>
+                                                    <option value="All Inclusive">All Inclusive</option>
+                                                    <option value="Without Nutrition">Without Nutrition</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="coffeeMachine" class="form-label" style="margin-top: 15px;">Coffee Machine</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.CoffeeMachine" id="coffeeMachineYes" value="true">
+                                                <label class="form-check-label" for="coffeeMachineYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.CoffeeMachine" id="coffeeMachineNo" value="false">
+                                                <label class="form-check-label" for="coffeeMachineNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="coffeeOrTea" class="form-label" style="margin-top: 15px;">Coffee Or Tea</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.CoffeeOrTea" id="coffeeOrTeaYes" value="true">
+                                                <label class="form-check-label" for="coffeeOrTeaYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.CoffeeOrTea" id="coffeeOrTeaNo" value="false">
+                                                <label class="form-check-label" for="coffeeOrTeaNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="electricKettle" class="form-label" style="margin-top: 15px;">Electric Kettle</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ElectricKettle" id="electricKettleYes" value="true">
+                                                <label class="form-check-label" for="electricKettleYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.ElectricKettle" id="electricKettleNo" value="false">
+                                                <label class="form-check-label" for="electricKettleNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="view" class="form-label" style="margin-top: 15px;">Room View</label>
+                                            <div class="input-group">
+                                                <select class="form-select" id="view" name="model.View" type="hidden">
+                                                    <option value="City">City View</option>
+                                                    <option value="Garden">Garden View</option>
+                                                    <option value="Sea">Sea View</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="soundproofing" class="form-label" style="margin-top: 15px;">Soundproofing</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Soundproofing" id="soundproofingYes" value="true">
+                                                <label class="form-check-label" for="soundproofingYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Soundproofing" id="soundproofingNo" value="false">
+                                                <label class="form-check-label" for="soundproofingNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="patio" class="form-label" style="margin-top: 15px;">Patio</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Patio" id="patioYes" value="true">
+                                                <label class="form-check-label" for="patioYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Patio" id="patioNo" value="false">
+                                                <label class="form-check-label" for="patioNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="flatScreenTV" class="form-label" style="margin-top: 15px;">Flat Screen TV</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.FlatScreenTV" id="flatScreenTVYes" value="true">
+                                                <label class="form-check-label" for="flatScreenTVYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.FlatScreenTV" id="flatScreenTVNo" value="false">
+                                                <label class="form-check-label" for="flatScreenTVNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="balcony" class="form-label" style="margin-top: 15px;">Balcony</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Balcony" id="balconyYes" value="true">
+                                                <label class="form-check-label" for="balconyYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Balcony" id="balconyNo" value="false">
+                                                <label class="form-check-label" for="balconyNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="terrace" class="form-label" style="margin-top: 15px;">Terrace</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Terrace" id="terraceYes" value="true">
+                                                <label class="form-check-label" for="terraceYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Terrace" id="terraceNo" value="false">
+                                                <label class="form-check-label" for="terraceNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="privatePool" class="form-label" style="margin-top: 15px;">Private Pool</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.PrivatePool" id="privatePoolYes" value="true">
+                                                <label class="form-check-label" for="privatePoolYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.PrivatePool" id="privatePoolNo" value="false">
+                                                <label class="form-check-label" for="privatePoolNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="bath" class="form-label" style="margin-top: 15px;">Bath</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Bath" id="bathYes" value="true">
+                                                <label class="form-check-label" for="bathYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.Bath" id="bathNo" value="false">
+                                                <label class="form-check-label" for="bathNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="placeToWorkOnALaptop" class="form-label" style="margin-top: 15px;">Place To Work On A Laptop</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.PlaceToWorkOnALaptop" id="placeToWorkOnALaptopYes" value="true">
+                                                <label class="form-check-label" for="placeToWorkOnALaptopYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.PlaceToWorkOnALaptop" id="placeToWorkOnALaptopNo" value="false">
+                                                <label class="form-check-label" for="placeToWorkOnALaptopNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="airConditioner" class="form-label" style="margin-top: 15px;">Air Conditioner</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.AirConditioner" id="airConditionerYes" value="true">
+                                                <label class="form-check-label" for="airConditionerYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.AirConditioner" id="airConditionerNo" value="false">
+                                                <label class="form-check-label" for="airConditionerNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="privateBathroom" class="form-label" style="margin-top: 15px;">Private Bathroom</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.PrivateBathroom" id="privateBathroomYes" value="true">
+                                                <label class="form-check-label" for="privateBathroomYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.PrivateBathroom" id="privateBathroomNo" value="false">
+                                                <label class="form-check-label" for="privateBathroomNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationYes" value="true">
+                                                <label class="form-check-label" for="placeToWorkOnALaptopYes">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="model.FreeCancellation" id="freeCancellationNo" value="false">
+                                                <label class="form-check-label" for="placeToWorkOnALaptopNo">No</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="roomDescription" style="margin-top: 15px;">Room Description</label>
+                                            <textarea class="form-control" id="roomDescription" name="model.RoomDescription" placeholder="Enter the room description" rows="5" style="margin-top: 10px;"></textarea>
+                                        </div>
+
+
+                                        <div id="booking-dates-room">
+                                            <label for="availableDatesRoom" style="margin-top: 15px;">Available Dates For Booking & Amount Of Same Available Rooms</label>
+                                            <div class="booking-date-room" style="margin-top: 15px;">
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" name="model.AvailableDatesRoom[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                    <input type="number" class="form-control" name="model.AmountOfAvailableSameRooms[]" placeholder="Enter amount of same available rooms" min="0" max="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button id="add-booking-date-room" class="btn btn-primary rounded-circle" style="margin-top: 15px; margin-bottom: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
+                                                <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
+                                            </svg>
+                                        </button>
+                                       
+                                        <label for="roomCost">Price Per 1 night</label>
+                                        <input type="number" class="form-control" name="model.RoomCost" id="roomCost" placeholder="Enter price per 1 night" step="0.01" min="0" max="10000" style="margin-top: 10px;">
+
+                                        <button id="save-button-room" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+
+                                        <div id="notificationRoom" class="text-danger1" style="display:none;"></div>
+                                    <script>
+                                        $(document).ready(function () {
+
+
+                                            $('#add-booking-date-room').click(function () {
+                                                var newBookingDateHtmlAttr = `
+                                                                                                <div class="booking-date-room" style="margin-top: 15px;">
+                                                                                                    <div class="input-group">
+                                                                                                        <input type="date" class="form-control" name="model.AvailableDatesRoom[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                                                                        <input type="number" class="form-control" name="model.AmountOfAvailableSameRooms[]" placeholder="Enter amount of same available rooms" min="0" max="100">
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                            `;
+                                                $('#booking-dates-room').append(newBookingDateHtmlAttr);
+                                            });
+                                        });
+
+                                    </script>
+
+                                       
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+          </div>
+    </body>
+</main>

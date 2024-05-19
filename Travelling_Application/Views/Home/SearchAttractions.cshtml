@@ -1,0 +1,225 @@
+﻿@{
+    ViewData["Title"] = "Booking.com | Официальный сайт | Лучший опыт";
+}
+@using Travelling_Application.ViewModels
+@model SearchAttractionViewModel
+<head>
+    <style>
+        .full-width-image {
+            width: 100%;
+            height: 10cm; /* Задаем высоту изображения */
+            background-image: url('https://cdn.tripster.ru/thumbs2/2184b9bc-f8e7-11ed-b368-5a4c7daa28fd.1220x600.jpeg'); /* Укажите путь к вашему изображению */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .clear-selection {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            z-index: 2;
+            background: transparent;
+            border: none;
+        }
+
+        .attraction-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .attraction-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 20px;
+            margin-left: 20px;
+            border-radius: 10px 20px 30px 40px;
+        }
+
+        .attraction-details {
+            padding: 15px;
+        }
+
+        .attraction-title {
+            margin-top: 0;
+        }
+
+        .attraction-price {
+            font-weight: bold;
+        }
+
+        .mini-info {
+            margin-top: 5px;
+        }
+
+        .mini-info-item {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .invalid-field {
+            border-color: red !important;
+        }
+
+        .container-fluid {
+            margin-left: 200px; /* Можно изменить значение на нужное количество пикселей */
+        }
+
+        .content {
+            margin-top: -0.6cm; /* Устанавливаем отступ сверху, чтобы контент начинался после изображения */
+        }
+    </style>
+    <script>
+        function validateSearch() {
+            var city = $('#citySelect').val();
+            var date = $('#checkInDate').val();
+            var people = $('#adultsCount').val();
+
+            var isValid = true;
+            if (!city) {
+                $('#citySelect').addClass('invalid-field');
+                isValid = false;
+            } else {
+                $('#citySelect').removeClass('invalid-field');
+            }
+
+            if (!date) {
+                $('#checkInDate').addClass('invalid-field');
+                isValid = false;
+            } else {
+                $('#checkInDate').removeClass('invalid-field');
+            }
+
+            if (!people || parseInt(people) <= 0 || parseInt(people) > 150) {
+                $('#adultsCount').addClass('invalid-field');
+                isValid = false;
+            } else {
+                $('#adultsCount').removeClass('invalid-field');
+            }
+
+            return isValid;
+        }
+
+    </script>
+</head>
+
+<div class="full-width-image"></div>
+
+<main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+    <body>
+     
+<div class="container content">
+            <form id="searchForm" method="get" action="/Home/AttractionResults" onsubmit="return validateSearch()">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+            @{
+                var selectedCity = ViewBag.SelectedCity as string;
+            }
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                    <select class="form-select" id="citySelect" name="city">
+                        <option value="" selected hidden>Where do you want to go?</option>
+                        @foreach (var city in Model.Cities)
+                        {
+                            <option value="@city">@city</option>
+                        }
+                    </select>
+                </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                var selectedCity = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(selectedCity))';
+                                var selectElement = document.getElementById('citySelect');
+                                selectElement.value = selectedCity;
+                            });
+                        </script>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                    <input type="date" class="form-control" id="checkInDate" name="checkInDate" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fas fa-users"></i></span>
+                    <input type="number" class="form-control" id="adultsCount" name="adultsCount" placeholder="Number of persons" min="1" max="150" value="@ViewBag.AdultsCount">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+            <div class="container-fluid">
+                <div class="row">
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col">
+    @if (Model?.Results != null && Model.Results.Any())
+    {
+                @foreach (var attraction in Model.Results)
+                {
+                    <div class="attraction-card">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="data:image;base64,@(Convert.ToBase64String(attraction.MainPhoto))" alt="Attraction Image" class="attraction-image" />
+                            </div>
+                            <div class="col-md-8">
+                                <div class="attraction-details">
+                                    <h3 class="attraction-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                        <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
+                                    </h3>
+                                    <p class="attraction-features" style="text-align: left;">@attraction.City, @attraction.Country</p>
+                                    <div class="row">
+                                        <div class="text-right">
+                                            <p class="attraction-price">Price per 1 person: $@attraction.Cost</p>
+                                            @if (attraction.FreeCancellation)
+                                            {
+                                                <p class="text-success">Free cancellation</p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <p class="mini-info">
+                                        <span class="mini-info-item"><i class="fa-solid fa-clock"></i> @attraction.TimeOfDay</span>
+                                    </p>
+                                    <p class="mini-info">
+                                        @{
+                                            foreach (var language in attraction.Languages)
+                                            {
+                                                <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
+                                            }
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+    }
+</div>
+ </div>
+                    </div>
+                </div>
+  </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('checkInDate').min = new Date().toISOString().split('T')[0];
+
+        var maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        maxDate.setMonth(maxDate.getMonth() + 3);
+        document.getElementById('checkInDate').max = maxDate.toISOString().split('T')[0];
+
+    </script>
+}
+    </body>
+</main>

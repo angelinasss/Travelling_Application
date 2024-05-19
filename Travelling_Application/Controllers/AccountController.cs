@@ -397,7 +397,9 @@ namespace Travelling_Application.Controllers
                 StartDates = model.StartDates,
                 EndDates = model.EndDates,
                 VerifiedByAdmin = false,
-                PublisherId = currentUser.Id
+                PublisherId = currentUser.Id,
+                RejectedByAdmin = false,
+                RejectedMessage = string.Empty
             };
             // добавить сохранение дат в другую БД
             _context.Car.Add(car);
@@ -442,7 +444,9 @@ namespace Travelling_Application.Controllers
                 AvailableDates = model.AvailableDates,
                 AmountOfTickets = model.AmountOfTickets,
                 VerifiedByAdmin = false,
-                PublisherId = currentUser.Id
+                PublisherId = currentUser.Id, 
+                RejectedMessage = string.Empty,
+                RejectedByAdmin = false
             };
 
             string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
@@ -465,6 +469,80 @@ namespace Travelling_Application.Controllers
 
             // Устанавливаем сообщение об успешном изменении в TempData
             TempData["SuccessMessage"] = "The object Attraction was successfully saved and sent for moderation.";
+
+            return View("NewObject", entities);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveAccomodationForm(Accomodation model, string photoDataAccomodation)
+        {
+            var photos = JsonConvert.DeserializeObject<List<string>>(photoDataAccomodation);
+            var photoBytesList = photos.Select(photoBase64 => Convert.FromBase64String(photoBase64.Split(',')[1])).ToList();
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var entities = new List<EntityModel>
+            {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+            };
+
+            var accommodation = new Accomodation
+            {
+                Name = model.Name,
+                City = model.City,
+                Country = model.Country,
+                TypesOfNutrition = model.TypesOfNutrition,
+                Address = model.Address,
+                TypeOfAccomodation = model.TypeOfAccomodation,
+                Description = model.Description,
+                Parking = model.Parking,
+                SwimmingPool = model.SwimmingPool,
+                FreeWIFI = model.FreeWIFI,
+                PrivateBeach = model.PrivateBeach,
+                LineOfBeach = model.LineOfBeach,
+                Restaurants = model.Restaurants,
+                SPA = model.SPA,
+                Bar = model.Bar,
+                Garden = model.Garden,
+                TransferToAirport = model.TransferToAirport,
+                TactileSigns = model.TactileSigns,
+                SmookingRooms = model.SmookingRooms,
+                FamilyRooms = model.FamilyRooms,
+                CarChargingStation = model.CarChargingStation,
+                WheelchairAccessible = model.WheelchairAccessible,
+                FitnessCentre = model.FitnessCentre,
+                PetsAllowed = model.PetsAllowed,
+                DeliveryFoodToTheRoom = model.DeliveryFoodToTheRoom,
+                EveryHourFrontDesk = model.EveryHourFrontDesk,
+                MainPhoto = photoBytesList[0],
+                VerifiedByAdmin = false,  
+                RejectedByAdmin = false,
+                PublisherId = currentUser.Id,
+                RejectedMessage = string.Empty
+            };
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+            // добавить сохранение дат в другую БД
+            _context.Accomodation.Add(accommodation);
+            await _context.SaveChangesAsync();
+
+            foreach (var photo in photoBytesList)
+            {
+                var photoss = new AccomodationPhotos
+                {
+                    ObjectId = accommodation.Id,
+                    PhotoArray = photo,
+                };
+                _context.AccomodationPhotos.Add(photoss);
+                await _context.SaveChangesAsync();
+            }
+
+            // Устанавливаем сообщение об успешном изменении в TempData
+            TempData["SuccessMessage"] = "The object Accommodation was successfully saved and sent for moderation.";
 
             return View("NewObject", entities);
         }
@@ -538,11 +616,16 @@ namespace Travelling_Application.Controllers
           .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin && c.PublisherId == currentUser.Id)
           .ToListAsync();
 
+            var unverifiedAccomodation = await _context.Accomodation
+         .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin && c.PublisherId == currentUser.Id)
+         .ToListAsync();
+
             var model = new UnverifiedObjectsViewModel
             {
                 UnverifiedCars = unverifiedCars,
                 UnverifiedAirTickets = unverifiedAirTickets,
-                UnverifiedAttractions = unverifiedAttractions
+                UnverifiedAttractions = unverifiedAttractions,
+                UnverifiedAccomodation = unverifiedAccomodation
             };
 
             return View("UnverifiedItems", model);
@@ -564,11 +647,16 @@ namespace Travelling_Application.Controllers
            .Where(c => c.VerifiedByAdmin && c.PublisherId == currentUser.Id)
            .ToListAsync();
 
+            var verifiedAccomodation = await _context.Accomodation
+           .Where(c => c.VerifiedByAdmin && c.PublisherId == currentUser.Id)
+           .ToListAsync();
+
             var model = new VerifiedObjectsViewModel
             {
                 VerifiedCars = verifiedCars,
                 VerifiedAirTickets = verifiedAirTickets,
-                VerifiedAttractions = verifiedAttractions
+                VerifiedAttractions = verifiedAttractions,
+                VerifiedAccomodation = verifiedAccomodation
             };
 
             return View("VerifiedItems", model);
@@ -590,11 +678,16 @@ namespace Travelling_Application.Controllers
             .Where(c => !c.VerifiedByAdmin && c.RejectedByAdmin && c.PublisherId == currentUser.Id)
             .ToListAsync();
 
+            var unverifiedAccomodation = await _context.Accomodation
+          .Where(c => !c.VerifiedByAdmin && c.RejectedByAdmin && c.PublisherId == currentUser.Id)
+          .ToListAsync();
+
             var model = new RejectedObjectsViewModel
             {
                 RejectedCars = unverifiedCars,
                 RejectedAirTickets = unverifiedAirTickets,
                 RejectedAttractions = unverifiedAttractions,
+                RejectedAccomodation = unverifiedAccomodation
             };
 
             return View("RejectedItems", model);
@@ -637,6 +730,28 @@ namespace Travelling_Application.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteAccomodationUnverified(int deleteAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(deleteAccomodationId);
+            var objectsToDelete = _context.AccomodationPhotos.Where(o => o.ObjectId == deleteAccomodationId).ToList();
+
+            if (objectsToDelete.Any())
+            {
+                // Удаляем найденные объекты
+                _context.AccomodationPhotos.RemoveRange(objectsToDelete);
+                await _context.SaveChangesAsync();
+            }
+
+            if (accomodation != null)
+            {
+                _context.Accomodation.Remove(accomodation); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteCarVerified(int deleteCarId)
         {
             var car = _context.Car.Find(deleteCarId); // Находим автомобиль по его ID
@@ -666,6 +781,28 @@ namespace Travelling_Application.Controllers
             if (attraction != null)
             {
                 _context.Entertainment.Remove(attraction); 
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await VerifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccomodationVerified(int deleteAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(deleteAccomodationId);
+            var objectsToDelete = _context.AccomodationPhotos.Where(o => o.ObjectId == deleteAccomodationId).ToList();
+
+            if (objectsToDelete.Any())
+            {
+                // Удаляем найденные объекты
+                _context.AccomodationPhotos.RemoveRange(objectsToDelete);
+                await _context.SaveChangesAsync();
+            }
+
+            if (accomodation != null)
+            {
+                _context.Accomodation.Remove(accomodation);
                 _context.SaveChanges(); // Сохраняем изменения в базе данных
             }
 
@@ -702,6 +839,28 @@ namespace Travelling_Application.Controllers
             if (attraction != null)
             {
                 _context.Entertainment.Remove(attraction); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await RejectedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccomodationRejected(int deleteAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(deleteAccomodationId);
+            var objectsToDelete = _context.AccomodationPhotos.Where(o => o.ObjectId == deleteAccomodationId).ToList();
+
+            if (objectsToDelete.Any())
+            {
+                // Удаляем найденные объекты
+                _context.AccomodationPhotos.RemoveRange(objectsToDelete);
+                await _context.SaveChangesAsync();
+            }
+
+            if (accomodation != null)
+            {
+                _context.Accomodation.Remove(accomodation); // Удаляем автомобиль из контекста
                 _context.SaveChanges(); // Сохраняем изменения в базе данных
             }
 
@@ -871,25 +1030,71 @@ namespace Travelling_Application.Controllers
         public async Task<IActionResult> EditAttractionUnverified(int editAttractionId)
         {
             var attraction = _context.Entertainment.Find(editAttractionId);
-            //ViewBag.CarPhoto = car.CarPhoto;
+            ViewBag.AttractionPhotos = _context.ObjectPhotos
+                                       .Where(photo => photo.ObjectId == editAttractionId)
+                                       .Select(photo => photo.PhotoArray)
+                                       .ToList(); ;
             ViewBag.AttractionName = attraction.Title;
             ViewBag.AttractionCountry = attraction.Country;
             ViewBag.AttractionCity = attraction.City;
             ViewBag.AttractionAddress = attraction.Address;
-            //ViewBag.ElectricCar = car.ElectricCar;
-            //ViewBag.AttractionCategory = attraction.Category;
+            ViewBag.Languages = attraction.Languages;
+            ViewBag.AttractionCategory = attraction.Category;
             ViewBag.TimeOfDay = attraction.TimeOfDay;
             ViewBag.FreeCancellation = attraction.FreeCancellation;
             ViewBag.AttractionDescription = attraction.Description;
             ViewBag.AttractionPrice = attraction.Cost;
 
-            //List<DateTime> DatesStart = car.StartDates;
+            List<DateTime> Dates = attraction.AvailableDates;
+            List<int> AmountOfTickets = attraction.AmountOfTickets;
 
-            //ViewBag.DatesStart = DatesStart;
+            ViewBag.Dates = Dates;
+            ViewBag.AmountOfTickets = AmountOfTickets;
 
-            //ViewBag.editCarId = car.Id;
+            ViewBag.editAttractionId = attraction.Id;
 
             return View("EditAttractionPage");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAccomodationUnverified(int editAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(editAccomodationId);
+            ViewBag.AccomodationPhotos = _context.AccomodationPhotos
+                                       .Where(photo => photo.ObjectId == editAccomodationId)
+                                       .Select(photo => photo.PhotoArray)
+                                       .ToList(); ;
+            ViewBag.AccomodationName = accomodation.Name;
+            ViewBag.AccomodationCountry = accomodation.Country;
+            ViewBag.AccomodationCity = accomodation.City;
+            ViewBag.AccomodationAddress = accomodation.Address;
+            ViewBag.AccomodationType = accomodation.TypeOfAccomodation;
+            ViewBag.Nutrition = accomodation.TypesOfNutrition;
+            ViewBag.Parking = accomodation.Parking;
+            ViewBag.SwimmingPool = accomodation.SwimmingPool;
+            ViewBag.FreeWIFI = accomodation.FreeWIFI;
+            ViewBag.PrivateBeach = accomodation.PrivateBeach;
+            ViewBag.LineOfBeach = accomodation.LineOfBeach.ToString();
+            ViewBag.SPA = accomodation.SPA;
+            ViewBag.Bar = accomodation.Bar;
+            ViewBag.Restaurants = accomodation.Restaurants;
+            ViewBag.Garden = accomodation.Garden;
+            ViewBag.TransferToAirport = accomodation.TransferToAirport;
+            ViewBag.TactileSigns = accomodation.TactileSigns;
+            ViewBag.SmookingRooms = accomodation.SmookingRooms;
+            ViewBag.FamilyRooms = accomodation.FamilyRooms;
+            ViewBag.CarChargingStation = accomodation.CarChargingStation;
+            ViewBag.WheelchairAccessible = accomodation.WheelchairAccessible;
+            ViewBag.FitnessCentre = accomodation.FitnessCentre;
+            ViewBag.PetsAllowed = accomodation.PetsAllowed;
+            ViewBag.DeliveryFoodToTheRoom = accomodation.DeliveryFoodToTheRoom;
+            ViewBag.EveryHourFrontDesk = accomodation.EveryHourFrontDesk;
+            ViewBag.Description = accomodation.Description;
+
+
+            ViewBag.editAccomodationId = accomodation.Id;
+
+            return View("EditAccomodationPage");
         }
 
         [HttpPost]
@@ -1020,6 +1225,136 @@ namespace Travelling_Application.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> UpdateEntertainmentForm(int editAttractionId, Entertainment model, string photoData)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var attraction = _context.Entertainment.Find(editAttractionId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            var photos = JsonConvert.DeserializeObject<List<string>>(photoData);
+            var photoBytesList = photos.Select(photoBase64 => Convert.FromBase64String(photoBase64.Split(',')[1])).ToList();
+
+            attraction.Title = model.Title;
+            attraction.City = model.City;
+            attraction.Country = model.Country;
+            attraction.Address = model.Address;
+            attraction.Languages = model.Languages;
+            attraction.TimeOfDay = model.TimeOfDay;
+            attraction.Cost = model.Cost;
+            attraction.FreeCancellation = model.FreeCancellation;
+            attraction.Category = model.Category;
+            attraction.MainPhoto = photoBytesList[0];
+            attraction.Description = model.Description;
+            attraction.AvailableDates = model.AvailableDates;
+            attraction.AmountOfTickets = model.AmountOfTickets;
+            attraction.VerifiedByAdmin = false;
+            attraction.PublisherId = currentUser.Id;
+            attraction.RejectedMessage = string.Empty;
+            attraction.RejectedByAdmin = false;
+
+            var photosToDelete = _context.ObjectPhotos.Where(photo => photo.ObjectId == editAttractionId).ToList();
+
+            if (photosToDelete.Any())
+            {
+                // Удаляем найденные фотографии
+                _context.ObjectPhotos.RemoveRange(photosToDelete);
+
+                // Сохраняем изменения в базе данных
+                _context.SaveChanges();
+            }
+
+            foreach (var photo in photoBytesList)
+            {
+                var photoss = new Photos
+                {
+                    ObjectId = editAttractionId,
+                    PhotoArray = photo,
+                };
+                _context.ObjectPhotos.Add(photoss);
+                await _context.SaveChangesAsync();
+            }
+
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateAccomodationForm(int editAccomodationId, Accomodation model, string photoDataAccomodation)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var accomodation = _context.Accomodation.Find(editAccomodationId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            var photos = JsonConvert.DeserializeObject<List<string>>(photoDataAccomodation);
+            var photoBytesList = photos.Select(photoBase64 => Convert.FromBase64String(photoBase64.Split(',')[1])).ToList();
+
+            accomodation.Name = model.Name;
+            accomodation.City = model.City;
+            accomodation.Country = model.Country;
+            accomodation.Address = model.Address;
+            accomodation.MainPhoto = photoBytesList[0];
+            accomodation.Description = model.Description;
+            accomodation.VerifiedByAdmin = false;
+            accomodation.PublisherId = currentUser.Id;
+            accomodation.RejectedMessage = string.Empty;
+            accomodation.RejectedByAdmin = false;
+            accomodation.TypeOfAccomodation = model.TypeOfAccomodation;
+            accomodation.TypesOfNutrition = model.TypesOfNutrition;
+            accomodation.Parking = model.Parking;
+            accomodation.SwimmingPool = model.SwimmingPool;
+            accomodation.FreeWIFI = model.FreeWIFI;
+            accomodation.PrivateBeach = model.PrivateBeach;
+            accomodation.LineOfBeach = model.LineOfBeach;
+            accomodation.SPA = model.SPA;
+            accomodation.Bar = model.Bar;
+            accomodation.Restaurants = model.Restaurants;
+            accomodation.Garden = model.Garden;
+            accomodation.TransferToAirport = model.TransferToAirport;
+            accomodation.TactileSigns = model.TactileSigns;
+            accomodation.SmookingRooms = model.SmookingRooms;
+            accomodation.FamilyRooms = model.FamilyRooms;
+            accomodation.CarChargingStation = model.CarChargingStation;
+            accomodation.WheelchairAccessible = model.WheelchairAccessible;
+            accomodation.FitnessCentre = model.FitnessCentre;
+            accomodation.PetsAllowed = model.PetsAllowed;
+            accomodation.DeliveryFoodToTheRoom = model.DeliveryFoodToTheRoom;
+            accomodation.EveryHourFrontDesk = model.EveryHourFrontDesk;
+
+            var photosToDelete = _context.AccomodationPhotos.Where(photo => photo.ObjectId == editAccomodationId).ToList();
+
+            if (photosToDelete.Any())
+            {
+                // Удаляем найденные фотографии
+                _context.AccomodationPhotos.RemoveRange(photosToDelete);
+
+                // Сохраняем изменения в базе данных
+                _context.SaveChanges();
+            }
+
+            foreach (var photo in photoBytesList)
+            {
+                var photoss = new AccomodationPhotos
+                {
+                    ObjectId = editAccomodationId,
+                    PhotoArray = photo,
+                };
+                _context.AccomodationPhotos.Add(photoss);
+                await _context.SaveChangesAsync();
+            }
+
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await UnverifiedObjects();
+        }
+
+       [HttpPost]
         public async Task<IActionResult> DeleteCarPhotoEdit(int editCarId)
         {
             var car = _context.Car.Find(editCarId);
@@ -1069,6 +1404,40 @@ namespace Travelling_Application.Controllers
             return View("CarInformation", model);
         }
 
+        public async Task<IActionResult> ShowAttractionInformation(int attractionId)
+        {
+            var attraction = _context.Entertainment.Find(attractionId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            var photos = _context.ObjectPhotos
+                        .Where(photo => photo.ObjectId == attractionId) 
+                        .Select(photo => photo.PhotoArray)
+                        .ToList();
+
+            var model = new ShowAttractionInformationViewModel
+            {
+                Title = attraction.Title,
+                City = attraction.City,
+                Country = attraction.Country,
+                Address = attraction.Address,
+                AvailableDates = attraction.AvailableDates,
+                Description = attraction.Description,
+                Cost = attraction.Cost,
+                Category = attraction.Category,
+                FreeCancellation = attraction.FreeCancellation,
+                //MainPhoto { get; set; }
+                Photos = photos,
+                AmountOfTickets = attraction.AmountOfTickets,
+                Languages = attraction.Languages,
+                TimeOfDay = attraction.TimeOfDay
+            };
+
+            return View("AttractionInformation", model);
+        }
+
         public async Task<IActionResult> AllVerifiedObjects()
         {
 
@@ -1084,11 +1453,16 @@ namespace Travelling_Application.Controllers
             .Where(c => c.VerifiedByAdmin)
             .ToListAsync();
 
+            var verifiedAccomodation = await _context.Accomodation
+           .Where(c => c.VerifiedByAdmin)
+           .ToListAsync();
+
             var model = new VerifiedObjectsViewModel
             {
                 VerifiedCars = verifiedCars,
                 VerifiedAirTickets = verifiedAirTickets,
-                VerifiedAttractions = verifiedAttractions
+                VerifiedAttractions = verifiedAttractions,
+                VerifiedAccomodation = verifiedAccomodation
             };
 
             return View("VerifiedItems", model);
@@ -1187,11 +1561,16 @@ namespace Travelling_Application.Controllers
            .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin)
            .ToListAsync();
 
+            var unverifiedAccomodation = await _context.Accomodation
+           .Where(c => !c.VerifiedByAdmin && !c.RejectedByAdmin)
+           .ToListAsync();
+
             var model = new UnverifiedObjectsViewModel
             {
                 UnverifiedCars = unverifiedCars,
                 UnverifiedAirTickets = unverifiedAirTickets,
-                UnverifiedAttractions = unverifiedAttractions
+                UnverifiedAttractions = unverifiedAttractions,
+                UnverifiedAccomodation = unverifiedAccomodation
             };
 
             return View("UnverifiedItems", model);
@@ -1219,6 +1598,17 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> VerifyAccomodation(int verifyAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(verifyAccomodationId);
+
+            accomodation.VerifiedByAdmin = true;
+
+            await _context.SaveChangesAsync();
+
+            return await AllUnverifiedObjects();
+        }
+
         public async Task<IActionResult> VerifyRejectedCar(int verifyCarId)
         {
             var car = _context.Car.Find(verifyCarId);
@@ -1239,6 +1629,19 @@ namespace Travelling_Application.Controllers
             attraction.VerifiedByAdmin = true;
             attraction.RejectedByAdmin = false;
             attraction.RejectedMessage = string.Empty;
+
+            await _context.SaveChangesAsync();
+
+            return await AllRejectedObjects();
+        }
+
+        public async Task<IActionResult> VerifyRejectedAccomodation(int verifyAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(verifyAccomodationId);
+
+            accomodation.VerifiedByAdmin = true;
+            accomodation.RejectedByAdmin = false;
+            accomodation.RejectedMessage = string.Empty;
 
             await _context.SaveChangesAsync();
 
@@ -1343,6 +1746,19 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> RejectAccomodation(int rejectAccomodationId, IFormCollection form)
+        {
+            var accomodation = _context.Accomodation.Find(rejectAccomodationId);
+            var message = form["RejectedMessageAccomodation"];
+
+            accomodation.RejectedByAdmin = true;
+            accomodation.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await AllUnverifiedObjects();
+        }
+
         public async Task<IActionResult> AllRejectedObjects()
         {
             var rejectedCars = await _context.Car
@@ -1357,11 +1773,16 @@ namespace Travelling_Application.Controllers
            .Where(c => !c.VerifiedByAdmin && c.RejectedByAdmin)
            .ToListAsync();
 
+            var rejectedAccomodation = await _context.Accomodation
+          .Where(c => !c.VerifiedByAdmin && c.RejectedByAdmin)
+          .ToListAsync();
+
             var model = new RejectedObjectsViewModel
             {
                 RejectedCars = rejectedCars,
                 RejectedAirTickets = rejectedAirTickets,
-                RejectedAttractions = rejectedAttractions
+                RejectedAttractions = rejectedAttractions,
+                RejectedAccomodation = rejectedAccomodation
             };
 
             return View("RejectedItems", model);
@@ -1448,6 +1869,28 @@ namespace Travelling_Application.Controllers
             return await AllRejectedObjects();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccomodationAllRejected(int deleteAccomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(deleteAccomodationId);
+            var objectsToDelete = _context.AccomodationPhotos.Where(o => o.ObjectId == deleteAccomodationId).ToList();
+
+            if (objectsToDelete.Any())
+            {
+                // Удаляем найденные объекты
+                _context.AccomodationPhotos.RemoveRange(objectsToDelete);
+                await _context.SaveChangesAsync();
+            }
+
+            if (accomodation != null)
+            {
+                _context.Accomodation.Remove(accomodation);
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await AllRejectedObjects();
+        }
+
         public async Task<IActionResult> RejectAirTicketEC(int rejectAirTicketId, IFormCollection form)
         {
             var airticket = _context.AirTicket.Find(rejectAirTicketId);
@@ -1486,6 +1929,101 @@ namespace Travelling_Application.Controllers
 
             return await AllUnverifiedObjects();
         }
-        //EditAttractionUnverified          
+
+        public async Task<IActionResult> AddRoomUnverified(string addRoomAccomodationId)
+        {
+            var entities = new List<EntityModel>
+            {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+            };
+
+            ViewBag.addRoomAccomodationId = addRoomAccomodationId;
+
+            return View("AddRoomPage", entities);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveRoomForm(Room model, string photoData, int addRoomAccomodationId)
+        {
+            var photos = JsonConvert.DeserializeObject<List<string>>(photoData);
+            var photoBytesList = photos.Select(photoBase64 => Convert.FromBase64String(photoBase64.Split(',')[1])).ToList();
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            var currentAccomodation = _context.Accomodation.Find(addRoomAccomodationId);
+
+            var entities = new List<EntityModel>
+            {
+                new EntityModel { Name = "Accommodation", Description = "Description for Accommodation" },
+                new EntityModel { Name = "Flight", Description = "Description for Flight" },
+                new EntityModel { Name = "Car", Description = "Description for Car" },
+                new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
+            };
+
+            var room = new Room
+            {
+                RoomName = model.RoomName,
+                WashingMachine = model.WashingMachine,
+                Kitchen = model.Kitchen,
+                WheelchairAccessibleRoom = model.WheelchairAccessibleRoom,
+                ToiletWithGrabBars = model.ToiletWithGrabBars,
+                BathtubWithgrabbars = model.BathtubWithgrabbars,
+                BarrierFreeShower = model.BarrierFreeShower,
+                ShowerWithoutEdge = model.ShowerWithoutEdge,
+                HighToilet = model.HighToilet,
+                LowSink = model.LowSink,
+                MainPhoto = photoBytesList[0],
+                BathroomEmergencyButton = model.BathroomEmergencyButton,
+                ShowerChair = model.ShowerChair,
+                TypeOfNutritionRoom = model.TypeOfNutritionRoom,
+                CoffeeMachine = model.CoffeeMachine,
+                CoffeeOrTea = model.CoffeeOrTea,
+                ElectricKettle = model.ElectricKettle,
+                View = model.View,
+                Soundproofing = model.Soundproofing,
+                Patio = model.Patio,
+                FlatScreenTV = model.FlatScreenTV,
+                Balcony = model.Balcony,
+                Terrace = model.Terrace,
+                PrivatePool = model.PrivatePool,
+                Bath = model.Bath,
+                PlaceToWorkOnALaptop = model.PlaceToWorkOnALaptop,
+                AirConditioner = model.AirConditioner,
+                PrivateBathroom = model.PrivateBathroom,
+                FreeCancellation = model.FreeCancellation,
+                RoomDescription = model.RoomDescription,
+                AvailableDatesRoom = model.AvailableDatesRoom,
+                AmountOfAvailableSameRooms = model.AmountOfAvailableSameRooms,
+                RoomCost = model.RoomCost,
+                AccomodationId = currentAccomodation.Id
+            };
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+            // добавить сохранение дат в другую БД
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
+
+            currentAccomodation.Rooms.Add(room);
+            currentAccomodation.VerifiedByAdmin = false;
+            currentAccomodation.RejectedByAdmin = false;
+            currentAccomodation.RejectedMessage = string.Empty;
+
+            foreach (var photo in photoBytesList)
+            {
+                var photoss = new RoomPhotos
+                {
+                    ObjectId = currentAccomodation.Id,
+                    PhotoArray = photo,
+                };
+                _context.RoomPhotos.Add(photoss);
+                await _context.SaveChangesAsync();
+            }
+
+            return await UnverifiedObjects();
+        }
+
     }
 }

@@ -34,19 +34,7 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("AudioPrompts")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Balcony")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("Bar")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("BathroomEmergencyButton")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("BraillePrompts")
                         .HasColumnType("bit");
 
                     b.Property<bool>("CarChargingStation")
@@ -82,24 +70,16 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("Garden")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("HighToilet")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Kitchen")
-                        .HasColumnType("bit");
-
                     b.Property<int>("LineOfBeach")
                         .HasColumnType("int");
 
-                    b.Property<bool>("LowSink")
-                        .HasColumnType("bit");
+                    b.Property<byte[]>("MainPhoto")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("NoSmookingRooms")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("Parking")
                         .HasColumnType("bit");
@@ -110,19 +90,23 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("PrivateBeach")
                         .HasColumnType("bit");
 
+                    b.Property<int>("PublisherId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
                     b.Property<bool>("RejectedByAdmin")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Restaurants")
                         .HasColumnType("int");
 
                     b.Property<bool>("SPA")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SeaView")
                         .HasColumnType("bit");
 
                     b.Property<bool>("SmookingRooms")
@@ -132,12 +116,6 @@ namespace Travelling_Application.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("TactileSigns")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Terrace")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("ToiletWithGrabBars")
                         .HasColumnType("bit");
 
                     b.Property<bool>("TransferToAirport")
@@ -170,6 +148,26 @@ namespace Travelling_Application.Migrations
                     b.HasIndex("UserId1");
 
                     b.ToTable("Accomodation");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.AccomodationPhotos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ObjectId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("PhotoArray")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccomodationPhotos");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.AirTicket", b =>
@@ -495,21 +493,11 @@ namespace Travelling_Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccomodationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoomID")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AccomodationId");
-
-                    b.HasIndex("RoomID");
 
                     b.ToTable("Photos");
                 });
@@ -559,20 +547,17 @@ namespace Travelling_Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int?>("AccomodationId")
+                    b.Property<int>("AccomodationId")
                         .HasColumnType("int");
-
-                    b.Property<string>("AccomodationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("AirConditioner")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("AllInclusive")
-                        .HasColumnType("bit");
+                    b.Property<string>("AmountOfAvailableSameRooms")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AvailableDates")
+                    b.Property<string>("AvailableDatesRoom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -585,22 +570,10 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("Bath")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("Bathroom")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("BathroomEmergencyButton")
                         .HasColumnType("bit");
 
                     b.Property<bool>("BathtubWithgrabbars")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("BreakfastAndDinnerIncluded")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("BreakfastIncluded")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("CityView")
                         .HasColumnType("bit");
 
                     b.Property<bool>("CoffeeMachine")
@@ -609,20 +582,13 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("CoffeeOrTea")
                         .HasColumnType("bit");
 
-                    b.Property<double>("Cost")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("ElectricKettle")
                         .HasColumnType("bit");
 
                     b.Property<bool>("FlatScreenTV")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("GardenView")
+                    b.Property<bool>("FreeCancellation")
                         .HasColumnType("bit");
 
                     b.Property<bool>("HighToilet")
@@ -634,9 +600,9 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("LowSink")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
+                    b.Property<byte[]>("MainPhoto")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<bool>("Patio")
                         .HasColumnType("bit");
@@ -650,8 +616,16 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("PrivatePool")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("SeaView")
-                        .HasColumnType("bit");
+                    b.Property<double>("RoomCost")
+                        .HasColumnType("float");
+
+                    b.Property<string>("RoomDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoomName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ShowerChair")
                         .HasColumnType("bit");
@@ -665,19 +639,21 @@ namespace Travelling_Application.Migrations
                     b.Property<bool>("Terrace")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("ThreeMealsADay")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("ToiletWithGrabBars")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("ViewFromTheWindow")
-                        .HasColumnType("bit");
+                    b.Property<string>("TypeOfNutritionRoom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("View")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("WashingMachine")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("WheelchairAccessible")
+                    b.Property<bool>("WheelchairAccessibleRoom")
                         .HasColumnType("bit");
 
                     b.HasKey("ID");
@@ -685,6 +661,26 @@ namespace Travelling_Application.Migrations
                     b.HasIndex("AccomodationId");
 
                     b.ToTable("Rooms");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.RoomPhotos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ObjectId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("PhotoArray")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoomPhotos");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.User", b =>
@@ -792,22 +788,13 @@ namespace Travelling_Application.Migrations
                         .HasForeignKey("UserId1");
                 });
 
-            modelBuilder.Entity("Travelling_Application.Models.Photo", b =>
-                {
-                    b.HasOne("Travelling_Application.Models.Accomodation", null)
-                        .WithMany("Photos")
-                        .HasForeignKey("AccomodationId");
-
-                    b.HasOne("Travelling_Application.Models.Room", null)
-                        .WithMany("Photos")
-                        .HasForeignKey("RoomID");
-                });
-
             modelBuilder.Entity("Travelling_Application.Models.Room", b =>
                 {
                     b.HasOne("Travelling_Application.Models.Accomodation", null)
                         .WithMany("Rooms")
-                        .HasForeignKey("AccomodationId");
+                        .HasForeignKey("AccomodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.User", b =>
@@ -819,19 +806,12 @@ namespace Travelling_Application.Migrations
 
             modelBuilder.Entity("Travelling_Application.Models.Accomodation", b =>
                 {
-                    b.Navigation("Photos");
-
                     b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.Role", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Travelling_Application.Models.Room", b =>
-                {
-                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.User", b =>

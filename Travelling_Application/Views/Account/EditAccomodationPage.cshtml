@@ -1,0 +1,695 @@
+﻿@using System.Web
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    @section styles {
+        <style>
+            .enlarged-photo-container {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .enlarged-photo-container1 {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo1 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-btnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .photo-item {
+                width: 150px;
+                height: 150px;
+                margin: 5px;
+                position: relative;
+            }
+
+            .delete-btn {
+                top: 5px;
+                right: 5px;
+            }
+
+            .img-thumbnail {
+                max-height: 150px; /* Устанавливаем максимальную высоту */
+                width: auto; /* Автоматически масштабируем ширину */
+                max-width: 150%; /* Не допускаем переполнение родительского контейнера */
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+        </style>
+        <style>
+            .btn-entity {
+                background-color: #f1f1f1;
+                color: #333;
+                transition: background-color 0.3s, color 0.3s;
+                border: none;
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+                .btn-entity:hover {
+                    background-color: #ddd;
+                    color: #222;
+                }
+
+                .btn-entity.selected {
+                    background-color: #007bff;
+                    color: #fff;
+                }
+        </style>
+        <style>
+            #notification {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notification1 {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            #notificationAccomodation {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            .success-notification {
+                background-color: #d4edda;
+                color: #155724;
+                border-color: #c3e6cb;
+            }
+
+            .text-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
+            }
+        </style>
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function validateAccomodationForm() {
+            // Проверка текстовых полей
+            var accomodationName = $('#accomodationName').val();
+            var accomodationCountry = $('#accomodationCountry').val();
+            var accomodationCity = $('#accomodationCity').val();
+            var accomodationAddress = $('#accomodationAddress').val();
+            var amountOfRestaurants = $('#restaurants').val();
+            var accomodationDescription = $('#descriptionAccomodation').val();
+            var swimmingpools = $('#swimmingpools').val();
+
+            var nutrition = $('input[name="model.TypesOfNutrition[]"]:checked').length > 0;
+
+            // Проверка загруженных фотографий
+            var photoCount = $('#photoContainerAccomodation').children().length;
+
+            // Проверка выбранных радиокнопок
+            var features = [
+                'parking',
+                'freeWIFI',
+                'privateBeach',
+                'SPA',
+                'Bar',
+                'garden',
+                'transferToAirport',
+                'tactileSigns',
+                'smookingRooms',
+                'familyRooms',
+                'carChargingStation',
+                'wheelchairAccessible',
+                'fitnessCentre',
+                'petsAllowed',
+                'deliveryFoodToTheRoom',
+                'everyHourFrontDesk'
+            ];
+
+            var isValid = true;
+
+            features.forEach(function (feature) {
+                var yesChecked = $('#' + feature + 'Yes').is(':checked');
+                var noChecked = $('#' + feature + 'No').is(':checked');
+
+                if (!yesChecked && !noChecked) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+            }
+
+            if (accomodationName === '') {
+                $('#accomodationName').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationName').removeClass('invalid-field');
+            }
+            if (swimmingpools === '') {
+                $('#swimmingpools').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#swimmingpools').removeClass('invalid-field');
+            }
+            if (accomodationCountry === '') {
+                $('#accomodationCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationCountry').removeClass('invalid-field');
+            }
+            if (accomodationCity === '') {
+                $('#accomodationCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationCity').removeClass('invalid-field');
+            }
+            if (accomodationAddress === '') {
+                $('#accomodationAddress').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#accomodationAddress').removeClass('invalid-field');
+            }
+            if (amountOfRestaurants === '') {
+                $('#restaurants').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#restaurants').removeClass('invalid-field');
+            }
+            if (accomodationDescription === '') {
+                $('#descriptionAccomodation').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#descriptionAccomodation').removeClass('invalid-field');
+            }
+
+            if (!nutrition || photoCount === 0) {
+                isValid = false;
+            }
+
+            if (!isValid) {
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+            }
+            return isValid;
+        }
+    </script>
+
+    <main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+        <body>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="list-group" style="background-color: #343a40;">
+                            <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
+                            @{
+                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                {
+                                    <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                    <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
+                                }
+                                else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                {
+                                    <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                    <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                    <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                    <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                                }
+                                else
+                                {
+                                    <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
+                                    <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
+                                    <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div id="accomodation-fields" class="mt-5">
+                                <form id="accomodation-form" asp-action="UpdateAccomodationForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAccomodationForm()">
+                                    <input type="hidden" name="editAccomodationId" value="@ViewBag.editAccomodationId" />
+                                    @{
+                                        var photoArrays = ViewBag.AccomodationPhotos as List<byte[]>;
+                                    }
+                                    <div id="photoContainerAccomodation" class="d-flex flex-wrap">
+                                        @if (photoArrays != null)
+                                        {
+                                            foreach (var photoArray in photoArrays)
+                                            {
+                                                var base64String = Convert.ToBase64String(photoArray);
+                                                var imgSrc = $"data:image/png;base64,{base64String}";
+                                                <div class="photo-item d-flex align-items-center justify-content-center position-relative">
+                                                    <img class="img-thumbnail" src="@imgSrc" data-src="@imgSrc" onclick="openPhoto1('@imgSrc')" />
+                                                    <button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <input type="hidden" id="photoDataAccomodation" name="photoDataAccomodation" />
+                                    <div class="form-group">
+                                        <input type="file" name="photos" id="photoUploadAccomodation" multiple style="display:none;">
+                                        <button type="button" class="btn btn-primary" id="uploadBtnAccomodation">Upload Photos</button>
+                                    </div>
+                                    <script>
+                                        $(document).ready(function () {
+                                            let photoArrayAccomodation = [];
+
+                                            // Добавляем изначально загруженные фото в массив photoArray
+                                            $('#photoContainerAccomodation img').each(function () {
+                                                photoArrayAccomodation.push($(this).attr('data-src'));
+                                            });
+
+                                            $("#uploadBtnAccomodation").click(function () {
+                                                $("#photoUploadAccomodation").click();
+                                            });
+
+                                            $("#photoUploadAccomodation").change(function () {
+                                                var files = this.files;
+                                                var container = $("#photoContainerAccomodation");
+
+                                                $.each(files, function (index, file) {
+                                                    var reader = new FileReader();
+                                                    reader.onload = function (e) {
+                                                        var imageSrc = e.target.result;
+                                                        var image = $('<div class="photo-item d-flex align-items-center justify-content-center position-relative"></div>').append(
+                                                            $('<img class="img-thumbnail">').attr({ 'src': imageSrc, 'data-src': imageSrc }).click(function () {
+                                                                openPhoto1($(this).attr('data-src'));
+                                                            }),
+                                                            $('<button class="btn btn-sm btn-danger delete-btn position-absolute" title="Delete">&times;</button>').click(function () {
+                                                                $(this).parent().remove();
+                                                                photoArrayAccomodation = photoArrayAccomodation.filter(src => src !== imageSrc);
+                                                                $("#photoDataAccomodation").val(JSON.stringify(photoArrayAccomodation));
+                                                            })
+                                                        );
+                                                        container.append(image);
+                                                        photoArrayAccomodation.push(imageSrc);
+                                                        $("#photoDataAccomodation").val(JSON.stringify(photoArrayAccomodation));
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                });
+                                            });
+
+                                            // Обработчик удаления для всех кнопок удаления
+                                            $(document).on('click', '.delete-btn', function () {
+                                                var imageSrc = $(this).siblings('img').attr('data-src');
+                                                $(this).parent().remove();
+                                                photoArrayAccomodation = photoArrayAccomodation.filter(src => src !== imageSrc);
+                                                $("#photoDataAccomodation").val(JSON.stringify(photoArrayAccomodation));
+                                            });
+
+                                            // Обновляем скрытое поле photoData перед отправкой формы
+                                            $("#accomodation-form").submit(function () {
+                                                $("#photoDataAccomodation").val(JSON.stringify(photoArrayAccomodation));
+                                                return validateAccomodationForm();
+                                            });
+                                        });
+
+                                        // Функция для отображения увеличенного изображения
+                                        function openPhoto1(imgSrc) {
+                                            var enlargedImgContainer = document.getElementById('enlarged-photo-container1');
+                                            var enlargedImg = document.getElementById('enlarged-photo1');
+                                            enlargedImg.src = imgSrc;
+                                            enlargedImgContainer.style.display = 'block';
+                                        }
+
+                                        // Функция для закрытия увеличенного изображения
+                                        function closePhoto1() {
+                                            var enlargedImgContainer = document.getElementById('enlarged-photo-container1');
+                                            enlargedImgContainer.style.display = 'none';
+                                        }
+                                    </script>
+
+                                    <!-- Скрытый контейнер для увеличенного изображения -->
+                                    <div id="enlarged-photo-container1" class="enlarged-photo-container1">
+                                        <span class="close-btnn" onclick="closePhoto1()">✕</span>
+                                        <img id="enlarged-photo1" class="enlarged-photo1">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="accomodationName" style="margin-top: 15px;">Accomodation Name</label>
+                                        <input type="text" name="model.Name" value="@ViewBag.AccomodationName" class="form-control" id="accomodationName" placeholder="Enter the accomodation name" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accomodationCountry" style="margin-top: 15px;">Country Of Accomodation</label>
+                                        <input type="text" name="model.Country" value="@ViewBag.AccomodationCountry" class="form-control" id="accomodationCountry" placeholder="Enter the country of accomodation" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accomodationCity" style="margin-top: 15px;">City Of Accomodation</label>
+                                        <input type="text" name="model.City" value="@ViewBag.AccomodationCity" class="form-control" id="accomodationCity" placeholder="Enter the city of accomodation" style="margin-top: 10px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accomodationAddress" style="margin-top: 15px;">Address Of Accomodation</label>
+                                        <input type="text" name="model.Address" value="@ViewBag.AccomodationAddress" class="form-control" id="accomodationAddress" placeholder="Enter the address of accomodation" style="margin-top: 10px;">
+                                    </div>
+                                    @{
+                                        var selectedType = ViewBag.AccomodationType as string;
+                                    }
+                                    <div class="mb-3">
+                                        <label for="accomodationType" class="form-label" style="margin-top: 15px;">Type Of Accomodation</label>
+                                        <div class="input-group">
+                                            <select class="form-select" id="accomodationType" name="model.TypeOfAccomodation" type="hidden">
+                                                <option value="Hotel">Hotel</option>
+                                                <option value="Hostel">Hostel</option>
+                                                <option value="Apartment">Apartment</option>
+                                                <option value="Flat">Flat</option>
+                                                <option value="House">House</option>
+                                                <option value="Villa">Villa</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            var selectedType = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(selectedType))';
+                                            var selectElement = document.getElementById('accomodationType');
+                                            selectElement.value = selectedType;
+                                        });
+                                    </script>
+                                    @{
+                                        var selectedNutrition = ViewBag.Nutrition as List<string> ?? new List<string>();
+                                    }
+                                    <div class="mb-3">
+                                        <label for="nutritionType" class="form-label" style="margin-top: 15px;">Types Of Nutrition</label><br>
+                                        @{
+                                            var nutritions = new Dictionary<string, string>
+                                        {
+                                        {"Breakfast Included", "Breakfast"},
+                                        {"Breakfast & Dinner Included", "Breakfast & Dinner"},
+                                        {"All Inclusive", "All Inclusive"},
+                                        {"Without Nutrition", "Without Nutrition"}
+                                        };
+
+                                            foreach (var nutrition in nutritions)
+                                            {
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox" name="model.TypesOfNutrition[]" id="@nutrition.Value" value="@nutrition.Key" @(selectedNutrition.Contains(nutrition.Key) ? "checked" : "")>
+                                                    <label class="form-check-label" for="@nutrition.Value">@nutrition.Key</label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="parking" class="form-label" style="margin-top: 15px;">Parking</label><br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.Parking" id="parkingYes" value="true" @(ViewBag.Parking == true ? "checked" : "")>
+                                            <label class="form-check-label" for="parkingYes">Yes</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.Parking" id="parkingNo" value="false" @(ViewBag.Parking == false ? "checked" : "")>
+                                            <label class="form-check-label" for="parkingNo">No</label>
+                                        </div>
+                                    </div>
+                                    <label for="swimmingpools" style="margin-top:15px;">Amount Of Swimming Pools</label>
+                                    <input type="number" class="form-control" name="model.SwimmingPool" value="@ViewBag.SwimmingPool" id="swimmingpools" placeholder="Enter amount of swimming pools" min="0" max="20" style="margin-top: 10px;">
+                                    <div class="mb-3">
+                                        <label for="freeWIFI" class="form-label" style="margin-top: 15px;">Free WIFI</label><br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.FreeWIFI" id="freeWIFIYes" value="true" @(ViewBag.FreeWIFI == true ? "checked" : "")>
+                                            <label class="form-check-label" for="freeWIFIYes">Yes</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.FreeWIFI" id="freeWIFINo" value="false" @(ViewBag.FreeWIFI == false ? "checked" : "")>
+                                            <label class="form-check-label" for="freeWIFINo">No</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="privateBeach" class="form-label" style="margin-top: 15px;">Private Beach</label><br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.PrivateBeach" id="privateBeachYes" value="true" @(ViewBag.PrivateBeach == true ? "checked" : "")>
+                                            <label class="form-check-label" for="privateBeachYes">Yes</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="model.PrivateBeach" id="privateBeachNo" value="false" @(ViewBag.PrivateBeach == false ? "checked" : "")>
+                                            <label class="form-check-label" for="privateBeachNo">No</label>
+                                        </div>
+                                    </div>
+                                    @{
+                                        var selectedLine = ViewBag.LineOfBeach as string;
+                                    }
+                                    <div
+                                    <div class="mb-3">
+                                        <label for="lineOfBeach" class="form-label" style="margin-top: 15px;">Line Of Beach</label>
+                                        <div class="input-group">
+                                            <select class="form-select" id="lineOfBeach" name="model.LineOfBeach" type="hidden">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="0">Without Beach Around</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <script>
+                                            document.addEventListener("DOMContentLoaded", function () {
+                                                var selectedLine = '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(selectedLine))';
+                                                var selectElement = document.getElementById('lineOfBeach');
+                                            
+                                                selectElement.value = selectedLine;
+                                            });
+                                    </script>
+                                    <div class="mb-3">
+                                <label for="SPA" class="form-label" style="margin-top: 15px;">SPA</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SPA" id="SPAYes" value="true" @(ViewBag.SPA == true ? "checked" : "")>
+                                    <label class="form-check-label" for="SPAYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SPA" id="SPANo" value="false" @(ViewBag.SPA == false ? "checked" : "")>
+                                    <label class="form-check-label" for="SPANo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="Bar" class="form-label" style="margin-top: 15px;">Bar</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Bar" id="BarYes" value="true" @(ViewBag.Bar == true ? "checked" : "")>
+                                    <label class="form-check-label" for="BarYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Bar" id="BarNo" value="false" @(ViewBag.Bar == false ? "checked" : "")>
+                                    <label class="form-check-label" for="BarNo">No</label>
+                                </div>
+                            </div>
+                            <label for="restaurants" style="margin-top:15px;">Amount Of Restaurants</label>
+                            <input type="number" class="form-control" name="model.Restaurants" value="@ViewBag.Restaurants" id="restaurants" placeholder="Enter amount of restaurants" min="0" max="10" style="margin-top: 10px;">
+                             <div class="mb-3">
+                                <label for="garden" class="form-label" style="margin-top: 15px;">Garden</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Garden" id="gardenYes" value="true" @(ViewBag.Garden == true ? "checked" : "")>
+                                    <label class="form-check-label" for="gardenYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.Garden" id="gardenNo" value="false" @(ViewBag.Garden == false ? "checked" : "")>
+                                    <label class="form-check-label" for="gardenNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="transferToAirport" class="form-label" style="margin-top: 15px;">Transfer To Airport</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TransferToAirport" id="transferToAirportYes" value="true" @(ViewBag.TransferToAirport == true ? "checked" : "")>
+                                    <label class="form-check-label" for="transferToAirportYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TransferToAirport" id="transferToAirportNo" value="false" @(ViewBag.TransferToAirport == false ? "checked" : "")>
+                                    <label class="form-check-label" for="transferToAirportNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tactileSigns" class="form-label" style="margin-top: 15px;">Tactile Signs</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TactileSigns" id="tactileSignsYes" value="true" @(ViewBag.TactileSigns == true ? "checked" : "")>
+                                    <label class="form-check-label" for="tactileSignsYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.TactileSigns" id="tactileSignsNo" value="false" @(ViewBag.TactileSigns == false ? "checked" : "")>
+                                    <label class="form-check-label" for="tactileSignsNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="smookingRooms" class="form-label" style="margin-top: 15px;">Smooking Rooms</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SmookingRooms" id="smookingRoomsYes" value="true" @(ViewBag.SmookingRooms == true ? "checked" : "")>
+                                    <label class="form-check-label" for="smookingRoomsYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.SmookingRooms" id="smookingRoomsNo" value="false" @(ViewBag.SmookingRooms == false ? "checked" : "")>
+                                    <label class="form-check-label" for="smookingRoomsNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="familyRooms" class="form-label" style="margin-top: 15px;">Family Rooms</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FamilyRooms" id="familyRoomsYes" value="true" @(ViewBag.FamilyRooms == true ? "checked" : "")>
+                                    <label class="form-check-label" for="familyRoomsYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FamilyRooms" id="familyRoomsNo" value="false" @(ViewBag.FamilyRooms == false ? "checked" : "")>
+                                    <label class="form-check-label" for="familyRoomsNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="carChargingStation" class="form-label" style="margin-top: 15px;">Car Charging Station</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.CarChargingStation" id="carChargingStationYes" value="true" @(ViewBag.CarChargingStation == true ? "checked" : "")>
+                                    <label class="form-check-label" for="carChargingStationYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.CarChargingStation" id="carChargingStationNo" value="false" @(ViewBag.CarChargingStation == false ? "checked" : "")>
+                                    <label class="form-check-label" for="carChargingStationNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="wheelchairAccessible" class="form-label" style="margin-top: 15px;">Wheelchair Accessible</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.WheelchairAccessible" id="wheelchairAccessibleYes" value="true" @(ViewBag.WheelchairAccessible == true ? "checked" : "")>
+                                    <label class="form-check-label" for="wheelchairAccessibleYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.WheelchairAccessible" id="wheelchairAccessibleNo" value="false" @(ViewBag.WheelchairAccessible == false ? "checked" : "")>
+                                    <label class="form-check-label" for="wheelchairAccessibleNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fitnessCentre" class="form-label" style="margin-top: 15px;">Fitness Centre</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FitnessCentre" id="fitnessCentreYes" value="true" @(ViewBag.FitnessCentre == true ? "checked" : "")>
+                                    <label class="form-check-label" for="fitnessCentreYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.FitnessCentre" id="fitnessCentreNo" value="false" @(ViewBag.FitnessCentre == false ? "checked" : "")>
+                                    <label class="form-check-label" for="fitnessCentreNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="petsAllowed" class="form-label" style="margin-top: 15px;">Pets Allowed</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.PetsAllowed" id="petsAllowedYes" value="true" @(ViewBag.PetsAllowed == true ? "checked" : "")>
+                                    <label class="form-check-label" for="petsAllowedYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.PetsAllowed" id="petsAllowedNo" value="false" @(ViewBag.PetsAllowed == false ? "checked" : "")>
+                                    <label class="form-check-label" for="petsAllowedNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="deliveryFoodToTheRoom" class="form-label" style="margin-top: 15px;">Delivery Food To The Room</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.DeliveryFoodToTheRoom" id="deliveryFoodToTheRoomYes" value="true" @(ViewBag.DeliveryFoodToTheRoom == true ? "checked" : "")>
+                                    <label class="form-check-label" for="deliveryFoodToTheRoomYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline"> 
+                                    <input class="form-check-input" type="radio" name="model.DeliveryFoodToTheRoom" id="deliveryFoodToTheRoomNo" value="false" @(ViewBag.DeliveryFoodToTheRoom == false ? "checked" : "")>
+                                    <label class="form-check-label" for="deliveryFoodToTheRoomNo">No</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="everyHourFrontDesk" class="form-label" style="margin-top: 15px;">Every Hour Front Desk</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.EveryHourFrontDesk" id="everyHourFrontDeskYes" value="true" @(ViewBag.EveryHourFrontDesk == true ? "checked" : "")>
+                                    <label class="form-check-label" for="everyHourFrontDeskYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="model.EveryHourFrontDesk" id="everyHourFrontDeskNo" value="false" @(ViewBag.EveryHourFrontDesk == false ? "checked" : "")>
+                                    <label class="form-check-label" for="everyHourFrontDeskNo">No</label>
+                                </div>
+                            </div>
+
+
+                             <div class="form-group">
+                                <label for="descriptionAccomodation" style="margin-top: 15px;">Accomodation Description</label>
+                                <textarea class="form-control" id="descriptionAccomodation" name="model.Description" placeholder="Enter the accomodation description" rows="5" style="margin-top: 10px;">@ViewBag.Description</textarea>
+                            </div>
+                                  <div class="accomodation-info" style="text-align: center;">
+                                <button id="save-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
+                                </form>
+                            </div>
+                            <div id="notificationAccomodation" class="text-danger1" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+    </main>
+</head>

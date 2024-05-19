@@ -175,17 +175,21 @@
                 </div>
                 <h6 style="font-weight: normal; margin-top: 20px;">@Model.Description</h6>
                 <h4 style="margin-top: 20px;">Available Dates For Booking:</h4>
-                @for (int i = 0; i < Model.StartDates.Count && i < Model.EndDates.Count; i++)
-                {
-                    <p class="mini-info" style="margin-top: 5px">
-                        <div class="booking-date">
-                            <label style="margin-right: 10px;">Start Date:</label>
-                            <input type="datetime-local" name="model.startDates[]" value="@Model.StartDates[i].ToString("yyyy-MM-ddTHH:mm")" readonly>
-                            <label style="margin-left: 10px;">Finish Date:</label>
-                            <input type="datetime-local" name="model.endDates[]" value="@Model.EndDates[i].ToString("yyyy-MM-ddTHH:mm")" readonly>
-                        </div>
-                    </p>
-                }
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        @for (int i = 0; i < Model.StartDates.Count && i < Model.EndDates.Count; i++)
+                        {
+                            <p class="mini-info" style="margin-top: 5px">
+                                <div class="booking-date">
+                                    <label style="margin-right: 10px;">Start Date:</label>
+                                    <input type="datetime-local" name="model.startDates[]" value="@Model.StartDates[i].ToString("yyyy-MM-ddTHH:mm")" readonly>
+                                    <label style="margin-left: 10px;">Finish Date:</label>
+                                    <input type="datetime-local" name="model.endDates[]" value="@Model.EndDates[i].ToString("yyyy-MM-ddTHH:mm")" readonly>
+                                </div>
+                            </p>
+                        }
+                    </div>
+                </div>
                 <h2 style="margin-top: 20px;">Cost: $@Model.Cost Per 1 Hour</h2>
             </div>
         </div>

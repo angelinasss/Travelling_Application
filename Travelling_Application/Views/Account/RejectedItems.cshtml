@@ -41,6 +41,14 @@
                 margin-bottom: 20px;
             }
 
+            .accomodation-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
             .car-image {
                 width: 100%;
                 height: auto;
@@ -48,6 +56,15 @@
             }
 
             .attraction-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border-radius: 10px 20px 30px 40px;
+            }
+
+            .accomodation-image {
                 width: 100%;
                 height: auto;
                 display: block;
@@ -77,6 +94,18 @@
             }
 
             .attraction-price {
+                font-weight: bold;
+            }
+
+            .accomodation-details {
+                padding: 15px;
+            }
+
+            .accomodation-title {
+                margin-top: 0;
+            }
+
+            .accomodation-price {
                 font-weight: bold;
             }
 
@@ -796,7 +825,7 @@
                                             <div class="col-md-8">
                                                 <div class="attraction-details">
                                                     <h3 class="attraction-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
-                                                        <a href="/Account/ShowAttractionInformation?carId=@attraction.Id">@attraction.Title</a>
+                                                        <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
                                                     </h3>
                                                     <p class="attraction-features" style="text-align: left;">@attraction.City, @attraction.Country</p>
                                                     <div class="row">
@@ -843,6 +872,96 @@
                                                             </form>
                                                             <form asp-action="DeleteAttractionAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="deleteAttractionId" value="@attraction.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="accomodation-list" style="margin-top: 20px;">
+                                @foreach (var accomodation in Model.RejectedAccomodation.Where(c => (!c.VerifiedByAdmin && c.RejectedByAdmin)))
+                                {
+                                    <div class="accomodation-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(accomodation.MainPhoto))" alt="Accomodation Image" class="accomodation-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="accomodation-details">
+                                                    <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
+                                                    </h3>
+                                                    <p class="accomodation-features" style="text-align: left;">@accomodation.City, @accomodation.Country</p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            if (accomodation.SwimmingPool > 0)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-person-swimming"></i> @accomodation.SwimmingPool swimming pool</span>
+                                                            }
+                                                            if (accomodation.Restaurants > 0)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-utensils"></i> @accomodation.Restaurants restaurant</span>
+                                                            }
+                                                            if (accomodation.Parking)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-square-parking"></i> Parking</span>
+                                                            }
+                                                            if (accomodation.PrivateBeach)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-umbrella-beach"></i> Private Beach</span>
+                                                            }
+                                                            if (accomodation.SPA)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-spa"></i> SPA</span>
+                                                            }
+                                                            if (accomodation.FitnessCentre)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-heart"></i> Fitness Centre</span>
+                                                            }
+                                                            if (accomodation.PetsAllowed)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-paw"></i> Pets Allowed</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            foreach (var nutrition in accomodation.TypesOfNutrition)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-bowl-food"></i> @nutrition</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="attraction-price">from $150 / 1 night</p>
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @accomodation.RejectedMessage
+                                                    </div>
+                                                    @{
+                                                        if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                                                        {
+                                                            <form asp-action="EditAccomodationUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="editAccomodationId" value="@accomodation.Id" />
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAccomodationRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAccomodationId" value="@accomodation.Id" />
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        }
+                                                        else if (User.IsInRole("admin") || User.IsInRole("Admin"))
+                                                        {
+                                                            <form asp-action="VerifyRejectedAccomodation" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="verifyAccomodationId" value="@accomodation.Id" />
+                                                                <button class="btn btn-success" type="submit">Verify</button>
+                                                            </form>
+                                                            <form asp-action="DeleteAccomodationAllRejected" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                                <input type="hidden" name="deleteAccomodationId" value="@accomodation.Id" />
                                                                 <button class="btn btn-danger" type="submit">Delete</button>
                                                             </form>
                                                         }
