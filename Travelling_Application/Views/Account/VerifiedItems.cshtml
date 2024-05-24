@@ -1,4 +1,8 @@
-﻿@using Travelling_Application.ViewModels
+﻿@{
+    ViewData["Title"] = "Verified Objects | TravelHaven";
+}
+
+@using Travelling_Application.ViewModels
 @model VerifiedObjectsViewModel
 
 <head>
@@ -141,10 +145,10 @@
                 height: 20px;
             }
 
-                /* Hide default HTML checkbox */
-                .switch input {
-                    display: none;
-                }
+            /* Hide default HTML checkbox */
+            .switch input {
+                display: none;
+            }
 
             /* The slider */
             .slider {
@@ -159,17 +163,17 @@
                 transition: .4s;
             }
 
-                .slider:before {
-                    position: absolute;
-                    content: "";
-                    height: 14px;
-                    width: 14px;
-                    left: 3px;
-                    bottom: 3px;
-                    background-color: white;
-                    -webkit-transition: .4s;
-                    transition: .4s;
-                }
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
 
             input:checked + .slider {
                 background-color: #2196F3;
@@ -190,9 +194,9 @@
                 border-radius: 20px;
             }
 
-                .slider.round:before {
-                    border-radius: 50%;
-                }
+            .slider.round:before {
+                border-radius: 50%;
+            }
             </style>
             }
 </head>
@@ -205,24 +209,29 @@
                 <div class="list-group" style="background-color: #343a40;">
                     <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
                     @{
-                        if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
-                        {
-                            <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
-                            <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Bookings</a>
-                        }
-                        else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
-                        {
-                            <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
-                            <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
-                            <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
-                            <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
-                        }
-                        else
-                        {
-                            <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Confirmation</a>
-                            <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
+                            if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                            {
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Verified Bookings</a>
+                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item style="color: #ffffff;">My Bookings Awaiting Verification</a>
+                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item style="color: #ffffff;">My Rejected Bookings</a>
+                            }
+                            else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                            {
+                                <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                                <a href="/Account/BookingsForVerification" class="list-group-item style="color: #ffffff;">Bookings For Verification</a>
+                                <a href="/Account/VerifiedBookings" class="list-group-item style="color: #ffffff;">Verified Bookings</a>
+                                <a href="/Account/RejectedBookings" class="list-group-item style="color: #ffffff;">Rejected Bookings</a>
+                            }
+                            else
+                            {
+                                <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Verification</a>
+                                <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
                                 <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
-                        }
+                            }
                     }
                 </div>
             </div>
@@ -890,7 +899,7 @@
                                                             }
                                                             if (accomodation.FitnessCentre)
                                                             {
-                                                                <span class="mini-info-item"><i class="fa-solid fa-heart"></i> Fitness Centre</span>
+                                                                <span class="mini-info-item"><i class="fa-solid fa-dumbbell"></i> Fitness Centre</span>
                                                             }
                                                             if (accomodation.PetsAllowed)
                                                             {
@@ -906,7 +915,7 @@
                                                             }
                                                         }
                                                     </p>
-                                                    <p class="attraction-price">from $150 / 1 night</p>
+                                                    <p class="attraction-price">from $@accomodation.MinCost / 1 night</p>
                                                     @{
                                                         if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                                                         {

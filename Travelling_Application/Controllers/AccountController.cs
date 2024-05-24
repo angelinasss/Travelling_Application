@@ -520,6 +520,7 @@ namespace Travelling_Application.Controllers
                 VerifiedByAdmin = false,  
                 RejectedByAdmin = false,
                 PublisherId = currentUser.Id,
+                MinCost = 0,
                 RejectedMessage = string.Empty
             };
 
@@ -584,7 +585,13 @@ namespace Travelling_Application.Controllers
                 VerifiedByAdminECTicket = false,
                 VerifiedByAdminBCTicket = false,
                 VerifiedByAdminFCTicket = false,
-                PublisherId = currentUser.Id
+                PublisherId = currentUser.Id,
+                RejectedByAdminBC = false,
+                RejectedByAdminEC = false,
+                RejectedByAdminFC = false,
+                RejectedMessageEC = string.Empty,
+                RejectedMessageBC = string.Empty,
+                RejectedMessageFC = string.Empty
             };
 
             string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
@@ -1438,6 +1445,67 @@ namespace Travelling_Application.Controllers
             return View("AttractionInformation", model);
         }
 
+        public async Task<IActionResult> ShowAccomodationInformation(int accomodationId)
+        {
+            var accomodation = _context.Accomodation.Find(accomodationId);
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            var photos = _context.AccomodationPhotos
+                        .Where(photo => photo.ObjectId == accomodationId)
+                        .Select(photo => photo.PhotoArray)
+                        .ToList();
+            var roomphotos = _context.RoomPhotos
+                        .Where(photo => photo.ObjectId == accomodationId)
+                        .Select(photo => photo.PhotoArray)
+                        .ToList();
+            var rooms = _context.Rooms
+                        .Where(room => room.AccomodationId == accomodationId)
+                        .ToList();
+            
+            foreach(var room in rooms)
+            {
+                room.Photos = _context.RoomPhotos
+                        .Where(photo => photo.ObjectId == accomodationId && photo.RoomId == room.ID)
+                        .ToList();
+            }
+
+            var model = new ShowAccomodationInformationViewModel
+            {
+                Name = accomodation.Name,
+                City = accomodation.City,
+                Country = accomodation.Country,
+                Address = accomodation.Address,
+                TypeOfAccomodation = accomodation.TypeOfAccomodation,
+                TypesOfNutrition = accomodation.TypesOfNutrition,
+                Parking = accomodation.Parking,
+                SwimmingPool = accomodation.SwimmingPool,
+                FreeWIFI = accomodation.FreeWIFI,
+                Photos = photos,
+                PrivateBeach = accomodation.PrivateBeach,
+                LineOfBeach = accomodation.LineOfBeach,
+                Restaurants = accomodation.Restaurants,
+                SPA = accomodation.SPA,
+                Bar = accomodation.Bar,
+                Garden = accomodation.Garden,
+                AllRooms = rooms,
+                TransferToAirport = accomodation.TransferToAirport,
+                SmookingRooms = accomodation.SmookingRooms,
+                FamilyRooms = accomodation.FamilyRooms,
+                CarChargingStation = accomodation.CarChargingStation,
+                WheelchairAccessible = accomodation.WheelchairAccessible,
+                FitnessCentre = accomodation.FitnessCentre,
+                PetsAllowed = accomodation.PetsAllowed,
+                DeliveryFoodToTheRoom = accomodation.DeliveryFoodToTheRoom,
+                EveryHourFrontDesk = accomodation.EveryHourFrontDesk,
+                Description = accomodation.Description
+            };
+
+            return View("AccomodationInformation", model);
+        }
+
         public async Task<IActionResult> AllVerifiedObjects()
         {
 
@@ -1961,6 +2029,11 @@ namespace Travelling_Application.Controllers
                 new EntityModel { Name = "Attraction", Description = "Description for Attraction" }
             };
 
+            if(currentAccomodation.MinCost > model.RoomCost)
+            {
+                currentAccomodation.MinCost = model.RoomCost;
+            }
+
             var room = new Room
             {
                 RoomName = model.RoomName,
@@ -2006,7 +2079,7 @@ namespace Travelling_Application.Controllers
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 
-            currentAccomodation.Rooms.Add(room);
+            currentAccomodation.AllRooms.Add(room);
             currentAccomodation.VerifiedByAdmin = false;
             currentAccomodation.RejectedByAdmin = false;
             currentAccomodation.RejectedMessage = string.Empty;
@@ -2017,12 +2090,172 @@ namespace Travelling_Application.Controllers
                 {
                     ObjectId = currentAccomodation.Id,
                     PhotoArray = photo,
+                    RoomId = room.ID
                 };
                 _context.RoomPhotos.Add(photoss);
                 await _context.SaveChangesAsync();
             }
 
             return await UnverifiedObjects();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRoom(int deleteRoomId, int deleteRoomAccomodationId)
+        {
+            var room = _context.Rooms.Find(deleteRoomId);
+            var accomodation = _context.Accomodation.Find(deleteRoomAccomodationId);
+            accomodation.VerifiedByAdmin = false;
+            accomodation.RejectedMessage = string.Empty;
+            accomodation.RejectedByAdmin = false;
+            var objectsToDelete = _context.RoomPhotos.Where(o => o.RoomId == deleteRoomId && o.ObjectId == deleteRoomAccomodationId).ToList();
+
+            if (objectsToDelete.Any())
+            {
+                // Удаляем найденные объекты
+                _context.RoomPhotos.RemoveRange(objectsToDelete);
+                await _context.SaveChangesAsync();
+            }
+
+            if (room != null)
+            {
+                _context.Rooms.Remove(room); // Удаляем автомобиль из контекста
+                _context.SaveChanges(); // Сохраняем изменения в базе данных
+            }
+
+            return await ShowAccomodationInformation(deleteRoomAccomodationId);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditRoom(int editRoomId, int editRoomAccomodationId)
+        {
+            var room = _context.Rooms.Find(editRoomId);
+            var accomodation = _context.Accomodation.Find(editRoomAccomodationId);
+            var objects = _context.RoomPhotos.Where(o => o.RoomId == editRoomId && o.ObjectId == editRoomAccomodationId).Select(o => o.PhotoArray).ToList();
+
+            ViewBag.RoomPhotos = objects;
+            ViewBag.RoomName = room.RoomName;
+            ViewBag.WashingMachine = room.WashingMachine;
+            ViewBag.Kitchen = room.Kitchen;
+            ViewBag.WheelchairAccessibleRoom = room.WheelchairAccessibleRoom;
+            ViewBag.ToiletWithGrabBars = room.ToiletWithGrabBars;
+            ViewBag.BarrierFreeShower = room.BarrierFreeShower;
+            ViewBag.BathtubWithgrabbars = room.BathtubWithgrabbars;
+            ViewBag.ShowerWithoutEdge = room.ShowerWithoutEdge;
+            ViewBag.HighToilet = room.HighToilet;
+            ViewBag.LowSink = room.LowSink;
+            ViewBag.BathroomEmergencyButton = room.BathroomEmergencyButton;
+            ViewBag.ShowerChair = room.ShowerChair;
+            ViewBag.Nutrition = room.TypeOfNutritionRoom;
+            ViewBag.CoffeeMachine = room.CoffeeMachine;
+            ViewBag.CoffeeOrTea = room.CoffeeOrTea;
+            ViewBag.ElectricKettle = room.ElectricKettle;
+            ViewBag.View = room.View;
+            ViewBag.Soundproofing = room.Soundproofing;
+            ViewBag.Patio = room.Patio;
+            ViewBag.FlatScreenTV = room.FlatScreenTV;
+            ViewBag.Balcony = room.Balcony;
+            ViewBag.Terrace = room.Terrace;
+            ViewBag.PrivatePool = room.PrivatePool;
+            ViewBag.Bath = room.Bath;
+            ViewBag.PlaceToWorkOnALaptop = room.PlaceToWorkOnALaptop;
+            ViewBag.AirConditioner = room.AirConditioner;
+            ViewBag.PrivateBathroom = room.PrivateBathroom;
+            ViewBag.FreeCancellation = room.FreeCancellation;
+            ViewBag.RoomDescription = room.RoomDescription;
+
+            List<DateTime> Dates = room.AvailableDatesRoom;
+            List<int> AmountOfSameRooms = room.AmountOfAvailableSameRooms;
+
+            ViewBag.Dates = Dates;
+            ViewBag.AmountOfSameRooms = AmountOfSameRooms;
+
+            ViewBag.RoomCost = room.RoomCost;
+
+            ViewBag.editRoomId = room.ID;
+            ViewBag.editRoomAccomodationId = room.AccomodationId;
+
+            return View("EditRoomPage");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateRoomForm(int editRoomId, int editRoomAccomodationId, Room model, string photoDataRoom)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var accomodation = _context.Accomodation.Find(editRoomAccomodationId);
+            var room = _context.Rooms.Find(editRoomId);
+            accomodation.VerifiedByAdmin = false;
+            accomodation.RejectedMessage = string.Empty;
+            accomodation.RejectedByAdmin = false;
+            var objectsToDelete = _context.RoomPhotos.Where(o => o.RoomId == editRoomId && o.ObjectId == editRoomAccomodationId).ToList();
+
+            if (objectsToDelete.Any())
+            {
+                // Удаляем найденные объекты
+                _context.RoomPhotos.RemoveRange(objectsToDelete);
+                await _context.SaveChangesAsync();
+            }
+
+            string filePath = "C:\\Users\\Angelina\\Pictures\\Camera Roll\\bbb846030d108b92a3fefbfca1f7bbe6.jpg";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            ViewBag.CarPhoto = fileBytes;
+
+            var photos = JsonConvert.DeserializeObject<List<string>>(photoDataRoom);
+            var photoBytesList = photos.Select(photoBase64 => Convert.FromBase64String(photoBase64.Split(',')[1])).ToList();
+
+            room.RoomName = model.RoomName;
+            room.WashingMachine = model.WashingMachine;
+            room.Kitchen = model.Kitchen;
+            room.WheelchairAccessibleRoom = model.WheelchairAccessibleRoom;
+            room.ToiletWithGrabBars = model.ToiletWithGrabBars;
+            room.BathtubWithgrabbars = model.BathtubWithgrabbars;
+            room.BarrierFreeShower = model.BarrierFreeShower;
+            room.ShowerWithoutEdge = model.ShowerWithoutEdge;
+            room.HighToilet = model.HighToilet;
+            room.LowSink = model.LowSink;
+            room.MainPhoto = photoBytesList[0];
+            room.BathroomEmergencyButton = model.BathroomEmergencyButton;
+            room.ShowerChair = model.ShowerChair;
+            room.TypeOfNutritionRoom = model.TypeOfNutritionRoom;
+            room.CoffeeMachine = model.CoffeeMachine;
+            room.CoffeeOrTea = model.CoffeeOrTea;
+            room.ElectricKettle = model.ElectricKettle;
+            room.View = model.View;
+            room.Soundproofing = model.Soundproofing;
+            room.Patio = model.Patio;
+            room.FlatScreenTV = model.FlatScreenTV;
+            room.Balcony = model.Balcony;
+            room.Terrace = model.Terrace;
+            room.PrivatePool = model.PrivatePool;
+            room.Bath = model.Bath;
+            room.PlaceToWorkOnALaptop = model.PlaceToWorkOnALaptop;
+            room.AirConditioner = model.AirConditioner;
+            room.PrivateBathroom = model.PrivateBathroom;
+            room.FreeCancellation = model.FreeCancellation;
+            room.RoomDescription = model.RoomDescription;
+            room.AvailableDatesRoom = model.AvailableDatesRoom;
+            room.AmountOfAvailableSameRooms = model.AmountOfAvailableSameRooms;
+            room.RoomCost = model.RoomCost;
+            room.AccomodationId = editRoomAccomodationId;
+
+            accomodation.MinCost = room.RoomCost;
+
+            await _context.SaveChangesAsync();
+
+            foreach (var photo in photoBytesList)
+            {
+                var photoss = new RoomPhotos
+                {
+                    ObjectId = editRoomAccomodationId,
+                    PhotoArray = photo,
+                    RoomId = editRoomId
+                };
+                _context.RoomPhotos.Add(photoss);
+                await _context.SaveChangesAsync();
+            }
+
+            await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+            return await ShowAccomodationInformation(editRoomAccomodationId);
         }
 
     }

@@ -5,5 +5,6 @@
         public int Id { get; set; }
         public byte[] PhotoArray { get; set; }
         public int ObjectId { get; set; }
+        public int RoomId { get; set; }
     }
 }

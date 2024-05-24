@@ -77,6 +77,9 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<double>("MinCost")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -288,6 +291,93 @@ namespace Travelling_Application.Migrations
                     b.HasIndex("UserId1");
 
                     b.ToTable("AirTicket");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.BookingAirTicket", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("AirTicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateOfDeparture")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Passengers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("VerifiedBooking")
+                        .HasColumnType("bit");
+
+                    b.HasKey("id");
+
+                    b.ToTable("BookingAirTickets");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.BookingAttraction", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("AmountOfTickets")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("VerifiedBooking")
+                        .HasColumnType("bit");
+
+                    b.HasKey("id");
+
+                    b.ToTable("BookingAttractions");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.BookingCar", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateOfDeparture")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("VerifiedBooking")
+                        .HasColumnType("bit");
+
+                    b.HasKey("id");
+
+                    b.ToTable("BookingCars");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.Car", b =>
@@ -678,7 +768,12 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
 
                     b.ToTable("RoomPhotos");
                 });
@@ -791,8 +886,17 @@ namespace Travelling_Application.Migrations
             modelBuilder.Entity("Travelling_Application.Models.Room", b =>
                 {
                     b.HasOne("Travelling_Application.Models.Accomodation", null)
-                        .WithMany("Rooms")
+                        .WithMany("AllRooms")
                         .HasForeignKey("AccomodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.RoomPhotos", b =>
+                {
+                    b.HasOne("Travelling_Application.Models.Room", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -806,12 +910,17 @@ namespace Travelling_Application.Migrations
 
             modelBuilder.Entity("Travelling_Application.Models.Accomodation", b =>
                 {
-                    b.Navigation("Rooms");
+                    b.Navigation("AllRooms");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.Room", b =>
+                {
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("Travelling_Application.Models.User", b =>

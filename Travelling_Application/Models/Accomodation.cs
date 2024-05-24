@@ -11,7 +11,7 @@
         public int Rating { get; set; }
         public string TypeOfAccomodation { get; set; }
         public string Description { get; set; }
-        public List<Room> Rooms { get; set; }
+        public List<Room> AllRooms { get; set; }
         public bool Parking { get; set; }
         public int SwimmingPool { get; set; }
         public bool FreeWIFI { get; set; }
@@ -36,5 +36,6 @@
         public string RejectedMessage { get; set; }
         public int PublisherId { get; set; }
         public byte[] MainPhoto { get; set; }
+        public double MinCost { get; set; }
     }
 }

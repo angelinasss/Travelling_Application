@@ -1,0 +1,539 @@
+﻿@{
+    ViewData["Title"] = "Accommodation Information | TravelHaven";
+}
+
+@using Travelling_Application.ViewModels
+@model ShowAccomodationInformationViewModel
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    @section styles {
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .car-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
+            .car-image {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .mini-info-item-free {
+                color: green;
+            }
+
+            .enlarged-photo-container {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .enlarged-photo {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 90%;
+                max-height: 90%;
+                border: 2px solid #fff;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-btnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 99999;
+            }
+
+            .photo-item {
+                width: 150px;
+                height: 150px;
+                margin: 5px;
+                position: relative;
+            }
+
+            .car-title {
+                margin-top: 0;
+            }
+
+            .car-price {
+                font-weight: bold;
+            }
+
+            .mini-info {
+                margin-top: 5px;
+            }
+
+            .mini-info-item {
+                display: inline-block;
+                margin-right: 10px;
+                padding: 5px 10px;
+                background-color: #f0f0f0;
+                color: #333;
+                border-radius: 5px;
+                margin-top: 10px;
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+
+            .gallery-container {
+                position: relative;
+                max-width: 600px;
+                margin: auto;
+            }
+
+            .gallery-slide {
+                display: none;
+            }
+
+            .active-slide {
+                display: block;
+            }
+
+            .gallery-container-room {
+                position: relative;
+                max-width: 600px;
+                margin: auto;
+            }
+
+            .gallery-slide-room {
+                display: none;
+            }
+
+            .active-slide-room {
+                display: block;
+            }
+
+            .prev, .next {
+                cursor: pointer;
+                position: absolute;
+                top: 50%;
+                width: auto;
+                padding: 16px;
+                color: white;
+                font-weight: bold;
+                font-size: 18px;
+                transition: 0.6s ease;
+                border-radius: 0 3px 3px 0;
+                user-select: none;
+            }
+
+            .prev {
+                left: 0;
+                border-radius: 3px 0 0 3px;
+            }
+
+            .next {
+                right: 0;
+                border-radius: 3px 0 0 3px;
+            }
+
+                .prev:hover, .next:hover {
+                    background-color: rgba(0,0,0,0.8);
+                }
+
+            .prev-room, .next-room {
+                cursor: pointer;
+                position: absolute;
+                top: 50%;
+                width: auto;
+                padding: 16px;
+                color: white;
+                font-weight: bold;
+                font-size: 18px;
+                transition: 0.6s ease;
+                border-radius: 0 3px 3px 0;
+                user-select: none;
+            }
+
+            .prev-room {
+                left: 0;
+                border-radius: 3px 0 0 3px;
+            }
+
+            .next-room {
+                right: 0;
+                border-radius: 3px 0 0 3px;
+            }
+
+                .prev-room:hover, .next-room:hover {
+                    background-color: rgba(0,0,0,0.8);
+                }
+
+            .input-group {
+                display: flex;
+                justify-content: center;
+            }
+
+                .input-group input {
+                    max-width: 200px;
+                    margin: 0 10px;
+                }
+        </style>
+    }
+</head>
+
+<main class="text-center" style="padding-bottom: 30px;">
+    <body>
+        <h2 style="margin-bottom: 20px">@Model.Name</h2>
+        <div class="gallery-container">
+            @for (int i = 0; i < Model.Photos.Count; i++)
+            {
+                var base64Image = Convert.ToBase64String(Model.Photos[i]);
+                var imageSrc = $"data:image/jpeg;base64,{base64Image}";
+                <div class="gallery-slide @((i == 0) ? "active-slide" : "")">
+                    <img src="@imageSrc" style="width:100%">
+                </div>
+            }
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        </div>
+        <h6 style="margin-top: 20px;"><i class="fa-solid fa-place-of-worship"></i>  @Model.TypeOfAccomodation</h6>
+        <h6 style="margin-top: 20px;"><i class="fa-solid fa-earth-americas"></i>  @Model.Country, @Model.City</h6>
+        <h6 style="margin-top: 20px;"><i class="fa-solid fa-map-location-dot"></i>  @Model.Address</h6>
+        <p class="mini-info">
+            @{
+                foreach (var nutrition in @Model.TypesOfNutrition)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-bowl-food"></i> @nutrition</span>
+                }
+            }
+        </p>
+        <p class="mini-info">
+            @{
+                if (Model.Parking)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-square-parking"></i> Parking</span>
+                }
+                if (Model.SwimmingPool != 0)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-person-swimming"></i> @Model.SwimmingPool Swimming Pool</span>
+                }
+                if (Model.FreeWIFI)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-wifi"></i> Free WIFI</span>
+                }
+                if (Model.PrivateBeach)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-umbrella-beach"></i> Private Beach</span>
+                }
+                if (Model.LineOfBeach != 0)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-grip-lines"></i> @Model.LineOfBeach Line Of Beach</span>
+                }
+                if (Model.Restaurants != 0)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-utensils"></i> @Model.Restaurants Restaurant</span>
+                }
+                if (Model.SPA)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-spa"></i> SPA</span>
+                }
+                if (Model.Bar)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-martini-glass"></i> Bar</span>
+                }
+                if (Model.Garden)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-sun-plant-wilt"></i> Garden</span>
+                }
+                if (Model.TransferToAirport)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-truck-plane"></i> Transfer To Airport</span>
+                }
+                if (Model.SmookingRooms)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-smoking"></i> Smooking Rooms</span>
+                }
+                if (Model.FamilyRooms)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-people-group"></i> Family Rooms</span>
+                }
+                if (Model.CarChargingStation)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-charging-station"></i> Car Charging Station</span>
+                }
+                if (Model.WheelchairAccessible)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-wheelchair"></i> Wheelchair Accessible</span>
+                }
+                if (Model.FitnessCentre)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-dumbbell"></i> Fitness Centre</span>
+                }
+                if (Model.PetsAllowed)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-paw"></i> Pets Allowed</span>
+                }
+                if (Model.DeliveryFoodToTheRoom)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-truck"></i> Delivery Food To The Room</span>
+                }
+                if (Model.EveryHourFrontDesk)
+                {
+                    <span class="mini-info-item"><i class="fa-solid fa-user-tie"></i> Every Hour Front Desk</span>
+                }
+
+            }
+        </p>
+        <h6 style="font-weight: normal; margin-top: 20px; margin-bottom: 30px;">@Model.Description</h6>
+        <h3>Rooms</h3>
+        @{
+            int roomIndex = 0;
+            foreach (var room in @Model.AllRooms)
+            {
+                <h2 style="margin-bottom: 20px; margin-top: 35px;">@room.RoomName</h2>
+                <div class="gallery-container-room" id="room-@roomIndex">
+                    @for (int i = 0; i < room.Photos.Count; i++)
+                    {
+                        var base64Image = Convert.ToBase64String(room.Photos[i].PhotoArray);
+                        var imageSrc = $"data:image/jpeg;base64,{base64Image}";
+                        <div class="gallery-slide-room @((i == 0) ? "active-slide-room" : "")" style="display:@((i == 0) ? "block" : "none")">
+                            <img src="@imageSrc" style="width:100%">
+                        </div>
+                    }
+                    <a class="prev-room" onclick="plusSlidesRoom(-1, @roomIndex)">&#10094;</a>
+                    <a class="next-room" onclick="plusSlidesRoom(1, @roomIndex)">&#10095;</a>
+                </div>
+                <h6 style="margin-top: 20px;"><i class="fa-solid fa-bowl-food"></i>  @room.TypeOfNutritionRoom Included</h6>
+                <h6 style="margin-top: 20px;"><i class="fa-regular fa-eye"></i>  @room.View View</h6>
+              
+                        if (room.FreeCancellation)
+                        {
+                        <span class="mini-info-item-free"> Free Cancellation</span>
+                        }
+                roomIndex++;
+               
+                <p class="mini-info">
+                    @{
+                        if (room.WashingMachine)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-soap"></i> Washing Machine</span>
+                        }
+                        if (room.Kitchen)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-kitchen-set"></i> Kitchen</span>
+                        }
+                        if (room.WheelchairAccessibleRoom)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-wheelchair"></i> Wheelchair Accessible Room</span>
+                        }
+                        if (room.ToiletWithGrabBars)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-toilet"></i> Toilet With Grab Bars</span>
+                        }
+                        if (room.BathtubWithgrabbars)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-bath"></i> Bathtub With Grabbars</span>
+                        }
+                        if (room.BarrierFreeShower)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-shower"></i> Barrier Free Shower</span>
+                        }
+                        if (room.ShowerWithoutEdge)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-shower"></i> Shower Without Edge</span>
+                        }
+                        if (room.HighToilet)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-toilet"></i> High Toilet</span>
+                        }
+                        if (room.LowSink)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-sink"></i> Low Sink</span>
+                        }
+                        if (room.BathroomEmergencyButton)
+                        {
+                            <span class="mini-info-item"><i class="fa-regular fa-circle-dot"></i> Bathroom Emergency Button</span>
+                        }
+                        if (room.ShowerChair)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-chair"></i> Shower Chair</span>
+                        }
+                        if (room.CoffeeMachine)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-mug-saucer"></i> Coffee Machine</span>
+                        }
+                        if (room.CoffeeOrTea)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-mug-hot"></i> Coffee Or Tea</span>
+                        }
+                        if (room.ElectricKettle)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-glass-water-droplet"></i> Electric Kettle</span>
+                        }
+                        if (room.Soundproofing)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-ear-listen"></i> Soundproofing</span>
+                        }
+                        if (room.Patio)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-headphones"></i> Patio</span>
+                        }
+                        if (room.FlatScreenTV)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-tv"></i> Flat Screen TV</span>
+                        }
+                        if (room.Balcony)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-check"></i> Balcony</span>
+                        }
+                        if (room.Terrace)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-check"></i> Terrace</span>
+                        }
+                        if (room.PrivatePool)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-water-ladder"></i> Private Pool</span>
+                        }
+                        if (room.Bath)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-bath"></i> Bath</span>
+                        }
+                        if (room.PlaceToWorkOnALaptop)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-laptop"></i> Place To Work On A Laptop</span>
+                        }
+                        if (room.AirConditioner)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-fan"></i> Air Conditioner</span>
+                        }
+                        if (room.PrivateBathroom)
+                        {
+                            <span class="mini-info-item"><i class="fa-solid fa-restroom"></i> Private Bathroom</span>
+                        }
+
+                    }
+                </p>
+                <h6 style="font-weight: normal; margin-top: 20px; margin-bottom: 30px;">@room.RoomDescription</h6>
+                <h4 style="margin-top: 20px;">Available Dates & Amount Of Same Rooms:</h4>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        @for (int i = 0; i < room.AvailableDatesRoom.Count && i < room.AmountOfAvailableSameRooms.Count; i++)
+                        {
+                            <div class="mini-info">
+                                <div class="input-group">
+                                    <input type="date" class="form-control" value="@room.AvailableDatesRoom[i].ToString("yyyy-MM-dd")" readonly>
+                                    <input type="number" class="form-control" value="@room.AmountOfAvailableSameRooms[i].ToString()" readonly>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <h2 style="margin-top: 20px; margin-bottom: 20px;">Cost: $@room.RoomCost / 1 Night</h2>
+                if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                {
+                    <form asp-action="EditRoom" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block; margin-bottom: 20px;" method="post">
+                        <input type="hidden" name="editRoomId" value="@room.ID" />
+                        <input type="hidden" name="editRoomAccomodationId" value="@room.AccomodationId" />
+                        <button class="btn btn-primary" type="submit">Edit</button>
+                    </form>
+                    <form asp-action="DeleteRoom" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block; margin-bottom: 20px;" method="post">
+                        <input type="hidden" name="deleteRoomId" value="@room.ID" />
+                        <input type="hidden" name="deleteRoomAccomodationId" value="@room.AccomodationId" />
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                    </form>
+                }
+            }
+         }
+        <script>
+            let slideIndex = 0;
+            showSlides(slideIndex);
+
+            function plusSlides(n) {
+                showSlides(slideIndex += n);
+            }
+
+            function showSlides(n) {
+                let slides = document.getElementsByClassName("gallery-slide");
+                if (n >= slides.length) {
+                    slideIndex = 0;
+                }
+                if (n < 0) {
+                    slideIndex = slides.length - 1;
+                }
+                for (let i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                slides[slideIndex].style.display = "block";
+            }
+        </script>
+        <script>
+            function plusSlidesRoom(n, roomIndex) {
+                showSlidesRoom(slideIndexx[roomIndex] += n, roomIndex);
+            }
+
+            function showSlidesRoom(n, roomIndex) {
+                let slidesRoom = document.querySelectorAll(`#room-${roomIndex} .gallery-slide-room`);
+                if (n >= slidesRoom.length) {
+                    slideIndexx[roomIndex] = 0;
+                }
+                if (n < 0) {
+                    slideIndexx[roomIndex] = slidesRoom.length - 1;
+                }
+                for (let i = 0; i < slidesRoom.length; i++) {
+                    slidesRoom[i].style.display = "none";
+                }
+                slidesRoom[slideIndexx[roomIndex]].style.display = "block";
+            }
+
+            let slideIndexx = [];
+            document.addEventListener('DOMContentLoaded', (event) => {
+                let rooms = document.querySelectorAll('.gallery-container-room');
+                rooms.forEach((room, index) => {
+                    slideIndexx[index] = 0;
+                    showSlidesRoom(slideIndexx[index], index);
+                });
+            });
+        </script>
+
+    </body>
+</main>
+

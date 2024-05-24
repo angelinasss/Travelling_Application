@@ -7,7 +7,7 @@
         public string RoomName { get; set; }
         public List<DateTime> AvailableDatesRoom { get; set; }
         public List<int> AmountOfAvailableSameRooms { get; set; }
-       // public List<Photo> Photos { get; set; }
+        public List<RoomPhotos> Photos { get; set; }
         public double RoomCost { get; set; }
         public string RoomDescription { get; set; }
         public bool WashingMachine { get; set; }
