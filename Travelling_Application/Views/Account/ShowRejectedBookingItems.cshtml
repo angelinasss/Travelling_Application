@@ -1,0 +1,902 @@
+﻿@{
+    ViewData["Title"] = "My Rejected Bookings | TravelHaven";
+}
+
+@using Travelling_Application.ViewModels
+@model ForRejectedMyBookingsObjectsViewModel
+
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    @section styles {
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .car-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
+            .attraction-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
+            .accomodation-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+
+            .car-image {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .attraction-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border-radius: 10px 20px 30px 40px;
+            }
+
+            .accomodation-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border-radius: 10px 20px 30px 40px;
+            }
+
+            .car-details {
+                padding: 15px;
+            }
+
+            .car-title {
+                margin-top: 0;
+            }
+
+            .car-price {
+                font-weight: bold;
+            }
+
+            .attraction-details {
+                padding: 15px;
+            }
+
+            .attraction-title {
+                margin-top: 0;
+            }
+
+            .attraction-price {
+                font-weight: bold;
+            }
+
+            .accomodation-details {
+                padding: 15px;
+            }
+
+            .accomodation-title {
+                margin-top: 0;
+            }
+
+            .airticket-price {
+                font-weight: bold;
+            }
+
+            .car-features {
+                color: #666;
+            }
+
+            .mini-info {
+                margin-top: 5px;
+            }
+
+            .mini-info-item {
+                display: inline-block;
+                margin-right: 10px;
+                padding: 5px 10px;
+                background-color: #f0f0f0;
+                color: #333;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+            }
+
+            /* Hide default HTML checkbox */
+            .switch input {
+                display: none;
+            }
+
+            /* The slider */
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            input:checked + .slider {
+                background-color: #2196F3;
+            }
+
+            input:focus + .slider {
+                box-shadow: 0 0 1px #2196F3;
+            }
+
+            input:checked + .slider:before {
+                -webkit-transform: translateX(19px);
+                -ms-transform: translateX(19px);
+                transform: translateX(19px);
+            }
+
+            /* Rounded sliders */
+            .slider.round {
+                border-radius: 20px;
+            }
+
+            .slider.round:before {
+                border-radius: 50%;
+            }
+
+            .notification {
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            .text-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .text-danger1 {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
+            }
+
+        </style>
+    }
+</head>
+
+<main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="list-group" style="background-color: #343a40;">
+                        <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
+                        @{
+                            if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                            {
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Verified Bookings</a>
+                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item style="color: #ffffff;">My Bookings Awaiting Verification</a>
+                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item style="color: #ffffff;">My Rejected Bookings</a>
+                            }
+                            else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
+                            {
+                                <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
+                                <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
+                                <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
+                                <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
+                                <a href="/Account/BookingsForVerification" class="list-group-item style="color: #ffffff;">Bookings For Verification</a>
+                                <a href="/Account/VerifiedBookings" class="list-group-item style="color: #ffffff;">Verified Bookings</a>
+                                <a href="/Account/RejectedBookings" class="list-group-item style="color: #ffffff;">Rejected Bookings</a>
+                            }
+                            else
+                            {
+                                <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Verification</a>
+                                <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
+                                <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col">
+                            @{
+                                <h3>My Rejected Bookings</h3>
+                            }
+                            <div class="car-list" style="margin-top: 20px;">
+                                @{
+                                    int iiii = 0;
+                                }
+                                @foreach (var car in Model.Cars)
+                                {
+                                    <div class="car-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(car.CarPhoto))" alt="Car Image" class="car-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="car-details">
+                                                    <h3 class="car-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowCarInformation?carId=@car.Id">@car.Title</a>
+                                                    </h3>
+                                                    <p class="car-features" style="text-align: left;">@car.City</p>
+                                                    <div class="row">
+                                                        <div class="text-right">
+                                                            <p class="car-price">Price per day: $@car.Cost</p>
+                                                            @if (car.FreeCancellation)
+                                                            {
+                                                                <p class="text-success">Free cancellation</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <p class="mini-info">
+                                                        @if (car.UnlimitedMileage)
+                                                        {
+                                                            <span class="mini-info-item"><i class="fa fa-road"></i> Unlimited Mileage</span>
+                                                        }
+                                                        <span class="mini-info-item"><i class="fa fa-gear"></i> @car.Transmission</span>
+                                                        <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
+                                                    </p>
+                                                    <h5>Booking Dates:</h5>
+                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.Date.ToString("dd/MM/yyyy") - @Model.BookingCars[iiii].ReturnDate.Date.ToString("dd/MM/yyyy")</span>  
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @Model.CarMessages[iiii]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    iiii++;
+                                }
+
+                            </div>
+                            <div class="airticket-list" style="margin-top: 20px;">
+                                @{
+                                    int i = 0;
+                                }
+
+                                @foreach (var airticket in Model.AirTickets)
+                                {
+                                    if (Model.BookingAirTickets[i].TypeClass == "EC")
+                                    {
+                                        <div class="car-card">
+                                            <div class="row">
+                                                <h3 style="margin-top: 20px;">Economy Class</h3>
+                                                <div class="col-md-3" style="margin-top: 20px;">
+                                                    @if (airticket.FreeCancellation)
+                                                    {
+                                                        <p class="text-success">Free cancellation</p>
+                                                    }
+                                                    <p class="airticket-price" style="font-size: 25px;">$@airticket.CostEC</p>
+                                                    <p style="display: inline-block; margin-right: 10px;">Luggage</p>
+                                                    <label class="switch" style="display: inline-block; vertical-align: middle;">
+                                                        @if (airticket.IncludeLuggageEC)
+                                                        {
+                                                            <input type="checkbox" checked disabled>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" disabled>
+                                                        }
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете слева от линии пути -->
+                                                    <div style="text-align: center; margin-left: -40px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.DepartureTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityFrom</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeek = "@airticket.DepartureTime.DayOfWeek";
+                                                                var monthNumber = "@airticket.DepartureTime.Month";
+                                                                var months = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var month = months[monthNumber - 1];
+
+                                                                var day = "@airticket.DepartureTime.Date.Day";
+
+                                                                document.write(dayOfWeek + ", " + month + day);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6" style="margin-top: 20px; margin-left: -85px;">
+                                                    <div style="text-align: center;">
+                                                        <p style="margin-bottom: -10px; font-size: smaller;">
+                                                            <script>
+                                                                var departureTimeString = "@airticket.DepartureTime";
+                                                                var arrivalTimeString = "@airticket.ArrivalTime";
+
+                                                                // Разбиваем строку на компоненты
+                                                                var parts = arrivalTimeString.split(/[. :]/); // Разделителями являются точка, пробел и двоеточие
+                                                                var parts1 = departureTimeString.split(/[. :]/);
+
+                                                                // Создаем объект Date с компонентами даты и времени
+                                                                var arrivalTime = new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4], parts[5]);
+                                                                var departureTime = new Date(parts1[2], parts1[1] - 1, parts1[0], parts1[3], parts1[4], parts1[5]);
+
+                                                                // Получение разницы в миллисекундах между датами отправления и прибытия
+                                                                var difference = Math.abs(arrivalTime - departureTime);
+
+                                                                // Преобразование разницы в дни, часы и минуты
+                                                                var daysDifference = Math.floor(difference / (1000 * 60 * 60 * 24));
+                                                                var hoursDifference = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                                var minutesDifference = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+                                                                // Форматирование значения "On the way"
+                                                                var onTheWay = "On the way: ";
+                                                                if (daysDifference > 0) {
+                                                                    onTheWay += daysDifference + "d ";
+                                                                }
+                                                                onTheWay += hoursDifference + "h " + minutesDifference + "m";
+
+                                                                document.write(onTheWay);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                    <div class="flight-path" style="position: relative;">
+                                                        <!-- Линия, соединяющая город отправки и город прибытия -->
+                                                        <svg height="100" width="100%">
+                                                            <!-- Путь (извилистая линия) -->
+                                                            <path d="M 50 50
+                                                                 Q 75 25, 100 50
+                                                                 Q 125 75, 150 50
+                                                                 Q 175 25, 200 50
+                                                                 Q 225 75, 250 50
+                                                                 Q 275 25, 300 50
+                                                                 Q 325 75, 350 50
+                                                                 Q 375 25, 400 50"
+                                                                  style="fill:none;stroke:black;stroke-width:2;stroke-dasharray:10,5" />
+                                                            <!-- Круг (город отправки) -->
+                                                            <circle cx="50" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город отправки) -->
+                                                            <text x="50" y="70" text-anchor="middle" fill="black">@airticket.DepartureCountryCode</text>
+                                                            <!-- Круг (город прибытия) -->
+                                                            <circle cx="400" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город прибытия) -->
+                                                            <text x="400" y="70" text-anchor="middle" fill="black">@airticket.ArrivalCountryCode</text>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете справа от линии пути -->
+                                                    <div style="text-align: center; margin-left: -110px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.ArrivalTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityTo</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeekArrivall = "@airticket.ArrivalTime.DayOfWeek";
+                                                                var monthNumberArrivall = "@airticket.ArrivalTime.Month";
+                                                                var monthsArrivall = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var monthArrivall = monthsArrivall[monthNumberArrivall - 1];
+
+                                                                var dayArrivall = "@airticket.ArrivalTime.Date.Day";
+
+                                                                document.write(dayOfWeekArrivall + ", " + monthArrivall + dayArrivall);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <h5>Count Of Tickets:</h5>
+                                                <span class="mini-info-item"> @Model.BookingAirTickets[i].Passengers</span>
+                                                <div class="col-md-12 text-center" style="margin-bottom: 20px;">
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-messageEC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @Model.AirticketMessages[i]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (Model.BookingAirTickets[i].TypeClass == "BC")
+                                    {
+                                        <div class="car-card">
+                                            <div class="row">
+                                                <h3 style="margin-top: 20px;">Business Class</h3>
+                                                <div class="col-md-3" style="margin-top: 20px;">
+                                                    @if (airticket.FreeCancellation)
+                                                    {
+                                                        <p class="text-success">Free cancellation</p>
+                                                    }
+                                                    <p class="airticket-price" style="font-size: 25px;">$@airticket.CostBC</p>
+                                                    <p style="display: inline-block; margin-right: 10px;">Luggage</p>
+                                                    <label class="switch" style="display: inline-block; vertical-align: middle;">
+                                                        @if (airticket.IncludeLuggageBC)
+                                                        {
+                                                            <input type="checkbox" checked disabled>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" disabled>
+                                                        }
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете слева от линии пути -->
+                                                    <div style="text-align: center; margin-left: -40px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.DepartureTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityFrom</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeek2 = "@airticket.DepartureTime.DayOfWeek";
+                                                                var monthNumber2 = "@airticket.DepartureTime.Month";
+                                                                var months2 = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var month2 = months2[monthNumber2 - 1];
+
+                                                                var day2 = "@airticket.DepartureTime.Date.Day";
+
+                                                                document.write(dayOfWeek2 + ", " + month2 + day2);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6" style="margin-top: 20px; margin-left: -85px;">
+                                                    <div style="text-align: center;">
+                                                        <p style="margin-bottom: -10px; font-size: smaller;">
+                                                            <script>
+                                                                var departureTimeString = "@airticket.DepartureTime";
+                                                                var arrivalTimeString = "@airticket.ArrivalTime";
+
+                                                                // Разбиваем строку на компоненты
+                                                                var parts = arrivalTimeString.split(/[. :]/); // Разделителями являются точка, пробел и двоеточие
+                                                                var parts1 = departureTimeString.split(/[. :]/);
+
+                                                                // Создаем объект Date с компонентами даты и времени
+                                                                var arrivalTime = new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4], parts[5]);
+                                                                var departureTime = new Date(parts1[2], parts1[1] - 1, parts1[0], parts1[3], parts1[4], parts1[5]);
+
+                                                                // Получение разницы в миллисекундах между датами отправления и прибытия
+                                                                var difference = Math.abs(arrivalTime - departureTime);
+
+                                                                // Преобразование разницы в дни, часы и минуты
+                                                                var daysDifference = Math.floor(difference / (1000 * 60 * 60 * 24));
+                                                                var hoursDifference = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                                var minutesDifference = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+                                                                // Форматирование значения "On the way"
+                                                                var onTheWay = "On the way: ";
+                                                                if (daysDifference > 0) {
+                                                                    onTheWay += daysDifference + "d ";
+                                                                }
+                                                                onTheWay += hoursDifference + "h " + minutesDifference + "m";
+
+                                                                document.write(onTheWay);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                    <div class="flight-path" style="position: relative;">
+                                                        <!-- Линия, соединяющая город отправки и город прибытия -->
+                                                        <svg height="100" width="100%">
+                                                            <!-- Путь (извилистая линия) -->
+                                                            <path d="M 50 50
+                                                                 Q 75 25, 100 50
+                                                                 Q 125 75, 150 50
+                                                                 Q 175 25, 200 50
+                                                                 Q 225 75, 250 50
+                                                                 Q 275 25, 300 50
+                                                                 Q 325 75, 350 50
+                                                                 Q 375 25, 400 50"
+                                                                  style="fill:none;stroke:black;stroke-width:2;stroke-dasharray:10,5" />
+                                                            <!-- Круг (город отправки) -->
+                                                            <circle cx="50" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город отправки) -->
+                                                            <text x="50" y="70" text-anchor="middle" fill="black">@airticket.DepartureCountryCode</text>
+                                                            <!-- Круг (город прибытия) -->
+                                                            <circle cx="400" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город прибытия) -->
+                                                            <text x="400" y="70" text-anchor="middle" fill="black">@airticket.ArrivalCountryCode</text>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете справа от линии пути -->
+                                                    <div style="text-align: center; margin-left: -110px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.ArrivalTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityTo</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeekArrival1 = "@airticket.ArrivalTime.DayOfWeek";
+                                                                var monthNumberArrival1 = "@airticket.ArrivalTime.Month";
+                                                                var monthsArrival1 = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var monthArrival1 = monthsArrival1[monthNumberArrival1 - 1];
+
+                                                                var dayArrival1 = "@airticket.ArrivalTime.Date.Day";
+
+                                                                document.write(dayOfWeekArrival1 + ", " + monthArrival1 + dayArrival1);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <h5>Count Of Tickets:</h5>
+                                                <span class="mini-info-item"> @Model.BookingAirTickets[i].Passengers</span>
+                                                <div class="col-md-12 text-center" style="margin-bottom: 20px;">
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-messageBC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @Model.AirticketMessages[i]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (Model.BookingAirTickets[i].TypeClass == "FC")
+                                    {
+                                        <div class="car-card">
+                                            <div class="row">
+                                                <h3 style="margin-top: 20px;">First Class</h3>
+                                                <div class="col-md-3" style="margin-top: 20px;">
+                                                    @if (airticket.FreeCancellation)
+                                                    {
+                                                        <p class="text-success">Free cancellation</p>
+                                                    }
+                                                    <p class="airticket-price" style="font-size: 25px;">$@airticket.CostFC</p>
+                                                    <p style="display: inline-block; margin-right: 10px;">Luggage</p>
+                                                    <label class="switch" style="display: inline-block; vertical-align: middle;">
+                                                        @if (airticket.IncludeLuggageFC)
+                                                        {
+                                                            <input type="checkbox" checked disabled>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" disabled>
+                                                        }
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете слева от линии пути -->
+                                                    <div style="text-align: center; margin-left: -40px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.DepartureTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityFrom</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeek11 = "@airticket.DepartureTime.DayOfWeek";
+                                                                var monthNumber11 = "@airticket.DepartureTime.Month";
+                                                                var months11 = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var month11 = months11[monthNumber11 - 1];
+
+                                                                var day11 = "@airticket.DepartureTime.Date.Day";
+
+                                                                document.write(dayOfWeek11 + ", " + month11 + day11);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6" style="margin-top: 20px; margin-left: -85px;">
+                                                    <div style="text-align: center;">
+                                                        <p style="margin-bottom: -10px; font-size: smaller;">
+                                                            <script>
+                                                                var departureTimeString = "@airticket.DepartureTime";
+                                                                var arrivalTimeString = "@airticket.ArrivalTime";
+
+                                                                // Разбиваем строку на компоненты
+                                                                var parts = arrivalTimeString.split(/[. :]/); // Разделителями являются точка, пробел и двоеточие
+                                                                var parts1 = departureTimeString.split(/[. :]/);
+
+                                                                // Создаем объект Date с компонентами даты и времени
+                                                                var arrivalTime = new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4], parts[5]);
+                                                                var departureTime = new Date(parts1[2], parts1[1] - 1, parts1[0], parts1[3], parts1[4], parts1[5]);
+
+                                                                // Получение разницы в миллисекундах между датами отправления и прибытия
+                                                                var difference = Math.abs(arrivalTime - departureTime);
+
+                                                                // Преобразование разницы в дни, часы и минуты
+                                                                var daysDifference = Math.floor(difference / (1000 * 60 * 60 * 24));
+                                                                var hoursDifference = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                                var minutesDifference = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+                                                                // Форматирование значения "On the way"
+                                                                var onTheWay = "On the way: ";
+                                                                if (daysDifference > 0) {
+                                                                    onTheWay += daysDifference + "d ";
+                                                                }
+                                                                onTheWay += hoursDifference + "h " + minutesDifference + "m";
+
+                                                                document.write(onTheWay);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                    <div class="flight-path" style="position: relative;">
+                                                        <!-- Линия, соединяющая город отправки и город прибытия -->
+                                                        <svg height="100" width="100%">
+                                                            <!-- Путь (извилистая линия) -->
+                                                            <path d="M 50 50
+                                                                 Q 75 25, 100 50
+                                                                 Q 125 75, 150 50
+                                                                 Q 175 25, 200 50
+                                                                 Q 225 75, 250 50
+                                                                 Q 275 25, 300 50
+                                                                 Q 325 75, 350 50
+                                                                 Q 375 25, 400 50"
+                                                                  style="fill:none;stroke:black;stroke-width:2;stroke-dasharray:10,5" />
+                                                            <!-- Круг (город отправки) -->
+                                                            <circle cx="50" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город отправки) -->
+                                                            <text x="50" y="70" text-anchor="middle" fill="black">@airticket.DepartureCountryCode</text>
+                                                            <!-- Круг (город прибытия) -->
+                                                            <circle cx="400" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город прибытия) -->
+                                                            <text x="400" y="70" text-anchor="middle" fill="black">@airticket.ArrivalCountryCode</text>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете справа от линии пути -->
+                                                    <div style="text-align: center; margin-left: -110px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.ArrivalTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityTo</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeekArrivalll = "@airticket.ArrivalTime.DayOfWeek";
+                                                                var monthNumberArrivalll = "@airticket.ArrivalTime.Month";
+                                                                var monthsArrivalll = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var monthArrivalll = monthsArrivalll[monthNumberArrivalll - 1];
+
+                                                                var dayArrivalll = "@airticket.ArrivalTime.Date.Day";
+
+                                                                document.write(dayOfWeekArrivalll + ", " + monthArrivalll + dayArrivalll);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <h5>Count Of Tickets:</h5>
+                                                <span class="mini-info-item"> @Model.BookingAirTickets[i].Passengers</span>
+                                                <div class="col-md-12 text-center" style="margin-bottom: 20px;">
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-messageFC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @Model.AirticketMessages[i]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    i++;
+                                }
+                            </div>
+                            <div class="attraction-list" style="margin-top: 20px;">
+                                @{
+                                    int iii = 0;
+                                }
+                                @foreach (var attraction in Model.Attractions)
+                                {
+                                    <div class="attraction-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(attraction.MainPhoto))" alt="Attraction Image" class="attraction-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="attraction-details">
+                                                    <h3 class="attraction-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
+                                                    </h3>
+                                                    <p class="attraction-features" style="text-align: left;">@attraction.City, @attraction.Country</p>
+                                                    <div class="row">
+                                                        <div class="text-right">
+                                                            <p class="attraction-price">Price per 1 person: $@attraction.Cost</p>
+                                                            @if (attraction.FreeCancellation)
+                                                            {
+                                                                <p class="text-success">Free cancellation</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <p class="mini-info">
+                                                        <span class="mini-info-item"><i class="fa-solid fa-clock"></i> @attraction.TimeOfDay</span>
+                                                    </p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            foreach (var language in attraction.Languages)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <h5>Booking Date:</h5>
+                                                    <span class="mini-info-item"> @Model.BookingAttractions[iii].Date.Date.ToString("dd/MM/yyyy")</span>
+                                                    <h5>Count Of Tickets:</h5>
+                                                    <span class="mini-info-item"> @Model.BookingAttractions[iii].AmountOfTickets</span>
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @Model.AttractionMessages[iii]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    iii++;
+                                }
+                            </div>
+
+                            <div class="accomodation-list" style="margin-top: 20px;">
+                                @{
+                                    int ii = 0;
+                                }
+                                @foreach (var accomodation in Model.Accomodation)
+                                {
+                                    <div class="accomodation-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(accomodation.MainPhoto))" alt="Accomodation Image" class="accomodation-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="accomodation-details">
+                                                    <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
+                                                    </h3>
+                                                    <p class="accomodation-features" style="text-align: left;">@accomodation.City, @accomodation.Country</p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            if (accomodation.SwimmingPool > 0)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-person-swimming"></i> @accomodation.SwimmingPool swimming pool</span>
+                                                            }
+                                                            if (accomodation.Restaurants > 0)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-utensils"></i> @accomodation.Restaurants restaurant</span>
+                                                            }
+                                                            if (accomodation.Parking)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-square-parking"></i> Parking</span>
+                                                            }
+                                                            if (accomodation.PrivateBeach)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-umbrella-beach"></i> Private Beach</span>
+                                                            }
+                                                            if (accomodation.SPA)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-spa"></i> SPA</span>
+                                                            }
+                                                            if (accomodation.FitnessCentre)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-dumbbell"></i> Fitness Centre</span>
+                                                            }
+                                                            if (accomodation.PetsAllowed)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-paw"></i> Pets Allowed</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            foreach (var nutrition in accomodation.TypesOfNutrition)
+                                                            {
+                                                                <span class="mini-info-item"><i class="fa-solid fa-bowl-food"></i> @nutrition</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="attraction-price">from $@accomodation.MinCost / 1 night</p>
+                                                    <h5>Booking Dates:</h5>
+                                                    <span class="mini-info-item"> @Model.BookingAccomodation[ii].DateOfDeparture.Date.ToString("dd/MM/yyyy") - @Model.BookingAccomodation[ii].ReturnDate.Date.ToString("dd/MM/yyyy")</span>
+                                                    <h5>Type Of Room:</h5>
+                                                    <span class="mini-info-item"> @Model.BookingAccomodation[ii].TypeOfRoom</span>
+                                                    <h5>Count Of Rooms:</h5>
+                                                    <span class="mini-info-item"> @Model.BookingAccomodation[ii].Adults</span>
+                                                    <h4>Cause of Reject:</h4>
+                                                    <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+                                                        @Model.AccomodationMessages[ii]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ii++;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</main>

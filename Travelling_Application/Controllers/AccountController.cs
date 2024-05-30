@@ -4,16 +4,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Claims;
 using Travelling_Application.Models;
 using Travelling_Application.ViewModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Http;
-using System.Diagnostics.Metrics;
 
 namespace Travelling_Application.Controllers
 {
@@ -290,16 +287,6 @@ namespace Travelling_Application.Controllers
             }
 
             return RedirectToAction("ViewProfile", "Account");
-        }
-
-        public async Task<IActionResult> ShowFavoriteItems()
-        {
-            return View("FavoriteItems");
-        }
-
-        public async Task<IActionResult> ShowBookingItems()
-        {
-            return View("BookingItems");
         }
 
         public async Task<IActionResult> AddObject()
@@ -698,6 +685,830 @@ namespace Travelling_Application.Controllers
             };
 
             return View("RejectedItems", model);
+        }
+
+        public async Task<IActionResult> BookingsForVerification()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var unverifiedCars = await _context.BookingCars
+            .Where(c => !c.VerifiedBooking && !c.RejectedBooking && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.BookingAirTickets
+           .Where(c => !c.VerifiedBooking && !c.RejectedBooking && !c.CanceledBooking)
+           .ToListAsync();
+
+            var unverifiedAttractions = await _context.BookingAttractions
+            .Where(c => !c.VerifiedBooking && !c.RejectedBooking && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAccomodation = await _context.BookingAccomodations
+              .Where(c => !c.VerifiedBooking && !c.RejectedBooking && !c.CanceledBooking)
+              .ToListAsync();
+
+            var myUnverifiedCars = new List<BookingCar>();
+            var myUnverifiedAirTickets = new List<BookingAirTicket>();
+            var myUnverifiedAttractions = new List<BookingAttraction>();
+            var myUnverifiedAccomodation = new List<BookingAccomodation>();
+
+            foreach (var car in unverifiedCars)
+            {
+                var exists = _context.Car.Any(c => c.Id == car.CarId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedCars.Add(car);
+                }
+            }
+
+            foreach (var airticket in unverifiedAirTickets)
+            {
+                var exists = _context.AirTicket.Any(c => c.Id == airticket.AirTicketId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAirTickets.Add(airticket);
+                }
+            }
+
+            foreach (var attraction in unverifiedAttractions)
+            {
+                var exists = _context.Entertainment.Any(c => c.Id == attraction.AttractionId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAttractions.Add(attraction);
+                }
+            }
+
+            foreach (var accomodation in unverifiedAccomodation)
+            {
+                var exists = _context.Accomodation.Any(c => c.Id == accomodation.AccomodationId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAccomodation.Add(accomodation);
+                }
+            }
+
+            var cars = new List<Car>();
+            var usersDataCars = new List<UserData>();
+
+            foreach (var car in myUnverifiedCars)
+            {
+                var currentCar = _context.Car.Find(car.CarId);
+                cars.Add(currentCar);
+                var user = _context.Users.Find(car.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataCars.Add(userData);
+            }
+
+            var airtickets = new List<AirTicket>();
+            var usersDataAirTickets = new List<UserData>();
+
+            foreach (var airticket in myUnverifiedAirTickets)
+            {
+                var currentAirticket = _context.AirTicket.Find(airticket.AirTicketId);
+                airtickets.Add(currentAirticket);
+                var user = _context.Users.Find(airticket.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAirTickets.Add(userData);
+            }
+
+            var attractions = new List<Entertainment>();
+            var usersDataAttractions = new List<UserData>();
+
+            foreach (var attraction in myUnverifiedAttractions)
+            {
+                var currentAttraction = _context.Entertainment.Find(attraction.AttractionId);
+                attractions.Add(currentAttraction);
+                var user = _context.Users.Find(attraction.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAttractions.Add(userData);
+            }
+
+            var accomodations = new List<Accomodation>();
+            var usersDataAccomodation = new List<UserData>();
+
+            foreach (var accomodation in myUnverifiedAccomodation)
+            {
+                var currentAccomodation = _context.Accomodation.Find(accomodation.AccomodationId);
+                accomodations.Add(currentAccomodation);
+                var user = _context.Users.Find(accomodation.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAccomodation.Add(userData);
+            }
+
+            
+
+            var model = new ForVerificationObjectsViewModel
+            {
+                Cars = cars,
+                AirTickets = airtickets,
+                Attractions = attractions,
+                Accomodation = accomodations,
+                BookingCars = myUnverifiedCars,
+                BookingAirTickets = myUnverifiedAirTickets,
+                BookingAttractions = myUnverifiedAttractions,
+                BookingAccomodation = myUnverifiedAccomodation,
+                UsersDataAttractions = usersDataAttractions,
+                UsersDataAirTickets = usersDataAirTickets,
+                UsersDataAccomodation = usersDataAccomodation,
+                UsersDataCars = usersDataCars
+            };
+
+            return View("BookingsForVerification", model);
+        }
+
+        public async Task<IActionResult> ShowBookingItems()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var unverifiedCars = await _context.BookingCars
+            .Where(c => c.VerifiedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.BookingAirTickets
+           .Where(c => c.VerifiedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+           .ToListAsync();
+
+            var unverifiedAttractions = await _context.BookingAttractions
+            .Where(c => c.VerifiedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAccomodation = await _context.BookingAccomodations
+              .Where(c => c.VerifiedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+              .ToListAsync();
+
+            var myUnverifiedCars = new List<BookingCar>();
+            var myUnverifiedAirTickets = new List<BookingAirTicket>();
+            var myUnverifiedAttractions = new List<BookingAttraction>();
+            var myUnverifiedAccomodation = new List<BookingAccomodation>();
+
+            foreach (var car in unverifiedCars)
+            {
+                var exists = _context.Car.Any(c => c.Id == car.CarId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedCars.Add(car);
+                }
+            }
+
+            foreach (var airticket in unverifiedAirTickets)
+            {
+                var exists = _context.AirTicket.Any(c => c.Id == airticket.AirTicketId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAirTickets.Add(airticket);
+                }
+            }
+
+            foreach (var attraction in unverifiedAttractions)
+            {
+                var exists = _context.Entertainment.Any(c => c.Id == attraction.AttractionId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAttractions.Add(attraction);
+                }
+            }
+
+            foreach (var accomodation in unverifiedAccomodation)
+            {
+                var exists = _context.Accomodation.Any(c => c.Id == accomodation.AccomodationId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAccomodation.Add(accomodation);
+                }
+            }
+
+            var cars = new List<Car>();
+
+            foreach (var car in myUnverifiedCars)
+            {
+                var currentCar = _context.Car.Find(car.CarId);
+                cars.Add(currentCar);
+            }
+
+            var airtickets = new List<AirTicket>();
+
+            foreach (var airticket in myUnverifiedAirTickets)
+            {
+                var currentAirticket = _context.AirTicket.Find(airticket.AirTicketId);
+                airtickets.Add(currentAirticket);
+            }
+
+            var attractions = new List<Entertainment>();
+
+            foreach (var attraction in myUnverifiedAttractions)
+            {
+                var currentAttraction = _context.Entertainment.Find(attraction.AttractionId);
+                attractions.Add(currentAttraction);
+            }
+
+            var accomodations = new List<Accomodation>();
+
+            foreach (var accomodation in myUnverifiedAccomodation)
+            {
+                var currentAccomodation = _context.Accomodation.Find(accomodation.AccomodationId);
+                accomodations.Add(currentAccomodation);
+            }
+
+            var model = new WaitingBookingsViewModel
+            {
+                Cars = cars,
+                AirTickets = airtickets,
+                Attractions = attractions,
+                Accomodation = accomodations,
+                BookingCars = myUnverifiedCars,
+                BookingAirTickets = myUnverifiedAirTickets,
+                BookingAttractions = myUnverifiedAttractions,
+                BookingAccomodation = myUnverifiedAccomodation
+            };
+
+            return View("BookingItems", model);
+        }
+
+        public async Task<IActionResult> ShowUnverifiedBookingItems()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var unverifiedCars = await _context.BookingCars
+            .Where(c => !c.VerifiedBooking && !c.RejectedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.BookingAirTickets
+           .Where(c => !c.VerifiedBooking && !c.RejectedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+           .ToListAsync();
+
+            var unverifiedAttractions = await _context.BookingAttractions
+            .Where(c => !c.VerifiedBooking && !c.RejectedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAccomodation = await _context.BookingAccomodations
+              .Where(c => !c.VerifiedBooking && !c.RejectedBooking && c.UserId == currentUser.Id && !c.CanceledBooking)
+              .ToListAsync();
+
+            var myUnverifiedCars = new List<BookingCar>();
+            var myUnverifiedAirTickets = new List<BookingAirTicket>();
+            var myUnverifiedAttractions = new List<BookingAttraction>();
+            var myUnverifiedAccomodation = new List<BookingAccomodation>();
+
+            foreach (var car in unverifiedCars)
+            {
+                var exists = _context.Car.Any(c => c.Id == car.CarId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedCars.Add(car);
+                }
+            }
+
+            foreach (var airticket in unverifiedAirTickets)
+            {
+                var exists = _context.AirTicket.Any(c => c.Id == airticket.AirTicketId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAirTickets.Add(airticket);
+                }
+            }
+
+            foreach (var attraction in unverifiedAttractions)
+            {
+                var exists = _context.Entertainment.Any(c => c.Id == attraction.AttractionId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAttractions.Add(attraction);
+                }
+            }
+
+            foreach (var accomodation in unverifiedAccomodation)
+            {
+                var exists = _context.Accomodation.Any(c => c.Id == accomodation.AccomodationId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myUnverifiedAccomodation.Add(accomodation);
+                }
+            }
+
+            var cars = new List<Car>();
+
+            foreach (var car in myUnverifiedCars)
+            {
+                var currentCar = _context.Car.Find(car.CarId);
+                cars.Add(currentCar);
+            }
+
+            var airtickets = new List<AirTicket>();
+
+            foreach (var airticket in myUnverifiedAirTickets)
+            {
+                var currentAirticket = _context.AirTicket.Find(airticket.AirTicketId);
+                airtickets.Add(currentAirticket);
+            }
+
+            var attractions = new List<Entertainment>();
+
+            foreach (var attraction in myUnverifiedAttractions)
+            {
+                var currentAttraction = _context.Entertainment.Find(attraction.AttractionId);
+                attractions.Add(currentAttraction);
+            }
+
+            var accomodations = new List<Accomodation>();
+
+            foreach (var accomodation in myUnverifiedAccomodation)
+            {
+                var currentAccomodation = _context.Accomodation.Find(accomodation.AccomodationId);
+                accomodations.Add(currentAccomodation);
+            }
+
+            var model = new WaitingBookingsViewModel
+            {
+                Cars = cars,
+                AirTickets = airtickets,
+                Attractions = attractions,
+                Accomodation = accomodations,
+                BookingCars = myUnverifiedCars,
+                BookingAirTickets = myUnverifiedAirTickets,
+                BookingAttractions = myUnverifiedAttractions,
+                BookingAccomodation = myUnverifiedAccomodation
+            };
+
+            return View("AwaitingBookings", model);
+        }
+
+        public async Task<IActionResult> VerifiedBookings()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var unverifiedCars = await _context.BookingCars
+            .Where(c => c.VerifiedBooking && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.BookingAirTickets
+           .Where(c => c.VerifiedBooking && !c.CanceledBooking)
+           .ToListAsync();
+
+            var unverifiedAttractions = await _context.BookingAttractions
+            .Where(c => c.VerifiedBooking && !c.CanceledBooking)
+            .ToListAsync();
+
+            var unverifiedAccomodation = await _context.BookingAccomodations
+              .Where(c => c.VerifiedBooking && !c.CanceledBooking)
+              .ToListAsync();
+
+            var myVerifiedCars = new List<BookingCar>();
+            var myVerifiedAirTickets = new List<BookingAirTicket>();
+            var myVerifiedAttractions = new List<BookingAttraction>();
+            var myVerifiedAccomodation = new List<BookingAccomodation>();
+
+            foreach (var car in unverifiedCars)
+            {
+                var exists = _context.Car.Any(c => c.Id == car.CarId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedCars.Add(car);
+                }
+            }
+
+            foreach (var airticket in unverifiedAirTickets)
+            {
+                var exists = _context.AirTicket.Any(c => c.Id == airticket.AirTicketId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAirTickets.Add(airticket);
+                }
+            }
+
+            foreach (var attraction in unverifiedAttractions)
+            {
+                var exists = _context.Entertainment.Any(c => c.Id == attraction.AttractionId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAttractions.Add(attraction);
+                }
+            }
+
+            foreach (var accomodation in unverifiedAccomodation)
+            {
+                var exists = _context.Accomodation.Any(c => c.Id == accomodation.AccomodationId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAccomodation.Add(accomodation);
+                }
+            }
+
+            var cars = new List<Car>();
+            var usersDataCars = new List<UserData>();
+
+            foreach (var car in myVerifiedCars)
+            {
+                var currentCar = _context.Car.Find(car.CarId);
+                cars.Add(currentCar);
+                var user = _context.Users.Find(car.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataCars.Add(userData);
+            }
+
+            var airtickets = new List<AirTicket>();
+            var usersDataAirTickets = new List<UserData>();
+
+            foreach (var airticket in myVerifiedAirTickets)
+            {
+                var currentAirticket = _context.AirTicket.Find(airticket.AirTicketId);
+                airtickets.Add(currentAirticket);
+                var user = _context.Users.Find(airticket.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAirTickets.Add(userData);
+            }
+
+            var attractions = new List<Entertainment>();
+            var usersDataAttractions = new List<UserData>();
+
+            foreach (var attraction in myVerifiedAttractions)
+            {
+                var currentAttraction = _context.Entertainment.Find(attraction.AttractionId);
+                attractions.Add(currentAttraction);
+                var user = _context.Users.Find(attraction.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAttractions.Add(userData);
+            }
+
+            var accomodations = new List<Accomodation>();
+            var usersDataAccomodation = new List<UserData>();
+
+            foreach (var accomodation in myVerifiedAccomodation)
+            {
+                var currentAccomodation = _context.Accomodation.Find(accomodation.AccomodationId);
+                accomodations.Add(currentAccomodation);
+                var user = _context.Users.Find(accomodation.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAccomodation.Add(userData);
+            }
+
+            var model = new ForVerificationObjectsViewModel
+            {
+                Cars = cars,
+                AirTickets = airtickets,
+                Attractions = attractions,
+                Accomodation = accomodations,
+                BookingCars = myVerifiedCars,
+                BookingAirTickets = myVerifiedAirTickets,
+                BookingAttractions = myVerifiedAttractions,
+                BookingAccomodation = myVerifiedAccomodation,
+                UsersDataAttractions = usersDataAttractions,
+                UsersDataAirTickets = usersDataAirTickets,
+                UsersDataAccomodation = usersDataAccomodation,
+                UsersDataCars = usersDataCars
+            };
+
+            return View("VerifiedBookingsOwner", model);
+        }
+
+        public async Task<IActionResult> RejectedBookings()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var unverifiedCars = await _context.BookingCars
+            .Where(c => c.RejectedBooking)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.BookingAirTickets
+           .Where(c => c.RejectedBooking)
+           .ToListAsync();
+
+            var unverifiedAttractions = await _context.BookingAttractions
+            .Where(c => c.RejectedBooking)
+            .ToListAsync();
+
+            var unverifiedAccomodation = await _context.BookingAccomodations
+              .Where(c => c.RejectedBooking)
+              .ToListAsync();
+
+            var myVerifiedCars = new List<BookingCar>();
+            var myVerifiedAirTickets = new List<BookingAirTicket>();
+            var myVerifiedAttractions = new List<BookingAttraction>();
+            var myVerifiedAccomodation = new List<BookingAccomodation>();
+
+            foreach (var car in unverifiedCars)
+            {
+                var exists = _context.Car.Any(c => c.Id == car.CarId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedCars.Add(car);
+                }
+            }
+
+            foreach (var airticket in unverifiedAirTickets)
+            {
+                var exists = _context.AirTicket.Any(c => c.Id == airticket.AirTicketId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAirTickets.Add(airticket);
+                }
+            }
+
+            foreach (var attraction in unverifiedAttractions)
+            {
+                var exists = _context.Entertainment.Any(c => c.Id == attraction.AttractionId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAttractions.Add(attraction);
+                }
+            }
+
+            foreach (var accomodation in unverifiedAccomodation)
+            {
+                var exists = _context.Accomodation.Any(c => c.Id == accomodation.AccomodationId && c.PublisherId == currentUser.Id);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAccomodation.Add(accomodation);
+                }
+            }
+
+            var cars = new List<Car>();
+            var usersDataCars = new List<UserData>();
+            var carMessages = new List<string>();
+
+            foreach (var car in myVerifiedCars)
+            {
+                var currentCar = _context.Car.Find(car.CarId);
+                cars.Add(currentCar);
+                var user = _context.Users.Find(car.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataCars.Add(userData);
+                carMessages.Add(car.RejectedMessage);
+            }
+
+            var airtickets = new List<AirTicket>();
+            var usersDataAirTickets = new List<UserData>();
+            var airticketMessages = new List<string>();
+
+            foreach (var airticket in myVerifiedAirTickets)
+            {
+                var currentAirticket = _context.AirTicket.Find(airticket.AirTicketId);
+                airtickets.Add(currentAirticket);
+                var user = _context.Users.Find(airticket.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAirTickets.Add(userData);
+                airticketMessages.Add(airticket.RejectedMessage);
+            }
+
+            var attractions = new List<Entertainment>();
+            var usersDataAttractions = new List<UserData>();
+            var attractionMessages = new List<string>();
+
+            foreach (var attraction in myVerifiedAttractions)
+            {
+                var currentAttraction = _context.Entertainment.Find(attraction.AttractionId);
+                attractions.Add(currentAttraction);
+                var user = _context.Users.Find(attraction.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAttractions.Add(userData);
+                attractionMessages.Add(attraction.RejectedMessage);
+            }
+
+            var accomodations = new List<Accomodation>();
+            var usersDataAccomodation = new List<UserData>();
+            var accomodationMessages = new List<string>();
+
+            foreach (var accomodation in myVerifiedAccomodation)
+            {
+                var currentAccomodation = _context.Accomodation.Find(accomodation.AccomodationId);
+                accomodations.Add(currentAccomodation);
+                var user = _context.Users.Find(accomodation.UserId);
+                var userData = new UserData();
+                userData.Name = user.Name;
+                userData.Email = user.Email;
+                userData.PhoneNumber = user.CountryCode + user.PhoneNumber;
+                usersDataAccomodation.Add(userData);
+                accomodationMessages.Add(accomodation.RejectedMessage);
+            }
+
+            var model = new ForRejectedObjectsViewModel
+            {
+                Cars = cars,
+                AirTickets = airtickets,
+                Attractions = attractions,
+                Accomodation = accomodations,
+                BookingCars = myVerifiedCars,
+                BookingAirTickets = myVerifiedAirTickets,
+                BookingAttractions = myVerifiedAttractions,
+                BookingAccomodation = myVerifiedAccomodation,
+                UsersDataAttractions = usersDataAttractions,
+                UsersDataAirTickets = usersDataAirTickets,
+                UsersDataAccomodation = usersDataAccomodation,
+                UsersDataCars = usersDataCars, 
+                CarMessages = carMessages,
+                AirticketMessages = airticketMessages,
+                AttractionMessages = attractionMessages,
+                AccomodationMessages = accomodationMessages
+            };
+
+            return View("RejectedBookingsOwner", model);
+        }
+
+        public async Task<IActionResult> ShowRejectedBookingItems()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var unverifiedCars = await _context.BookingCars
+            .Where(c => c.RejectedBooking && c.UserId == currentUser.Id)
+            .ToListAsync();
+
+            var unverifiedAirTickets = await _context.BookingAirTickets
+           .Where(c => c.RejectedBooking && c.UserId == currentUser.Id)
+           .ToListAsync();
+
+            var unverifiedAttractions = await _context.BookingAttractions
+            .Where(c => c.RejectedBooking && c.UserId == currentUser.Id)
+            .ToListAsync();
+
+            var unverifiedAccomodation = await _context.BookingAccomodations
+              .Where(c => c.RejectedBooking && c.UserId == currentUser.Id)
+              .ToListAsync();
+
+            var myVerifiedCars = new List<BookingCar>();
+            var myVerifiedAirTickets = new List<BookingAirTicket>();
+            var myVerifiedAttractions = new List<BookingAttraction>();
+            var myVerifiedAccomodation = new List<BookingAccomodation>();
+
+            foreach (var car in unverifiedCars)
+            {
+                var exists = _context.Car.Any(c => c.Id == car.CarId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedCars.Add(car);
+                }
+            }
+
+            foreach (var airticket in unverifiedAirTickets)
+            {
+                var exists = _context.AirTicket.Any(c => c.Id == airticket.AirTicketId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAirTickets.Add(airticket);
+                }
+            }
+
+            foreach (var attraction in unverifiedAttractions)
+            {
+                var exists = _context.Entertainment.Any(c => c.Id == attraction.AttractionId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAttractions.Add(attraction);
+                }
+            }
+
+            foreach (var accomodation in unverifiedAccomodation)
+            {
+                var exists = _context.Accomodation.Any(c => c.Id == accomodation.AccomodationId);
+
+                if (exists)
+                {
+                    // Add to the verifiedCars list
+                    myVerifiedAccomodation.Add(accomodation);
+                }
+            }
+
+            var cars = new List<Car>();
+            var carMessages = new List<string>();
+
+            foreach (var car in myVerifiedCars)
+            {
+                var currentCar = _context.Car.Find(car.CarId);
+                cars.Add(currentCar);
+                carMessages.Add(car.RejectedMessage);
+            }
+
+            var airtickets = new List<AirTicket>();
+            var airticketMessages = new List<string>();
+
+            foreach (var airticket in myVerifiedAirTickets)
+            {
+                var currentAirticket = _context.AirTicket.Find(airticket.AirTicketId);
+                airtickets.Add(currentAirticket);
+                airticketMessages.Add(airticket.RejectedMessage);
+            }
+
+            var attractions = new List<Entertainment>();
+            var attractionMessages = new List<string>();
+
+            foreach (var attraction in myVerifiedAttractions)
+            {
+                var currentAttraction = _context.Entertainment.Find(attraction.AttractionId);
+                attractions.Add(currentAttraction);
+                attractionMessages.Add(attraction.RejectedMessage);
+            }
+
+            var accomodations = new List<Accomodation>();
+            var accomodationMessages = new List<string>();
+
+            foreach (var accomodation in myVerifiedAccomodation)
+            {
+                var currentAccomodation = _context.Accomodation.Find(accomodation.AccomodationId);
+                accomodations.Add(currentAccomodation);
+                accomodationMessages.Add(accomodation.RejectedMessage);
+            }
+
+            var model = new ForRejectedMyBookingsObjectsViewModel
+            {
+                Cars = cars,
+                AirTickets = airtickets,
+                Attractions = attractions,
+                Accomodation = accomodations,
+                BookingCars = myVerifiedCars,
+                BookingAirTickets = myVerifiedAirTickets,
+                BookingAttractions = myVerifiedAttractions,
+                BookingAccomodation = myVerifiedAccomodation,
+                CarMessages = carMessages,
+                AirticketMessages = airticketMessages,
+                AttractionMessages = attractionMessages,
+                AccomodationMessages = accomodationMessages
+            };
+
+            return View(model);
         }
 
         [HttpPost]
@@ -1655,6 +2466,34 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> VerifyCarBooking(int verifyCarId)
+        {
+            var car = _context.BookingCars.Find(verifyCarId);
+
+            car.VerifiedBooking = true;
+            car.RejectedMessage = string.Empty;
+            car.RejectedBooking = false;
+            car.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
+        public async Task<IActionResult> VerifyCarRejectedBooking(int verifyCarId)
+        {
+            var car = _context.BookingCars.Find(verifyCarId);
+
+            car.VerifiedBooking = true;
+            car.RejectedMessage = string.Empty;
+            car.RejectedBooking = false;
+            car.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await RejectedBookings();
+        }
+
         public async Task<IActionResult> VerifyAttraction(int verifyAttractionId)
         {
             var attraction = _context.Entertainment.Find(verifyAttractionId);
@@ -1666,6 +2505,34 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> VerifyAttractionRejectedBooking(int verifyAttractionId)
+        {
+            var attraction = _context.BookingAttractions.Find(verifyAttractionId);
+
+            attraction.VerifiedBooking = true;
+            attraction.RejectedMessage = string.Empty;
+            attraction.RejectedBooking = false;
+            attraction.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await RejectedBookings();
+        }
+
+        public async Task<IActionResult> VerifyAttractionBooking(int verifyAttractionId)
+        {
+            var attraction = _context.BookingAttractions.Find(verifyAttractionId);
+
+            attraction.VerifiedBooking = true;
+            attraction.RejectedMessage = string.Empty;
+            attraction.RejectedBooking = false;
+            attraction.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
         public async Task<IActionResult> VerifyAccomodation(int verifyAccomodationId)
         {
             var accomodation = _context.Accomodation.Find(verifyAccomodationId);
@@ -1675,6 +2542,36 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await AllUnverifiedObjects();
+        }
+
+        public async Task<IActionResult> VerifyAccomodationBooking(int verifyAccomodationId)
+        {
+            var accomodation = _context.BookingAccomodations.Find(verifyAccomodationId);
+
+            accomodation.VerifiedBooking = true;
+            accomodation.RejectedMessage = string.Empty;
+            accomodation.RejectedBooking = false;
+            accomodation.CanceledBooking = false;
+
+            _context.BookingAccomodations.Update(accomodation);
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
+        public async Task<IActionResult> VerifyAccomodationRejectedBooking(int verifyAccomodationId)
+        {
+            var accomodation = _context.BookingAccomodations.Find(verifyAccomodationId);
+
+            accomodation.VerifiedBooking = true;
+            accomodation.RejectedMessage = string.Empty;
+            accomodation.RejectedBooking = false;
+            accomodation.CanceledBooking = false;
+
+            _context.BookingAccomodations.Update(accomodation);
+            await _context.SaveChangesAsync();
+
+            return await RejectedBookings();
         }
 
         public async Task<IActionResult> VerifyRejectedCar(int verifyCarId)
@@ -1727,6 +2624,62 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> VerifyAirTicketECBooking(int verifyAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
+
+            airticket.VerifiedBooking = true;
+            airticket.RejectedMessage = string.Empty;
+            airticket.RejectedBooking = false;
+            airticket.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
+        public async Task<IActionResult> VerifyAirTicketECRejectedBooking(int verifyAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
+
+            airticket.VerifiedBooking = true;
+            airticket.RejectedMessage = string.Empty;
+            airticket.RejectedBooking = false;
+            airticket.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await RejectedBookings();
+        }
+
+        public async Task<IActionResult> VerifyAirTicketBCRejectedBooking(int verifyAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
+
+            airticket.VerifiedBooking = true;
+            airticket.RejectedMessage = string.Empty;
+            airticket.RejectedBooking = false;
+            airticket.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await RejectedBookings();
+        }
+
+        public async Task<IActionResult> VerifyAirTicketFCRejectedBooking(int verifyAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
+
+            airticket.VerifiedBooking = true;
+            airticket.RejectedMessage = string.Empty;
+            airticket.RejectedBooking = false;
+            airticket.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await RejectedBookings();
+        }
+
         public async Task<IActionResult> VerifyRejectedAirTicketEC(int verifyAirTicketId)
         {
             var airticket = _context.AirTicket.Find(verifyAirTicketId);
@@ -1751,6 +2704,20 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> VerifyAirTicketBCBooking(int verifyAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
+
+            airticket.VerifiedBooking = true;
+            airticket.RejectedMessage = string.Empty;
+            airticket.RejectedBooking = false;
+            airticket.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
         public async Task<IActionResult> VerifyRejectedAirTicketBC(int verifyAirTicketId)
         {
             var airticket = _context.AirTicket.Find(verifyAirTicketId);
@@ -1773,6 +2740,20 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await AllRejectedObjects();
+        }
+
+        public async Task<IActionResult> VerifyAirTicketFCBooking(int verifyAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
+
+            airticket.VerifiedBooking = true;
+            airticket.RejectedMessage = string.Empty;
+            airticket.RejectedBooking = false;
+            airticket.CanceledBooking = false;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
         }
 
         public async Task<IActionResult> VerifyRejectedAirTicketFC(int verifyAirTicketId)
@@ -1801,6 +2782,19 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> RejectCarBooking(int rejectCarId, IFormCollection form)
+        {
+            var car = _context.BookingCars.Find(rejectCarId);
+            var message = form["RejectedMessageCar"];
+
+            car.RejectedBooking = true;
+            car.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
         public async Task<IActionResult> RejectAttraction(int rejectAttractionId, IFormCollection form)
         {
             var attraction = _context.Entertainment.Find(rejectAttractionId);
@@ -1814,6 +2808,19 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> RejectAttractionBooking(int rejectAttractionId, IFormCollection form)
+        {
+            var attraction = _context.BookingAttractions.Find(rejectAttractionId);
+            var message = form["RejectedMessageAttraction"];
+
+            attraction.RejectedBooking = true;
+            attraction.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
         public async Task<IActionResult> RejectAccomodation(int rejectAccomodationId, IFormCollection form)
         {
             var accomodation = _context.Accomodation.Find(rejectAccomodationId);
@@ -1825,6 +2832,19 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await AllUnverifiedObjects();
+        }
+
+        public async Task<IActionResult> RejectAccomodationBooking(int rejectAccomodationId, IFormCollection form)
+        {
+            var accomodation = _context.BookingAccomodations.Find(rejectAccomodationId);
+            var message = form["RejectedMessageAccomodation"];
+
+            accomodation.RejectedBooking = true;
+            accomodation.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
         }
 
         public async Task<IActionResult> AllRejectedObjects()
@@ -1972,6 +2992,19 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> RejectAirTicketECBooking(int rejectAirTicketId, IFormCollection form)
+        {
+            var airticket = _context.BookingAirTickets.Find(rejectAirTicketId);
+            var message = form["RejectedMessageAirTicketEC"];
+
+            airticket.RejectedBooking = true;
+            airticket.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
         public async Task<IActionResult> RejectAirTicketBC(int rejectAirTicketId, IFormCollection form)
         {
             var airticket = _context.AirTicket.Find(rejectAirTicketId);
@@ -1985,6 +3018,19 @@ namespace Travelling_Application.Controllers
             return await AllUnverifiedObjects();
         }
 
+        public async Task<IActionResult> RejectAirTicketBCBooking(int rejectAirTicketId, IFormCollection form)
+        {
+            var airticket = _context.BookingAirTickets.Find(rejectAirTicketId);
+            var message = form["RejectedMessageAirTicketBC"];
+
+            airticket.RejectedBooking = true;
+            airticket.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
+        }
+
         public async Task<IActionResult> RejectAirTicketFC(int rejectAirTicketId, IFormCollection form)
         {
             var airticket = _context.AirTicket.Find(rejectAirTicketId);
@@ -1996,6 +3042,19 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await AllUnverifiedObjects();
+        }
+
+        public async Task<IActionResult> RejectAirTicketFCBooking(int rejectAirTicketId, IFormCollection form)
+        {
+            var airticket = _context.BookingAirTickets.Find(rejectAirTicketId);
+            var message = form["RejectedMessageAirTicketFC"];
+
+            airticket.RejectedBooking = true;
+            airticket.RejectedMessage = message;
+
+            await _context.SaveChangesAsync();
+
+            return await BookingsForVerification();
         }
 
         public async Task<IActionResult> AddRoomUnverified(string addRoomAccomodationId)
@@ -2256,6 +3315,264 @@ namespace Travelling_Application.Controllers
 
             await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
             return await ShowAccomodationInformation(editRoomAccomodationId);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelCarBooking(int cancelCarId)
+        {
+            var car = _context.BookingCars.Find(cancelCarId);
+            DateTime startDate = car.DateOfDeparture;
+            DateTime endDate = car.ReturnDate;
+
+            int carId = car.CarId;
+            var originalCar = _context.Car.Find(carId);
+            originalCar.StartDates.Add(startDate);
+            originalCar.EndDates.Add(endDate);
+            _context.Car.Update(originalCar);
+
+            car.CanceledBooking = true;
+            await _context.SaveChangesAsync();
+
+            return await ShowUnverifiedBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelCarBookingg(int cancelCarId)
+        {
+            var car = _context.BookingCars.Find(cancelCarId);
+            DateTime startDate = car.DateOfDeparture;
+            DateTime endDate = car.ReturnDate;
+
+            int carId = car.CarId;
+            var originalCar = _context.Car.Find(carId);
+            originalCar.StartDates.Add(startDate);
+            originalCar.EndDates.Add(endDate);
+            _context.Car.Update(originalCar);
+
+            car.CanceledBooking = true;
+            car.VerifiedBooking = false;
+            await _context.SaveChangesAsync();
+
+            return await ShowBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAttractionBooking(int cancelAttractionId)
+        {
+            var attraction = _context.BookingAttractions.Find(cancelAttractionId);
+            DateTime date = attraction.Date;
+            int amountOfTicket = attraction.AmountOfTickets;
+
+            int attractionId = attraction.AttractionId;
+            var originalAttraction = _context.Entertainment.Find(attractionId);
+            var dates = originalAttraction.AvailableDates;
+            int i = 0;
+            foreach (var datee in dates)
+            {
+                if(datee == date)
+                {
+                    originalAttraction.AmountOfTickets[i] += amountOfTicket;
+                }
+                i++;
+            }
+            _context.Entertainment.Update(originalAttraction);
+
+            attraction.CanceledBooking = true;
+            await _context.SaveChangesAsync();
+
+            return await ShowUnverifiedBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAttractionBookingg(int cancelAttractionId)
+        {
+            var attraction = _context.BookingAttractions.Find(cancelAttractionId);
+            DateTime date = attraction.Date;
+            int amountOfTicket = attraction.AmountOfTickets;
+
+            int attractionId = attraction.AttractionId;
+            var originalAttraction = _context.Entertainment.Find(attractionId);
+            var dates = originalAttraction.AvailableDates;
+            int i = 0;
+            foreach (var datee in dates)
+            {
+                if (datee == date)
+                {
+                    originalAttraction.AmountOfTickets[i] += amountOfTicket;
+                }
+                i++;
+            }
+            _context.Entertainment.Update(originalAttraction);
+
+            attraction.CanceledBooking = true;
+            attraction.VerifiedBooking = false;
+            await _context.SaveChangesAsync();
+
+            return await ShowBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAccomodationBooking(int cancelAccomodationId)
+        {
+            var accomodation = _context.BookingAccomodations.Find(cancelAccomodationId);
+            int roomId = accomodation.RoomId;
+            int rooms = accomodation.Adults;
+            DateTime startDate = accomodation.DateOfDeparture;
+            DateTime endDate = accomodation.ReturnDate;
+
+            int accomodationId = accomodation.AccomodationId;
+            var room = _context.Rooms.Find(roomId);
+            var dates = room.AvailableDatesRoom;
+            int i = 0;
+            foreach(var date in dates)
+            {
+                if(date >= startDate && date < endDate)
+                {
+                    room.AmountOfAvailableSameRooms[i] += rooms;
+                }
+                i++;
+            }
+            _context.Rooms.Update(room);
+
+            accomodation.CanceledBooking = true;
+            await _context.SaveChangesAsync();
+
+            return await ShowUnverifiedBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAccomodationBookingg(int cancelAccomodationId)
+        {
+            var accomodation = _context.BookingAccomodations.Find(cancelAccomodationId);
+            int roomId = accomodation.RoomId;
+            int rooms = accomodation.Adults;
+            DateTime startDate = accomodation.DateOfDeparture;
+            DateTime endDate = accomodation.ReturnDate;
+
+            int accomodationId = accomodation.AccomodationId;
+            var room = _context.Rooms.Find(roomId);
+            var dates = room.AvailableDatesRoom;
+            int i = 0;
+            foreach (var date in dates)
+            {
+                if (date >= startDate && date < endDate)
+                {
+                    room.AmountOfAvailableSameRooms[i] += rooms;
+                }
+                i++;
+            }
+            _context.Rooms.Update(room);
+
+            accomodation.CanceledBooking = true;
+            accomodation.VerifiedBooking = false;
+            await _context.SaveChangesAsync();
+
+            return await ShowBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAirTicketECBooking(int cancelAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(cancelAirTicketId);
+            int passengers = airticket.Passengers;
+
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsEC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            await _context.SaveChangesAsync();
+
+            return await ShowUnverifiedBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAirTicketECBookingg(int cancelAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(cancelAirTicketId);
+            int passengers = airticket.Passengers;
+
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsEC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            airticket.VerifiedBooking = false;
+            await _context.SaveChangesAsync();
+
+            return await ShowBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAirTicketBCBooking(int cancelAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(cancelAirTicketId);
+            int passengers = airticket.Passengers;
+
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsBC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            await _context.SaveChangesAsync();
+
+            return await ShowUnverifiedBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAirTicketBCBookingg(int cancelAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(cancelAirTicketId);
+            int passengers = airticket.Passengers;
+
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsBC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            airticket.VerifiedBooking = false;
+            await _context.SaveChangesAsync();
+
+            return await ShowBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAirTicketFCBooking(int cancelAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(cancelAirTicketId);
+            int passengers = airticket.Passengers;
+
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsFC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            await _context.SaveChangesAsync();
+
+            return await ShowUnverifiedBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAirTicketFCBookingg(int cancelAirTicketId)
+        {
+            var airticket = _context.BookingAirTickets.Find(cancelAirTicketId);
+            int passengers = airticket.Passengers;
+
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsFC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            airticket.VerifiedBooking = false;
+            await _context.SaveChangesAsync();
+
+            return await ShowBookingItems();
         }
 
     }

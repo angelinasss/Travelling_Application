@@ -30,8 +30,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBdHRyYWN0aW9uSW5mb3JtYXRpb24uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/AwaitingBookings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBd2FpdGluZ0Jvb2tpbmdzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/BookingItems.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxCb29raW5nSXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/BookingsForVerification.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxCb29raW5nc0ZvclZlcmlmaWNhdGlvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/CarInformation.cshtml]
@@ -74,12 +82,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/RejectedBookingsOwner.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWplY3RlZEJvb2tpbmdzT3duZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/RejectedItems.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWplY3RlZEl0ZW1zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/ShowRejectedBookingItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTaG93UmVqZWN0ZWRCb29raW5nSXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/UnverifiedItems.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVbnZlcmlmaWVkSXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/VerifiedBookingsOwner.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxWZXJpZmllZEJvb2tpbmdzT3duZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BSUIR 4 SEM/OOP PROJECT/Travelling_Application/Travelling_Application/Views/Account/VerifiedItems.cshtml]

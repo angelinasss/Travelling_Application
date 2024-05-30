@@ -34,6 +34,10 @@ namespace Travelling_Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AvailableRoomsNames")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Bar")
                         .HasColumnType("bit");
 
@@ -293,6 +297,54 @@ namespace Travelling_Application.Migrations
                     b.ToTable("AirTicket");
                 });
 
+            modelBuilder.Entity("Travelling_Application.Models.BookingAccomodation", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("AccomodationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Adults")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("CanceledBooking")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateOfDeparture")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("RejectedBooking")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TypeOfRoom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("VerifiedBooking")
+                        .HasColumnType("bit");
+
+                    b.HasKey("id");
+
+                    b.ToTable("BookingAccomodations");
+                });
+
             modelBuilder.Entity("Travelling_Application.Models.BookingAirTicket", b =>
                 {
                     b.Property<int>("id")
@@ -304,14 +356,28 @@ namespace Travelling_Application.Migrations
                     b.Property<int>("AirTicketId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("CanceledBooking")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("DateOfDeparture")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Passengers")
                         .HasColumnType("int");
 
+                    b.Property<bool>("RejectedBooking")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TypeClass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -338,8 +404,18 @@ namespace Travelling_Application.Migrations
                     b.Property<int>("AttractionId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("CanceledBooking")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("RejectedBooking")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -360,11 +436,21 @@ namespace Travelling_Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
+                    b.Property<bool>("CanceledBooking")
+                        .HasColumnType("bit");
+
                     b.Property<int>("CarId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfDeparture")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("RejectedBooking")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RejectedMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");

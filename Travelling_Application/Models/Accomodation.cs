@@ -37,5 +37,6 @@
         public int PublisherId { get; set; }
         public byte[] MainPhoto { get; set; }
         public double MinCost { get; set; }
+        public List<string> AvailableRoomsNames { get; set; }
     }
 }

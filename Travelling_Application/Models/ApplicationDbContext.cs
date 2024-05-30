@@ -20,6 +20,7 @@ namespace Travelling_Application.Models
         public DbSet<BookingCar> BookingCars { get; set; }
 
         public DbSet<BookingAirTicket> BookingAirTickets { get; set; }
+        public DbSet<BookingAccomodation> BookingAccomodations { get; set; }
 
 
         public DbSet<Car> Car { get; set; }

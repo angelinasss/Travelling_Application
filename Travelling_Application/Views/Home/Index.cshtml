@@ -6,6 +6,7 @@
 @model SearchAccomodationViewModel
 
 <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <style>
             .full-width-image {
                 width: 100%;
@@ -101,9 +102,41 @@
                 font-size: 1.2rem;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
+
+            .text-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+            }
+
+            #notification {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
         </style>
 
         <script>
+            function validateButtons() {
+                const radios = document.getElementsByName('room');
+                let isChecked = false;
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        isChecked = true;
+                        break;
+                    }
+                }
+                if (!isChecked) {
+                    $('#notification').text('Please choose room for booking.').addClass('text-danger').show();
+                    return false; // Prevent form submission
+                }
+
+                $('#notification').text('Please choose room for booking.').removeClass('text-danger').hide();
+
+                return true; // Allow form submission
+            }
+
             function validateSearch() {
                 var city = $('#citySelect').val();
                 var dateIn = $('#checkInDate').val();
@@ -215,85 +248,176 @@
                 </div>
             </form>
 
-            <div class="container-fluid" style="margin-left: 200px;">
-                <div class="row">
-                    <div class="col-md-9">
+          
+                    <div class="container-fluid" style="margin-left: 200px;">
                         <div class="row">
-                            <div class="col">
-                                @if (Model?.Results != null && Model.Results.Any())
-                                {
-                                    @foreach (var accomodation in Model.Results)
-                                    {
-                                        <div class="accomodation-card">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <img src="data:image;base64,@(Convert.ToBase64String(accomodation.MainPhoto))" alt="Accomodation Image" class="accomodation-image" />
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <div class="accomodation-details">
-                                                        <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
-                                                            <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
-                                                        </h3>
-                                                        <p class="accomodation-features" style="text-align: left;">@accomodation.City, @accomodation.Country</p>
-                                                        <p class="mini-info">
-                                                            @{
-                                                                if (accomodation.SwimmingPool > 0)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-person-swimming"></i> @accomodation.SwimmingPool swimming pool</span>
+                            <div class="col-md-9">
+                                <div class="row">
+                                    <div class="col">
+                                        @if (Model?.Results != null && Model.Results.Any())
+                                        {
+                                            @foreach (var accomodation in Model.Results)
+                                            {
+                                        <form id="bookAccomodation_@accomodation.Id" method="post" action="/Home/BookAccomodation" onsubmit="return validateButtons()" class="bookAccomodationForm">
+                                                <input type="hidden" name="accomodationId" value="@accomodation.Id" />
+                                                <input type="hidden" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
+                                                <input type="hidden" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-dd")" />
+                                                <input type="hidden" name="rooms" value="@ViewBag.Rooms" />
+                                                <input type="hidden" name="adults" value="@ViewBag.Adults" />
+                                                <div class="accomodation-card">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <img src="data:image;base64,@(Convert.ToBase64String(accomodation.MainPhoto))" alt="Accomodation Image" class="accomodation-image" />
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="accomodation-details">
+                                                                <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                                    <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
+                                                                </h3>
+                                                                <p class="accomodation-features" style="text-align: left;">@accomodation.City, @accomodation.Country</p>
+                                                                <p class="mini-info">
+                                                                    @{
+                                                                        if (accomodation.SwimmingPool > 0)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-person-swimming"></i> @accomodation.SwimmingPool swimming pool</span>
+                                                                        }
+                                                                        if (accomodation.Restaurants > 0)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-utensils"></i> @accomodation.Restaurants restaurant</span>
+                                                                        }
+                                                                        if (accomodation.Parking)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-square-parking"></i> Parking</span>
+                                                                        }
+                                                                        if (accomodation.PrivateBeach)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-umbrella-beach"></i> Private Beach</span>
+                                                                        }
+                                                                        if (accomodation.SPA)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-spa"></i> SPA</span>
+                                                                        }
+                                                                        if (accomodation.FitnessCentre)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-dumbbell"></i> Fitness Centre</span>
+                                                                        }
+                                                                        if (accomodation.PetsAllowed)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-paw"></i> Pets Allowed</span>
+                                                                        }
+                                                                    }
+                                                                </p>
+                                                                <p class="mini-info">
+                                                                    @{
+                                                                        foreach (var nutrition in accomodation.TypesOfNutrition)
+                                                                        {
+                                                                                <span class="mini-info-item"><i class="fa-solid fa-bowl-food"></i> @nutrition</span>
+                                                                        }
+                                                                    }
+                                                                </p>
+                                                                <p class="accomodation-price">from $@accomodation.MinCost / 1 night</p>
+
+                                                                @{
+                                                                    if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                    {
+                                                                        <h4>Choose Room For Booking:</h4>
+                                                                        <input type="hidden" id="selectedRoom" name="selectedRoom" value="" />
+
+                                                                        <div class="available-rooms" style="margin-bottom: 10px;">
+                                                                            @foreach (var roomName in accomodation.AvailableRoomsNames)
+                                                                            {
+                                                                                <label class="radio-inline" style="margin-right: 10px;">
+                                                                                    <input type="radio" name="room" value="@roomName" onclick="updateSelectedRoom('@roomName')"> @roomName
+                                                                                </label>
+                                                                            }
+                                                                        </div>
+
+                                                                        <div id="notification" class="text-danger" style="display:none;"></div>
+
+
+                                                                    <button id="bookButton_@accomodation.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                    }
                                                                 }
-                                                                if (accomodation.Restaurants > 0)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-utensils"></i> @accomodation.Restaurants restaurant</span>
-                                                                }
-                                                                if (accomodation.Parking)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-square-parking"></i> Parking</span>
-                                                                }
-                                                                if (accomodation.PrivateBeach)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-umbrella-beach"></i> Private Beach</span>
-                                                                }
-                                                                if (accomodation.SPA)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-spa"></i> SPA</span>
-                                                                }
-                                                                if (accomodation.FitnessCentre)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-dumbbell"></i> Fitness Centre</span>
-                                                                }
-                                                                if (accomodation.PetsAllowed)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-paw"></i> Pets Allowed</span>
-                                                                }
-                                                            }
-                                                        </p>
-                                                        <p class="mini-info">
-                                                            @{
-                                                                foreach (var nutrition in accomodation.TypesOfNutrition)
-                                                                {
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-bowl-food"></i> @nutrition</span>
-                                                                }
-                                                            }
-                                                        </p>
-                                                        <p class="accomodation-price">from $@accomodation.MinCost / 1 night</p>
-                                                        <button id="book-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                        </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="no-results-message">
+                                                <p>No accommodation found for your search criteria. Please try again with different options.</p>
                                             </div>
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div class="no-results-message">
-                                        <p>No accommodation found for your search criteria. Please try again with different options.</p>
+                                        }
                                     </div>
-                                }
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+        
         </div>
     </body>
 </main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Перехватываем отправку формы
+            $('.bookAccomodationForm').submit(function (event) {
+                // Отменяем стандартное поведение отправки формы
+                event.preventDefault();
+
+                if (!validateButtons()) {
+                    return false;
+                }
+
+                var form = $(this);
+                var formData = form.serialize();
+
+                // Отправляем AJAX-запрос на сервер
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    success: function (response) {
+                        // Изменяем цвет и текст кнопки после успешного запроса
+                        var buttonId = form.find('button[type=submit]').attr('id');
+                        var button = $('#' + buttonId);
+                        button.css('background-color', 'green');
+                        button.text('Booked');
+                        button.prop('disabled', true);
+
+                        // Перенаправление или другие действия при необходимости
+                        // Например, можно перенаправить пользователя:
+                        // window.location.href = response.redirectUrl;
+                    },
+                    error: function (xhr, status, error) {
+                        // Обработка ошибок
+                        console.error('Ошибка: ' + error);
+                    }
+                });
+            });
+        });
+
+
+        function changeButton(button) {
+            if (validateButtons()) {
+                // Change button color
+                button.style.backgroundColor = 'green';
+                // Change button text
+                button.innerText = 'Booked';
+                button.disabled = true;
+                return true; // Allow form submission
+            }
+            return false; // Prevent form submission
+        }
+    </script>
+
+    <script>
+        function updateSelectedRoom(roomName) {
+            document.getElementById('selectedRoom').value = roomName;
+        }
+    </script>
+}

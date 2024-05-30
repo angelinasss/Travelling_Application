@@ -99,6 +99,43 @@ namespace Travelling_Application.Controllers
                 }
             }
 
+            foreach (var accomodation in validAccomodations)
+            {
+                // ѕроверить, есть ли у отел€ комнаты, которые доступны на все даты
+                var availableRooms = _context.Rooms
+                    .Where(r => r.AccomodationId == accomodation.Id)
+                    .ToList();
+
+                var roomsAvail = new List<string>();
+
+                foreach (var room in availableRooms)
+                {
+                    // ѕолучить доступные даты дл€ этой комнаты
+                    var availableDates = room.AvailableDatesRoom;
+                    int i = 0;
+                    // ѕроверить, доступны ли все даты в интервале [checkInDate, checkOutDate)
+                    bool allDatesAvailable = true;
+                    for (var date = checkInDate; date < checkOutDate; date = date.AddDays(1))
+                    {
+                        if (!availableDates.Contains(date) || room.AmountOfAvailableSameRooms[i] < rooms)
+                        {
+                            allDatesAvailable = false;
+                            break;
+                        }
+                        i++;
+                    }
+
+                    if (allDatesAvailable)
+                    {
+                        roomsAvail.Add(room.RoomName);
+                    }
+                }
+
+                accomodation.AvailableRoomsNames = roomsAvail;
+                _context.Accomodation.Update(accomodation);
+                _context.SaveChanges();
+            }
+
             var searchResults = validAccomodations;
 
             var cities = _context.Accomodation.Where(e => e.VerifiedByAdmin).Select(e => e.City).Distinct().ToList();
@@ -198,6 +235,7 @@ namespace Travelling_Application.Controllers
 
         }
 
+        [HttpPost]
         public async Task<IActionResult> BookAttraction(string attractionId, int amountOfTickets, DateTime date)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -209,9 +247,22 @@ namespace Travelling_Application.Controllers
                 UserId = currentUser.Id,
                 AttractionId = AttractionId,
                 VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
                 AmountOfTickets = amountOfTickets,
-                Date = date
+                Date = date, 
+                CanceledBooking = false
             };
+            for(int i = 0; i < attraction.AmountOfTickets.Count; i++)
+            {
+                if (attraction.AvailableDates[i] == date)
+                {
+                    var tickets = attraction.AmountOfTickets[i];
+                    attraction.AmountOfTickets[i] = tickets - amountOfTickets;
+                }
+            }
+
+            _context.Entertainment.Update(attraction);
 
             _context.BookingAttractions.Add(model);
             await _context.SaveChangesAsync();
@@ -219,6 +270,7 @@ namespace Travelling_Application.Controllers
             return RedirectToAction("AttractionResults", new { city = attraction.City, checkInDate = date, adultsCount = amountOfTickets });
         }
 
+        [HttpPost]
         public async Task<IActionResult> BookCar(string carId, DateTime dateIn, DateTime dateOut)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -230,16 +282,54 @@ namespace Travelling_Application.Controllers
                 UserId = currentUser.Id,
                 CarId = CarId,
                 VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
                 DateOfDeparture = dateIn,
-                ReturnDate = dateOut
+                ReturnDate = dateOut,
+                CanceledBooking = false
             };
 
             _context.BookingCars.Add(model);
+
+            int index = -1;
+
+            for (int i = 0; i < car.StartDates.Count; i++)
+            {
+                if (car.StartDates[i] <= dateIn && car.EndDates[i] >= dateOut)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1)
+            {
+                throw new InvalidOperationException("No suitable date range found.");
+            }
+
+            DateTime oldStartDate = car.StartDates[index];
+            DateTime oldEndDate = car.EndDates[index];
+
+            // ќбновл€ем массивы
+            car.StartDates[index] = oldStartDate;
+            car.EndDates[index] = dateIn;
+
+            var newStartDates = car.StartDates.ToList();
+            var newEndDates = car.EndDates.ToList();
+
+            newStartDates.Add(dateOut);
+            newEndDates.Add(oldEndDate);
+
+            car.StartDates = newStartDates;
+            car.EndDates = newEndDates;
+
+            _context.Car.Update(car);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("CarResults", new { city = car.City, checkInDate = dateIn, checkOutDate = dateOut });
         }
 
+        [HttpPost]
         public async Task<IActionResult> BookFlightEC(string airticketId, DateTime dateIn, DateTime dateOut, int passengers, bool tripTypee)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -251,17 +341,25 @@ namespace Travelling_Application.Controllers
                 UserId = currentUser.Id,
                 AirTicketId = AirticketId,
                 VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
                 DateOfDeparture = dateIn,
                 ReturnDate = dateOut,
-                Passengers = passengers
+                Passengers = passengers,
+                TypeClass = "EC",
+                CanceledBooking = false
             };
 
+            var amountTick = airticket.AmountOfTicketsEC - passengers;
+            airticket.AmountOfTicketsEC = amountTick;
+            _context.AirTicket.Update(airticket);
             _context.BookingAirTickets.Add(model);
             await _context.SaveChangesAsync();
      
             return RedirectToAction("FlightResults", new { cityFrom = airticket.CityFrom, cityTo = airticket.CityTo, checkInDate = dateIn, checkOutDate = dateOut, tripType = tripTypee, adultsCount = passengers });
         }
 
+        [HttpPost]
         public async Task<IActionResult> BookFlightBC(string airticketId, DateTime dateIn, DateTime dateOut, int passengers, bool tripTypee)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -273,17 +371,25 @@ namespace Travelling_Application.Controllers
                 UserId = currentUser.Id,
                 AirTicketId = AirticketId,
                 VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
                 DateOfDeparture = dateIn,
                 ReturnDate = dateOut,
-                Passengers = passengers
+                Passengers = passengers,
+                TypeClass = "BC",
+                CanceledBooking = false
             };
 
+            var amountTick = airticket.AmountOfTicketsBC;
+            airticket.AmountOfTicketsBC = amountTick - passengers;
+            _context.AirTicket.Update(airticket);
             _context.BookingAirTickets.Add(model);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("FlightResults", new { cityFrom = airticket.CityFrom, cityTo = airticket.CityTo, checkInDate = dateIn, checkOutDate = dateOut, tripType = tripTypee, adultsCount = passengers });
         }
 
+        [HttpPost]
         public async Task<IActionResult> BookFlightFC(string airticketId, DateTime dateIn, DateTime dateOut, int passengers, bool tripTypee)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -295,15 +401,64 @@ namespace Travelling_Application.Controllers
                 UserId = currentUser.Id,
                 AirTicketId = AirticketId,
                 VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
                 DateOfDeparture = dateIn,
                 ReturnDate = dateOut,
-                Passengers = passengers
+                Passengers = passengers,
+                TypeClass = "FC",
+                CanceledBooking = false
             };
 
+            var amountTick = airticket.AmountOfTicketsFC;
+            airticket.AmountOfTicketsFC = amountTick - passengers;
+            _context.AirTicket.Update(airticket);
             _context.BookingAirTickets.Add(model);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("FlightResults", new { cityFrom = airticket.CityFrom, cityTo = airticket.CityTo, checkInDate = dateIn, checkOutDate = dateOut, tripType = tripTypee, adultsCount = passengers });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BookAccomodation(string accomodationId, DateTime dateIn, DateTime dateOut, int rooms, int adults, string selectedRoom)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            int AccomodationId = int.Parse(accomodationId);
+            var accomodation = _context.Accomodation.Find(AccomodationId);
+            var room = _context.Rooms.FirstOrDefault(r => r.AccomodationId == AccomodationId && r.RoomName == selectedRoom);
+
+            var model = new BookingAccomodation
+            {
+                UserId = currentUser.Id,
+                AccomodationId = AccomodationId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Adults = rooms,
+                RoomId = room.ID,
+                TypeOfRoom = room.RoomName,
+                CanceledBooking = false
+            };
+
+            _context.BookingAccomodations.Add(model);
+            await _context.SaveChangesAsync();
+
+            int i = 0;
+            foreach(var date in room.AvailableDatesRoom)
+            {
+                if(date >= dateIn && date < dateOut)
+                {
+                    room.AmountOfAvailableSameRooms[i] = room.AmountOfAvailableSameRooms[i] - rooms;
+                }
+                i++;
+            }
+
+            _context.Rooms.Update(room);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("AccomodationResults", new { city = accomodation.City, checkInDate = dateIn, checkOutDate = dateOut, adults, rooms});
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

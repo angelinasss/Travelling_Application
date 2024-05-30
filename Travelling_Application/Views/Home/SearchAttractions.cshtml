@@ -194,7 +194,7 @@
                 </div>
             </form>
 
-            <form id="bookAttraction" method="get" action="/Home/BookAttraction">
+           
                     <div class="container-fluid" style="margin-left: 200px;">
                         <div class="row">
                             <div class="col-md-9">
@@ -204,6 +204,7 @@
                                         {
                                             @foreach (var attraction in Model.Results)
                                             {
+                                                 <form id="bookAttraction_@attraction.Id" method="post" action="/Home/BookAttraction" class="bookAttractionForm">
                                             <input type="hidden" name="attractionId" value="@attraction.Id" />
                                             <input type="hidden" name="amountOfTickets" value="@ViewBag.AdultsCount" />
                                             <input type="hidden" name="date" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
@@ -237,12 +238,18 @@
                                                                             <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
                                                                         }
                                                                     }
-                                                                </p>
-                                                                <button onclick="changeButton(this)" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                            </p>   @{
+                                                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                {
+                                                                    <button id="bookButton_@attraction.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                }
+                                                            }
+                                                        
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                        </form>
                                             }
                                         }
                                         else
@@ -256,56 +263,57 @@
                             </div>
                         </div>
                     </div>
-            </form>
+          
 
-            <script>
-                $(document).ready(function () {
-                    // Перехватываем отправку формы
-                    $('#bookAttraction').submit(function (event) {
-                        // Отменяем стандартное поведение отправки формы
-                        event.preventDefault();
-
-                        // Получаем данные из формы
-                        var formData = $(this).serialize();
-
-                        // Отправляем AJAX-запрос на сервер
-                        $.ajax({
-                            type: 'GET',
-                            url: '/Home/BookAttraction',
-                            data: formData,
-                            success: function (response) {
-                                // Если запрос успешен, меняем цвет и текст кнопки
-                                changeButton($('#bookButton')); // Предполагая, что у вас есть кнопка с id="bookButton"
-
-                                // Обновляем страницу или выполняем другие действия при необходимости
-                            },
-                            error: function (xhr, status, error) {
-                                // Обработка ошибок
-                            }
-                        });
-                    });
-                });
-
-                function changeButton(button) {
-                    // Изменяем цвет кнопки
-                    button.style.backgroundColor = 'green';
-                    // Изменяем текст кнопки
-                    button.innerText = 'Booked';
-                }
-            </script>
+          
         </div>
-             
-
-        @section Scripts {
-            <script>
-                document.getElementById('checkInDate').min = new Date().toISOString().split('T')[0];
-
-                var maxDate = new Date();
-                maxDate.setFullYear(maxDate.getFullYear() + 1);
-                maxDate.setMonth(maxDate.getMonth() + 3);
-                document.getElementById('checkInDate').max = maxDate.toISOString().split('T')[0];
-
-            </script>
-        }
     </body>
 </main>
+
+@section Scripts {
+    <script>
+        document.getElementById('checkInDate').min = new Date().toISOString().split('T')[0];
+
+        var maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        maxDate.setMonth(maxDate.getMonth() + 3);
+        document.getElementById('checkInDate').max = maxDate.toISOString().split('T')[0];
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Перехватываем отправку формы
+            $('.bookAttractionForm').submit(function (event) {
+                event.preventDefault();
+                var form = $(this);
+                var formData = form.serialize();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Home/BookAttraction',
+                    data: formData,
+                    success: function (response) {
+                        var buttonId = form.find('button[type=submit]').attr('id');
+                        var button = $('#' + buttonId);
+                        button.css('background-color', 'green');
+                        button.text('Booked');
+                        button.prop('disabled', true);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка: ' + error);
+                    }
+                });
+            });
+        });
+
+        function changeButton(button) {
+            // Изменяем цвет кнопки
+            button.style.backgroundColor = 'green';
+            // Изменяем текст кнопки
+            button.innerText = 'Booked';
+            button.disabled = true;
+            return true;
+        }
+    </script>
+}

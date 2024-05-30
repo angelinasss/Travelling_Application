@@ -387,12 +387,12 @@
                                     {
                                         @foreach (var airticket in Model.Results)
                                         {
-                                          
-                                            <form id="bookFlightEC" method="get" action="/Home/BookFlightEC">
+
+                                        <form id="bookEC_@airticket.Id" method="post" action="/Home/BookFlightEC" class="bookECForm">
                                                 <input type="hidden" name="airticketId" value="@airticket.Id" />
                                                 <input type="hidden" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
                                                 <input type="hidden" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-dd")" />
-                                                <input type="hidden" name="passengers" value="@ViewBag.Passengers" />
+                                                <input type="hidden" name="passengers" value="@ViewBag.AdultsCount" />
                                                 <input type="hidden" name="tripTypee" value="@ViewBag.OneWayTrip" />
                                             @if (airticket.AmountOfTicketsEC > 0 && airticket.VerifiedByAdminECTicket)
                                             {
@@ -533,17 +533,22 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-12 text-center" style="margin-bottom: 20px;">
-                                                            <button onclick="changeButton(this)" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                            @{
+                                                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                {
+                                                                    <button id="bookButtonEC_@airticket.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                }
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
                                             }
                                             </form>
-                                            <form id="bookFlightBC" method="get" action="/Home/BookFlightBC">
+                                        <form id="bookBC_@airticket.Id" method="post" action="/Home/BookFlightBC" class="bookBCForm">
                                                         <input type="hidden" name="airticketId" value="@airticket.Id" />
                                                         <input type="hidden" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
                                                         <input type="hidden" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-dd")" />
-                                                        <input type="hidden" name="passengers" value="@ViewBag.Passengers" />
+                                            <input type="hidden" name="passengers" value="@ViewBag.AdultsCount" />
                                                         <input type="hidden" name="tripTypee" value="@ViewBag.OneWayTrip" />
                                                             @if (airticket.AmountOfTicketsBC > 0 && airticket.VerifiedByAdminBCTicket)
                                                         {
@@ -684,17 +689,22 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12 text-center" style="margin-bottom: 20px;">
-                                                                        <button onclick="changeButton(this)" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                            @{
+                                                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                {
+                                                                    <button id="bookButtonBC_@airticket.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                }
+                                                            }
                                                                     </div>
                                                                 </div>
                                                            </div>
                                                         }
                                                       </form>
-                                            <form id="bookFlightFC" method="get" action="/Home/BookFlightFC">
+                                        <form id="bookFC_@airticket.Id" method="post" action="/Home/BookFlightFC" class="bookFCForm">
                                             <input type="hidden" name="airticketId" value="@airticket.Id" />
                                             <input type="hidden" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
                                             <input type="hidden" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-dd")" />
-                                            <input type="hidden" name="passengers" value="@ViewBag.Passengers" />
+                                            <input type="hidden" name="passengers" value="@ViewBag.AdultsCount" />
                                             <input type="hidden" name="tripTypee" value="@ViewBag.OneWayTrip" />
                                                 @if (airticket.AmountOfTicketsFC > 0 && airticket.VerifiedByAdminFCTicket)
                                                 {
@@ -835,7 +845,13 @@
                                                                 </div>
                                                             </div>
                                                                 <div class="col-md-12 text-center" style="margin-bottom: 20px;">
-                                                                <button onclick="changeButton(this)" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                              @{
+                                                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                {
+                                                                    <button id="bookButtonFC_@airticket.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                }
+                                                            }
+
                                                                 </div>
                                                         </div>
                                                     </div>
@@ -858,76 +874,97 @@
         </div>
         @section Scripts {
             <script>
+             
+
                 $(document).ready(function () {
                     // Перехватываем отправку формы
-                    $('#bookFlightEC').submit(function (event) {
+                    $('.bookECForm').submit(function (event) {
                         // Отменяем стандартное поведение отправки формы
                         event.preventDefault();
 
                         // Получаем данные из формы
-                        var formData = $(this).serialize();
+                        var form = $(this);
+                        var formData = form.serialize();
 
                         // Отправляем AJAX-запрос на сервер
                         $.ajax({
-                            type: 'GET',
+                            type: 'POST',
                             url: '/Home/BookFlightEC',
                             data: formData,
                             success: function (response) {
-                                // Если запрос успешен, меняем цвет и текст кнопки
-                                changeButton($('#bookButton')); // Предполагая, что у вас есть кнопка с id="bookButton"
+                                var buttonId = form.find('button[type=submit]').attr('id');
+                                var button = $('#' + buttonId);
+                                button.css('background-color', 'green');
+                                button.text('Booked');
+                                button.prop('disabled', true);
 
-                                // Обновляем страницу или выполняем другие действия при необходимости
+                                // Перенаправление или другие действия при необходимости
+                                // Например, можно перенаправить пользователя:
+                                // window.location.href = response.redirectUrl;
                             },
                             error: function (xhr, status, error) {
                                 // Обработка ошибок
+                                console.error('Ошибка: ' + error);
                             }
                         });
                     });
 
-                    $('#bookFlightBC').submit(function (event) {
+                    $('.bookBCForm').submit(function (event) {
                         // Отменяем стандартное поведение отправки формы
                         event.preventDefault();
 
-                        // Получаем данные из формы
-                        var formData = $(this).serialize();
+                        var form = $(this);
+                        var formData = form.serialize();
 
                         // Отправляем AJAX-запрос на сервер
                         $.ajax({
-                            type: 'GET',
+                            type: 'POST',
                             url: '/Home/BookFlightBC',
                             data: formData,
                             success: function (response) {
-                                // Если запрос успешен, меняем цвет и текст кнопки
-                                changeButton($('#bookButton')); // Предполагая, что у вас есть кнопка с id="bookButton"
+                                var buttonId = form.find('button[type=submit]').attr('id');
+                                var button = $('#' + buttonId);
+                                button.css('background-color', 'green');
+                                button.text('Booked');
+                                button.prop('disabled', true);
 
-                                // Обновляем страницу или выполняем другие действия при необходимости
+                                // Перенаправление или другие действия при необходимости
+                                // Например, можно перенаправить пользователя:
+                                // window.location.href = response.redirectUrl;
                             },
                             error: function (xhr, status, error) {
                                 // Обработка ошибок
+                                console.error('Ошибка: ' + error);
                             }
                         });
                     });
 
-                    $('#bookFlightFC').submit(function (event) {
+                    $('.bookFCForm').submit(function (event) {
                         // Отменяем стандартное поведение отправки формы
                         event.preventDefault();
 
-                        // Получаем данные из формы
-                        var formData = $(this).serialize();
+                        var form = $(this);
+                        var formData = form.serialize();
 
                         // Отправляем AJAX-запрос на сервер
                         $.ajax({
-                            type: 'GET',
+                            type: 'POST',
                             url: '/Home/BookFlightFC',
                             data: formData,
                             success: function (response) {
-                                // Если запрос успешен, меняем цвет и текст кнопки
-                                changeButton($('#bookButton')); // Предполагая, что у вас есть кнопка с id="bookButton"
+                                var buttonId = form.find('button[type=submit]').attr('id');
+                                var button = $('#' + buttonId);
+                                button.css('background-color', 'green');
+                                button.text('Booked');
+                                button.prop('disabled', true);
 
-                                // Обновляем страницу или выполняем другие действия при необходимости
+                                // Перенаправление или другие действия при необходимости
+                                // Например, можно перенаправить пользователя:
+                                // window.location.href = response.redirectUrl;
                             },
                             error: function (xhr, status, error) {
                                 // Обработка ошибок
+                                console.error('Ошибка: ' + error);
                             }
                         });
                     });
@@ -938,6 +975,8 @@
                     button.style.backgroundColor = 'green';
                     // Изменяем текст кнопки
                     button.innerText = 'Booked';
+                    button.disabled = true;
+                    return true;
                 }
             </script>
         }
