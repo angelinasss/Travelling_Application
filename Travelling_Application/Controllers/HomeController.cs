@@ -461,6 +461,130 @@ namespace Travelling_Application.Controllers
             return RedirectToAction("AccomodationResults", new { city = accomodation.City, checkInDate = dateIn, checkOutDate = dateOut, adults, rooms});
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToFavoriteAttraction(int attractionId, int amountOfTickets, DateTime date)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+
+            var model = new FavoriteAttraction
+            {
+                UserId = currentUser.Id,
+                AttractionId = attractionId,
+                AmountOfTickets = amountOfTickets,
+                Date = date
+            };
+
+            _context.FavoriteAttractions.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Json(new { isFavorite = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavoriteCar(int carId, DateTime dateIn, DateTime dateOut)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+
+            var model = new FavoriteCar
+            {
+                UserId = currentUser.Id,
+                CarId = carId,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut
+            };
+
+            _context.FavoriteCars.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Json(new { isFavorite = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavoriteAirTicketEC(int airticketId, DateTime dateIn, DateTime dateOut, int passengers)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+
+            var model = new FavoriteAirTicket
+            {
+                UserId = currentUser.Id,
+                AirTicketId = airticketId,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Passengers = passengers,
+                TypeClass = "EC"
+            };
+
+            _context.FavoriteAirTickets.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Json(new { isFavorite = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavoriteAirTicketBC(int airticketId, DateTime dateIn, DateTime dateOut, int passengers)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+
+            var model = new FavoriteAirTicket
+            {
+                UserId = currentUser.Id,
+                AirTicketId = airticketId,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Passengers = passengers,
+                TypeClass = "BC"
+            };
+
+            _context.FavoriteAirTickets.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Json(new { isFavorite = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavoriteAirTicketFC(int airticketId, DateTime dateIn, DateTime dateOut, int passengers)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+
+            var model = new FavoriteAirTicket
+            {
+                UserId = currentUser.Id,
+                AirTicketId = airticketId,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Passengers = passengers,
+                TypeClass = "FC"
+            };
+
+            _context.FavoriteAirTickets.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Json(new { isFavorite = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavoriteAccomodation(int accomodationId, DateTime dateIn, DateTime dateOut, int rooms, string selectedRoom)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            var room = _context.Rooms.FirstOrDefault(r => r.AccomodationId == accomodationId && r.RoomName == selectedRoom);
+
+            var model = new FavoriteAccomodation
+            {
+                UserId = currentUser.Id,
+                AccomodationId = accomodationId,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Rooms = rooms,
+                TypeOfRoom = selectedRoom,
+                RoomId = room.ID
+            };
+
+            _context.FavoriteAccomodations.Add(model);
+            await _context.SaveChangesAsync();
+
+            return Json(new { isFavorite = true });
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -1,15 +1,18 @@
-﻿@{
+﻿<!DOCTYPE html>
+@{
     ViewData["Title"] = "Attractions | TravelHaven";
 }
 @using Travelling_Application.ViewModels
 @model SearchAttractionViewModel
+<html lang="en">
 <head>
+    <!-- Add necessary meta tags and other head elements here -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .full-width-image {
             width: 100%;
-            height: 10cm; /* Задаем высоту изображения */
-            background-image: url('https://cdn.tripster.ru/thumbs2/2184b9bc-f8e7-11ed-b368-5a4c7daa28fd.1220x600.jpeg'); /* Укажите путь к вашему изображению */
+            height: 10cm;
+            background-image: url('https://cdn.tripster.ru/thumbs2/2184b9bc-f8e7-11ed-b368-5a4c7daa28fd.1220x600.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -23,14 +26,6 @@
             z-index: 2;
             background: transparent;
             border: none;
-        }
-
-        .attraction-card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-bottom: 20px;
         }
 
         .attraction-image {
@@ -73,7 +68,7 @@
         }
 
         .content {
-            margin-top: -0.6cm; /* Устанавливаем отступ сверху, чтобы контент начинался после изображения */
+            margin-top: -0.6cm;
         }
 
         .btn-primary {
@@ -87,17 +82,17 @@
             transition: background-color 0.3s, transform 0.3s;
         }
 
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
+            .btn-primary:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
 
-        .btn-primary:focus,
-        .btn-primary:active {
-            background-color: #004085;
-            border-color: #004085;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
+            .btn-primary:focus,
+            .btn-primary:active {
+                background-color: #004085;
+                border-color: #004085;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            }
 
         .no-results-message {
             text-align: center;
@@ -110,6 +105,35 @@
             font-size: 1.2rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .attraction-card {
+            position: relative;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .favorite-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+            .favorite-icon i {
+                cursor: pointer;
+                font-size: 2rem;
+                color: red;
+            }
+
+            .favorite-icon .fa-heart-o {
+                color: transparent;
+                -webkit-text-stroke: 2px red;
+            }
+
+            .favorite-icon .fa-heart {
+                color: red;
+            }
     </style>
 
     <script>
@@ -140,8 +164,6 @@
                 $('#adultsCount').removeClass('invalid-field');
             }
 
-            
-
             return isValid;
         }
 
@@ -152,7 +174,6 @@
 
 <main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
     <body>
-
         <div class="container content">
             <form id="searchForm" method="get" action="/Home/AttractionResults" onsubmit="return validateSearch()">
                 <div class="row justify-content-center">
@@ -194,78 +215,78 @@
                 </div>
             </form>
 
-           
-                    <div class="container-fluid" style="margin-left: 200px;">
+            <div class="container-fluid" style="margin-left: 200px;">
+                <div class="row">
+                    <div class="col-md-9">
                         <div class="row">
-                            <div class="col-md-9">
-                                <div class="row">
-                                    <div class="col">
-                                        @if (Model?.Results != null && Model.Results.Any())
-                                        {
-                                            @foreach (var attraction in Model.Results)
-                                            {
-                                                 <form id="bookAttraction_@attraction.Id" method="post" action="/Home/BookAttraction" class="bookAttractionForm">
+                            <div class="col">
+                                @if (Model?.Results != null && Model.Results.Any())
+                                {
+                                    @foreach (var attraction in Model.Results)
+                                    {
+                                        <form id="bookAttraction_@attraction.Id" method="post" action="/Home/BookAttraction" class="bookAttractionForm">
                                             <input type="hidden" name="attractionId" value="@attraction.Id" />
                                             <input type="hidden" name="amountOfTickets" value="@ViewBag.AdultsCount" />
                                             <input type="hidden" name="date" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
-                                                <div class="attraction-card">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <img src="data:image;base64,@(Convert.ToBase64String(attraction.MainPhoto))" alt="Attraction Image" class="attraction-image" />
-                                                        </div>
-                                                        <div class="col-md-8">
-                                                            <div class="attraction-details">
-                                                                <h3 class="attraction-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
-                                                                    <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
-                                                                </h3>
-                                                                <p class="attraction-features" style="text-align: left;">@attraction.City, @attraction.Country</p>
-                                                                <div class="row">
-                                                                    <div class="text-right">
-                                                                        <p class="attraction-price">Price per 1 person: $@attraction.Cost</p>
-                                                                        @if (attraction.FreeCancellation)
-                                                                        {
-                                                                            <p class="text-success">Free cancellation</p>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                                <p class="mini-info">
-                                                                    <span class="mini-info-item"><i class="fa-solid fa-clock"></i> @attraction.TimeOfDay</span>
-                                                                </p>
-                                                                <p class="mini-info">
-                                                                    @{
-                                                                        foreach (var language in attraction.Languages)
-                                                                        {
-                                                                            <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
-                                                                        }
+                                            <div class="attraction-card">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <img src="data:image;base64,@(Convert.ToBase64String(attraction.MainPhoto))" alt="Attraction Image" class="attraction-image" />
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="attraction-details">
+                                                            <div class="favorite-icon">
+                                                                <i class="fa @("fa-heart-o")" data-attraction-id="@attraction.Id" style="cursor: pointer;"></i>
+                                                            </div>
+                                                            <h3 class="attraction-title">
+                                                                <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
+                                                            </h3>
+                                                            <p class="attraction-features">@attraction.City, @attraction.Country</p>
+                                                            <div class="row">
+                                                                <div class="text-right">
+                                                                    <p class="attraction-price">Price per 1 person: $@attraction.Cost</p>
+                                                                    @if (attraction.FreeCancellation)
+                                                                    {
+                                                                        <p class="text-success">Free cancellation</p>
                                                                     }
-                                                            </p>   @{
+                                                                </div>
+                                                            </div>
+                                                            <p class="mini-info">
+                                                                <span class="mini-info-item"><i class="fa-solid fa-clock"></i> @attraction.TimeOfDay</span>
+                                                            </p>
+                                                            <p class="mini-info">
+                                                                @{
+                                                                    foreach (var language in attraction.Languages)
+                                                                    {
+                                                                        <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
+                                                                    }
+                                                                }
+                                                            </p>
+                                                            @{
                                                                 if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                                                                 {
-                                                                    <button id="bookButton_@attraction.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                    <button id="bookButton_@attraction.Id" type="submit" class="btn btn-primary">Book</button>
                                                                 }
                                                             }
-                                                        
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                        </form>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <div class="no-results-message">
-                                                <p>No attractions found for your search criteria. Please try again with different options.</p>
                                             </div>
-                                        }
+                                        </form>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="no-results-message">
+                                        <p>No attractions found for your search criteria. Please try again with different options.</p>
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-          
+                </div>
+            </div>
 
-          
         </div>
     </body>
 </main>
@@ -278,7 +299,6 @@
         maxDate.setFullYear(maxDate.getFullYear() + 1);
         maxDate.setMonth(maxDate.getMonth() + 3);
         document.getElementById('checkInDate').max = maxDate.toISOString().split('T')[0];
-
     </script>
 
     <script>
@@ -305,15 +325,33 @@
                     }
                 });
             });
-        });
 
-        function changeButton(button) {
-            // Изменяем цвет кнопки
-            button.style.backgroundColor = 'green';
-            // Изменяем текст кнопки
-            button.innerText = 'Booked';
-            button.disabled = true;
-            return true;
-        }
+            $('.favorite-icon i').click(function () {
+                var $icon = $(this);
+                var attractionId = $icon.data('attraction-id');
+                var amountOfTickets = $('#adultsCount').val();
+                var date = $('#checkInDate').val();
+
+                $.ajax({
+                    url: '/Home/AddToFavoriteAttraction',
+                    type: 'POST',
+                    data: {
+                        attractionId: attractionId,
+                        amountOfTickets: amountOfTickets,
+                        date: date
+                    },
+                    success: function (response) {
+                        if (response.isFavorite) {
+                            $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                        } else {
+                            $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                        }
+                    },
+                    error: function () {
+                        alert('There was an error updating your favorites. Please try again.');
+                    }
+                });
+            });
+        });
     </script>
 }

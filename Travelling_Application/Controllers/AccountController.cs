@@ -195,7 +195,7 @@ namespace Travelling_Application.Controllers
                     ViewBag.DefaultCountryCode = "";
                 }
             }
-            return View("ViewProfile");
+            return View();
         }
 
         [HttpPost]
@@ -2480,20 +2480,6 @@ namespace Travelling_Application.Controllers
             return await BookingsForVerification();
         }
 
-        public async Task<IActionResult> VerifyCarRejectedBooking(int verifyCarId)
-        {
-            var car = _context.BookingCars.Find(verifyCarId);
-
-            car.VerifiedBooking = true;
-            car.RejectedMessage = string.Empty;
-            car.RejectedBooking = false;
-            car.CanceledBooking = false;
-
-            await _context.SaveChangesAsync();
-
-            return await RejectedBookings();
-        }
-
         public async Task<IActionResult> VerifyAttraction(int verifyAttractionId)
         {
             var attraction = _context.Entertainment.Find(verifyAttractionId);
@@ -2503,20 +2489,6 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await AllUnverifiedObjects();
-        }
-
-        public async Task<IActionResult> VerifyAttractionRejectedBooking(int verifyAttractionId)
-        {
-            var attraction = _context.BookingAttractions.Find(verifyAttractionId);
-
-            attraction.VerifiedBooking = true;
-            attraction.RejectedMessage = string.Empty;
-            attraction.RejectedBooking = false;
-            attraction.CanceledBooking = false;
-
-            await _context.SaveChangesAsync();
-
-            return await RejectedBookings();
         }
 
         public async Task<IActionResult> VerifyAttractionBooking(int verifyAttractionId)
@@ -2557,21 +2529,6 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await BookingsForVerification();
-        }
-
-        public async Task<IActionResult> VerifyAccomodationRejectedBooking(int verifyAccomodationId)
-        {
-            var accomodation = _context.BookingAccomodations.Find(verifyAccomodationId);
-
-            accomodation.VerifiedBooking = true;
-            accomodation.RejectedMessage = string.Empty;
-            accomodation.RejectedBooking = false;
-            accomodation.CanceledBooking = false;
-
-            _context.BookingAccomodations.Update(accomodation);
-            await _context.SaveChangesAsync();
-
-            return await RejectedBookings();
         }
 
         public async Task<IActionResult> VerifyRejectedCar(int verifyCarId)
@@ -2636,48 +2593,6 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await BookingsForVerification();
-        }
-
-        public async Task<IActionResult> VerifyAirTicketECRejectedBooking(int verifyAirTicketId)
-        {
-            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
-
-            airticket.VerifiedBooking = true;
-            airticket.RejectedMessage = string.Empty;
-            airticket.RejectedBooking = false;
-            airticket.CanceledBooking = false;
-
-            await _context.SaveChangesAsync();
-
-            return await RejectedBookings();
-        }
-
-        public async Task<IActionResult> VerifyAirTicketBCRejectedBooking(int verifyAirTicketId)
-        {
-            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
-
-            airticket.VerifiedBooking = true;
-            airticket.RejectedMessage = string.Empty;
-            airticket.RejectedBooking = false;
-            airticket.CanceledBooking = false;
-
-            await _context.SaveChangesAsync();
-
-            return await RejectedBookings();
-        }
-
-        public async Task<IActionResult> VerifyAirTicketFCRejectedBooking(int verifyAirTicketId)
-        {
-            var airticket = _context.BookingAirTickets.Find(verifyAirTicketId);
-
-            airticket.VerifiedBooking = true;
-            airticket.RejectedMessage = string.Empty;
-            airticket.RejectedBooking = false;
-            airticket.CanceledBooking = false;
-
-            await _context.SaveChangesAsync();
-
-            return await RejectedBookings();
         }
 
         public async Task<IActionResult> VerifyRejectedAirTicketEC(int verifyAirTicketId)
@@ -2789,8 +2704,18 @@ namespace Travelling_Application.Controllers
 
             car.RejectedBooking = true;
             car.RejectedMessage = message;
+            DateTime startDate = car.DateOfDeparture;
+            DateTime endDate = car.ReturnDate;
 
+            int carId = car.CarId;
+            var originalCar = _context.Car.Find(carId);
+            originalCar.StartDates.Add(startDate);
+            originalCar.EndDates.Add(endDate);
+            _context.Car.Update(originalCar);
+
+            car.CanceledBooking = true;
             await _context.SaveChangesAsync();
+
 
             return await BookingsForVerification();
         }
@@ -2816,6 +2741,24 @@ namespace Travelling_Application.Controllers
             attraction.RejectedBooking = true;
             attraction.RejectedMessage = message;
 
+            DateTime date = attraction.Date;
+            int amountOfTicket = attraction.AmountOfTickets;
+
+            int attractionId = attraction.AttractionId;
+            var originalAttraction = _context.Entertainment.Find(attractionId);
+            var dates = originalAttraction.AvailableDates;
+            int i = 0;
+            foreach (var datee in dates)
+            {
+                if (datee == date)
+                {
+                    originalAttraction.AmountOfTickets[i] += amountOfTicket;
+                }
+                i++;
+            }
+            _context.Entertainment.Update(originalAttraction);
+
+            attraction.CanceledBooking = true;
             await _context.SaveChangesAsync();
 
             return await BookingsForVerification();
@@ -2842,6 +2785,26 @@ namespace Travelling_Application.Controllers
             accomodation.RejectedBooking = true;
             accomodation.RejectedMessage = message;
 
+            int roomId = accomodation.RoomId;
+            int rooms = accomodation.Adults;
+            DateTime startDate = accomodation.DateOfDeparture;
+            DateTime endDate = accomodation.ReturnDate;
+
+            int accomodationId = accomodation.AccomodationId;
+            var room = _context.Rooms.Find(roomId);
+            var dates = room.AvailableDatesRoom;
+            int i = 0;
+            foreach (var date in dates)
+            {
+                if (date >= startDate && date < endDate)
+                {
+                    room.AmountOfAvailableSameRooms[i] += rooms;
+                }
+                i++;
+            }
+            _context.Rooms.Update(room);
+
+            accomodation.CanceledBooking = true;
             await _context.SaveChangesAsync();
 
             return await BookingsForVerification();
@@ -2999,7 +2962,14 @@ namespace Travelling_Application.Controllers
 
             airticket.RejectedBooking = true;
             airticket.RejectedMessage = message;
+            int passengers = airticket.Passengers;
 
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsEC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
             await _context.SaveChangesAsync();
 
             return await BookingsForVerification();
@@ -3025,7 +2995,14 @@ namespace Travelling_Application.Controllers
 
             airticket.RejectedBooking = true;
             airticket.RejectedMessage = message;
+            int passengers = airticket.Passengers;
 
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsBC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
             await _context.SaveChangesAsync();
 
             return await BookingsForVerification();
@@ -3051,8 +3028,15 @@ namespace Travelling_Application.Controllers
 
             airticket.RejectedBooking = true;
             airticket.RejectedMessage = message;
+            int passengers = airticket.Passengers;
 
-            await _context.SaveChangesAsync();
+            int airticketId = airticket.AirTicketId;
+            var originalAirticket = _context.AirTicket.Find(airticketId);
+            originalAirticket.AmountOfTicketsFC += passengers;
+            _context.AirTicket.Update(originalAirticket);
+
+            airticket.CanceledBooking = true;
+            await _context.SaveChangesAsync(); 
 
             return await BookingsForVerification();
         }

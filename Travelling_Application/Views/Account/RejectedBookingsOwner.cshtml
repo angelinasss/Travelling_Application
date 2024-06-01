@@ -19,6 +19,24 @@
                 background-color: #f4f4f4;
             }
 
+            .list-group-item {
+                font-family: 'Poppins', sans-serif; /* Используем шрифт Poppins */
+                color: #ffffff; /* Белый цвет текста */
+                background-color: #47b0e7; /* Цвет фона, соответствующий шапке сайта */
+                border: none;
+                margin-bottom: 5px;
+                transition: background-color 0.3s ease;
+            }
+
+                .list-group-item:hover {
+                    background-color: #6aaed6; /* Цвет фона при наведении, слегка отличающийся для выделения */
+                }
+
+                .list-group-item.active {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
+
             .container {
                 max-width: 800px;
                 margin: 20px auto;
@@ -225,31 +243,31 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="list-group" style="background-color: #343a40;">
+                    <div class="list-group">
                         <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
                         @{
                             if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                             {
-                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
-                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Verified Bookings</a>
-                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item style="color: #ffffff;">My Bookings Awaiting Verification</a>
-                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item style="color: #ffffff;">My Rejected Bookings</a>
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item">My Verified Bookings</a>
+                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item">My Bookings Awaiting Verification</a>
+                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item">My Rejected Bookings</a>
                             }
                             else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                             {
-                                <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
-                                <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
-                                <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
-                                <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
-                                <a href="/Account/BookingsForVerification" class="list-group-item style="color: #ffffff;">Bookings For Verification</a>
-                                <a href="/Account/VerifiedBookings" class="list-group-item style="color: #ffffff;">Verified Bookings</a>
-                                <a href="/Account/RejectedBookings" class="list-group-item style="color: #ffffff;">Rejected Bookings</a>
+                                <a href="/Account/AddObject" class="list-group-item">Add Object</a>
+                                <a href="/Account/VerifiedObjects" class="list-group-item">My Verified Objects</a>
+                                <a href="/Account/UnverifiedObjects" class="list-group-item">My Unverified Objects</a>
+                                <a href="/Account/RejectedObjects" class="list-group-item">My Rejected Objects</a>
+                                <a href="/Account/BookingsForVerification" class="list-group-item">Bookings For Verification</a>
+                                <a href="/Account/VerifiedBookings" class="list-group-item">Verified Bookings</a>
+                                <a href="/Account/RejectedBookings" class="list-group-item">Rejected Bookings</a>
                             }
                             else
                             {
-                                <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Verification</a>
-                                <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
-                                <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                <a href="/Account/AllUnverifiedObjects" class="list-group-item">Objects Requiring Verification</a>
+                                <a href="/Account/AllVerifiedObjects" class="list-group-item">Verified Objects</a>
+                                <a href="/Account/AllRejectedObjects" class="list-group-item">Rejected Objects</a>
                             }
                         }
                     </div>
@@ -258,7 +276,7 @@
                     <div class="row">
                         <div class="col">
                             @{
-                                <h3>Rejected Bookings</h3>
+                                <h3 class="bookings-title">Rejected Bookings</h3>
                             }
                             <div class="car-list" style="margin-top: 20px;">
                                 @{
@@ -304,10 +322,6 @@
                                                     <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                         @Model.CarMessages[iiii]
                                                     </div>
-                                                    <form asp-action="VerifyCarRejectedBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="verifyCarId" value="@Model.BookingCars[iiii].id" />
-                                                        <button class="btn btn-success" type="submit">Verify</button>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -472,10 +486,6 @@
                                                     <div class="rejected-messageEC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                         @Model.AirticketMessages[i]
                                                     </div>
-                                                    <form asp-action="VerifyAirTicketECRejectedBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="verifyAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                        <button class="btn btn-success" type="submit">Verify</button>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -629,10 +639,6 @@
                                                     <div class="rejected-messageBC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                         @Model.AirticketMessages[i]
                                                     </div>
-                                                    <form asp-action="VerifyAirTicketBCRejectedBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="verifyAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                        <button class="btn btn-success" type="submit">Verify</button>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -786,10 +792,6 @@
                                                     <div class="rejected-messageFC" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                         @Model.AirticketMessages[i]
                                                     </div>
-                                                    <form asp-action="VerifyAirTicketFCRejectedBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="verifyAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                        <button class="btn btn-success" type="submit">Verify</button>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -846,10 +848,6 @@
                                                     <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                              @Model.AttractionMessages[iii]
                                                     </div>
-                                                    <form asp-action="VerifyAttractionRejectedBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="verifyAttractionId" value="@Model.BookingAttractions[iii].id" />
-                                                        <button class="btn btn-success" type="submit">Verify</button>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -930,10 +928,6 @@
                                                     <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                         @Model.AccomodationMessages[ii]
                                                     </div>
-                                                    <form asp-action="VerifyAccomodationRejectedBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                        <input type="hidden" name="verifyAccomodationId" value="@Model.BookingAccomodation[ii].id" />
-                                                        <button class="btn btn-success" type="submit">Verify</button>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>

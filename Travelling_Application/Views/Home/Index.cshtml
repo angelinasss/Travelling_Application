@@ -18,10 +18,10 @@
             }
 
             .accomodation-card {
+                position: relative;
+                padding: 15px;
                 border: 1px solid #ddd;
-                border-radius: 5px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                overflow: hidden;
+                border-radius: 8px;
                 margin-bottom: 20px;
             }
 
@@ -115,6 +115,34 @@
                 margin-top: 10px;
                 border-radius: 5px;
             }
+
+            #favoriteNotification {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+            .favorite-icon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
+
+                .favorite-icon i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-icon .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-icon .fa-heart {
+                    color: red;
+                }
         </style>
 
         <script>
@@ -271,6 +299,9 @@
                                                         </div>
                                                         <div class="col-md-8">
                                                             <div class="accomodation-details">
+                                                                <div class="favorite-icon">
+                                                                    <i class="fa @("fa-heart-o")" data-accomodation-id="@accomodation.Id" style="cursor: pointer;"></i>
+                                                                </div>
                                                                 <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
                                                                     <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
                                                                 </h3>
@@ -334,6 +365,7 @@
 
                                                                         <div id="notification" class="text-danger" style="display:none;"></div>
 
+                                                                    <div id="favoriteNotification" class="text-danger" style="display:none; color:red; margin-top:10px;"></div>
 
                                                                     <button id="bookButton_@accomodation.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
                                                                     }
@@ -356,68 +388,106 @@
                             </div>
                         </div>
                     </div>
-        
         </div>
+        @section Scripts {
+            <script>
+                $(document).ready(function () {
+                    // Перехватываем отправку формы
+                    $('.bookAccomodationForm').submit(function (event) {
+                        // Отменяем стандартное поведение отправки формы
+                        event.preventDefault();
+
+                        if (!validateButtons()) {
+                            return false;
+                        }
+
+                        var form = $(this);
+                        var formData = form.serialize();
+
+                        // Отправляем AJAX-запрос на сервер
+                        $.ajax({
+                            type: 'POST',
+                            url: $(this).attr('action'),
+                            data: formData,
+                            success: function (response) {
+                                // Изменяем цвет и текст кнопки после успешного запроса
+                                var buttonId = form.find('button[type=submit]').attr('id');
+                                var button = $('#' + buttonId);
+                                button.css('background-color', 'green');
+                                button.text('Booked');
+                                button.prop('disabled', true);
+
+                                // Перенаправление или другие действия при необходимости
+                                // Например, можно перенаправить пользователя:
+                                // window.location.href = response.redirectUrl;
+                            },
+                            error: function (xhr, status, error) {
+                                // Обработка ошибок
+                                console.error('Ошибка: ' + error);
+                            }
+                        });
+                    });
+                    $('.favorite-icon i').click(function () {
+                        var $icon = $(this);
+                        var accomodationId = $icon.data('accomodation-id');
+                        var dateIn = $('#checkInDate').val();
+                        var dateOut = $('#checkOutDate').val();
+                        var rooms = $('#rooms').val();
+                        var selectedRoom = $('input[name="room"]:checked').val(); // Get the selected room value
+
+                        // Проверяем, выбран ли тип комнаты
+                        if (!selectedRoom) {
+                            $('#favoriteNotification').text('Please choose a room type before adding to favorites.').show();
+                            return; // Прерываем выполнение, если комната не выбрана
+                        }
+
+                        $('#favoriteNotification').hide(); // Скрываем сообщение об ошибке, если комната выбрана
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteAccomodation',
+                            type: 'POST',
+                            data: {
+                                accomodationId: accomodationId,
+                                dateIn: dateIn,
+                                dateOut: dateOut,
+                                rooms: rooms,
+                                selectedRoom: selectedRoom
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
+                            }
+                        });
+                    });
+
+
+                });
+
+
+                function changeButton(button) {
+                    if (validateButtons()) {
+                        // Change button color
+                        button.style.backgroundColor = 'green';
+                        // Change button text
+                        button.innerText = 'Booked';
+                        button.disabled = true;
+                        return true; // Allow form submission
+                    }
+                    return false; // Prevent form submission
+                }
+            </script>
+
+            <script>
+                function updateSelectedRoom(roomName) {
+                    document.getElementById('selectedRoom').value = roomName;
+                }
+            </script>
+        }
     </body>
 </main>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Перехватываем отправку формы
-            $('.bookAccomodationForm').submit(function (event) {
-                // Отменяем стандартное поведение отправки формы
-                event.preventDefault();
-
-                if (!validateButtons()) {
-                    return false;
-                }
-
-                var form = $(this);
-                var formData = form.serialize();
-
-                // Отправляем AJAX-запрос на сервер
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: formData,
-                    success: function (response) {
-                        // Изменяем цвет и текст кнопки после успешного запроса
-                        var buttonId = form.find('button[type=submit]').attr('id');
-                        var button = $('#' + buttonId);
-                        button.css('background-color', 'green');
-                        button.text('Booked');
-                        button.prop('disabled', true);
-
-                        // Перенаправление или другие действия при необходимости
-                        // Например, можно перенаправить пользователя:
-                        // window.location.href = response.redirectUrl;
-                    },
-                    error: function (xhr, status, error) {
-                        // Обработка ошибок
-                        console.error('Ошибка: ' + error);
-                    }
-                });
-            });
-        });
-
-
-        function changeButton(button) {
-            if (validateButtons()) {
-                // Change button color
-                button.style.backgroundColor = 'green';
-                // Change button text
-                button.innerText = 'Booked';
-                button.disabled = true;
-                return true; // Allow form submission
-            }
-            return false; // Prevent form submission
-        }
-    </script>
-
-    <script>
-        function updateSelectedRoom(roomName) {
-            document.getElementById('selectedRoom').value = roomName;
-        }
-    </script>
-}

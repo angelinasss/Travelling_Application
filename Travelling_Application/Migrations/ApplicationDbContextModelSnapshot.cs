@@ -661,6 +661,123 @@ namespace Travelling_Application.Migrations
                     b.ToTable("Entertainment");
                 });
 
+            modelBuilder.Entity("Travelling_Application.Models.FavoriteAccomodation", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("AccomodationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateOfDeparture")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rooms")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TypeOfRoom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("FavoriteAccomodations");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.FavoriteAirTicket", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("AirTicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateOfDeparture")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Passengers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TypeClass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("FavoriteAirTickets");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.FavoriteAttraction", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("AmountOfTickets")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttractionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("FavoriteAttractions");
+                });
+
+            modelBuilder.Entity("Travelling_Application.Models.FavoriteCar", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateOfDeparture")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("FavoriteCars");
+                });
+
             modelBuilder.Entity("Travelling_Application.Models.Photo", b =>
                 {
                     b.Property<int>("Id")

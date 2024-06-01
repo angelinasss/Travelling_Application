@@ -17,6 +17,11 @@ namespace Travelling_Application.Models
 
         public DbSet<BookingAttraction> BookingAttractions { get; set; }
 
+        public DbSet<FavoriteAttraction> FavoriteAttractions { get; set; }
+        public DbSet<FavoriteCar> FavoriteCars { get; set; }
+        public DbSet<FavoriteAccomodation> FavoriteAccomodations { get; set; }
+        public DbSet<FavoriteAirTicket> FavoriteAirTickets { get; set; }
+
         public DbSet<BookingCar> BookingCars { get; set; }
 
         public DbSet<BookingAirTicket> BookingAirTickets { get; set; }

@@ -16,8 +16,26 @@
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
-                background-color: #f4f4f4;
+                background-color: #f0f8ff;
             }
+
+            .list-group-item {
+                font-family: 'Poppins', sans-serif; /* Используем шрифт Poppins */
+                color: #ffffff; /* Белый цвет текста */
+                background-color: #47b0e7; /* Цвет фона, соответствующий шапке сайта */
+                border: none;
+                margin-bottom: 5px;
+                transition: background-color 0.3s ease;
+            }
+
+                .list-group-item:hover {
+                    background-color: #6aaed6; /* Цвет фона при наведении, слегка отличающийся для выделения */
+                }
+
+                .list-group-item.active {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
 
             .container {
                 max-width: 800px;
@@ -141,10 +159,10 @@
                 height: 20px;
             }
 
-                /* Hide default HTML checkbox */
-                .switch input {
-                    display: none;
-                }
+            /* Hide default HTML checkbox */
+            .switch input {
+                display: none;
+            }
 
             /* The slider */
             .slider {
@@ -159,17 +177,17 @@
                 transition: .4s;
             }
 
-                .slider:before {
-                    position: absolute;
-                    content: "";
-                    height: 14px;
-                    width: 14px;
-                    left: 3px;
-                    bottom: 3px;
-                    background-color: white;
-                    -webkit-transition: .4s;
-                    transition: .4s;
-                }
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
 
             input:checked + .slider {
                 background-color: #2196F3;
@@ -214,6 +232,18 @@
 
             .invalid-field {
                 border-color: red !important;
+            }
+
+            .bookings-title {
+                font-size: 2em;
+                color: #ffffff; /* Цвет шрифта изменён на белый */
+                text-align: center;
+                padding: 20px;
+                background: linear-gradient(to right, #6dd5fa, #2980b9);
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
             }
 
         </style>
@@ -366,31 +396,31 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="list-group" style="background-color: #343a40;">
+                    <div class="list-group">
                         <a href="/Account/ViewProfile" class="list-group-item style="color: #ffffff;">Account</a>
                         @{
                             if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                             {
-                                <a href="/Account/ShowFavoriteItems" class="list-group-item style="color: #ffffff;">My Favorite</a>
-                                <a href="/Account/ShowBookingItems" class="list-group-item style="color: #ffffff;">My Verified Bookings</a>
-                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item style="color: #ffffff;">My Bookings Awaiting Verification</a>
-                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item style="color: #ffffff;">My Rejected Bookings</a>
+                                <a href="/Account/ShowFavoriteItems" class="list-group-item">My Favorite</a>
+                                <a href="/Account/ShowBookingItems" class="list-group-item">My Verified Bookings</a>
+                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item">My Bookings Awaiting Verification</a>
+                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item">My Rejected Bookings</a>
                             }
                             else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                             {
-                                <a href="/Account/AddObject" class="list-group-item style="color: #ffffff;">Add Object</a>
-                                <a href="/Account/VerifiedObjects" class="list-group-item style="color: #ffffff;">My Verified Objects</a>
-                                <a href="/Account/UnverifiedObjects" class="list-group-item style="color: #ffffff;">My Unverified Objects</a>
-                                <a href="/Account/RejectedObjects" class="list-group-item style="color: #ffffff;">My Rejected Objects</a>
-                                <a href="/Account/BookingsForVerification" class="list-group-item style="color: #ffffff;">Bookings For Verification</a>
-                                <a href="/Account/VerifiedBookings" class="list-group-item style="color: #ffffff;">Verified Bookings</a>
-                                <a href="/Account/RejectedBookings" class="list-group-item style="color: #ffffff;">Rejected Bookings</a>
+                                <a href="/Account/AddObject" class="list-group-item">Add Object</a>
+                                <a href="/Account/VerifiedObjects" class="list-group-item">My Verified Objects</a>
+                                <a href="/Account/UnverifiedObjects" class="list-group-item">My Unverified Objects</a>
+                                <a href="/Account/RejectedObjects" class="list-group-item">My Rejected Objects</a>
+                                <a href="/Account/BookingsForVerification" class="list-group-item">Bookings For Verification</a>
+                                <a href="/Account/VerifiedBookings" class="list-group-item">Verified Bookings</a>
+                                <a href="/Account/RejectedBookings" class="list-group-item">Rejected Bookings</a>
                             }
                             else
                             {
-                                <a href="/Account/AllUnverifiedObjects" class="list-group-item style="color: #ffffff;">Objects Requiring Verification</a>
-                                <a href="/Account/AllVerifiedObjects" class="list-group-item style="color: #ffffff;">Verified Object</a>
-                                <a href="/Account/AllRejectedObjects" class="list-group-item style="color: #ffffff;">Rejected Object</a>
+                                <a href="/Account/AllUnverifiedObjects" class="list-group-item">Objects Requiring Verification</a>
+                                <a href="/Account/AllVerifiedObjects" class="list-group-item">Verified Objects</a>
+                                <a href="/Account/AllRejectedObjects" class="list-group-item">Rejected Objects</a>
                             }
                         }
                     </div>
@@ -399,7 +429,7 @@
                     <div class="row">
                         <div class="col">
                             @{
-                                    <h3>Bookings For Verification</h3>
+                                <h3 class="bookings-title">Bookings For Verification</h3>
                             }
                             <div class="car-list" style="margin-top: 20px;">
                                 @{
