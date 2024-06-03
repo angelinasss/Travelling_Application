@@ -143,26 +143,17 @@
                 }
         </style>
         <style>
-            #notification {
+            #notification,
+            #notification1,
+            #notificationAccomodation,
+            #notificationAccomodationNutrition,
+            #notificationAccomodationPhoto {
                 display: none;
                 padding: 10px;
                 margin-top: 10px;
                 border-radius: 5px;
             }
 
-            #notification1 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notificationAccomodation {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
 
             .success-notification {
                 background-color: #d4edda;
@@ -189,7 +180,7 @@
     }
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        function validateAccomodationForm() {
+         function validateAccomodationForm() {
             // Проверка текстовых полей
             var accomodationName = $('#accomodationName').val();
             var accomodationCountry = $('#accomodationCountry').val();
@@ -224,19 +215,44 @@
                 'everyHourFrontDesk'
             ];
 
-            var isValid = true;
+            var featuresNot = [
+                'Parking',
+                'Free WIFI',
+                'Private Beach',
+                'SPA',
+                'Bar',
+                'Garden',
+                'Transfer To Airport',
+                'Tactile Signs',
+                'Smooking Rooms',
+                'Family Rooms',
+                'Car Charging Station',
+                'Wheelchair Accessible',
+                'Fitness Centre',
+                'Pets Allowed',
+                'Delivery Food To The Room',
+                'Every Hour Front Desk'
+            ];
 
+            var isValid = true;
+            var i = 0;
             features.forEach(function (feature) {
                 var yesChecked = $('#' + feature + 'Yes').is(':checked');
                 var noChecked = $('#' + feature + 'No').is(':checked');
 
                 if (!yesChecked && !noChecked) {
                     isValid = false;
+                    $('#notificationAccomodation' + feature).text('Please fill in the "' + featuresNot[i] + '" field.').addClass('text-danger').show();
                 }
+                else {
+                    $('#notificationAccomodation' + feature).text('Please fill in the "' + featuresNot[i] + '" field.').hide();
+                }
+
+                i++;
             });
 
             if (!isValid) {
-                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger').show();
             }
 
             if (accomodationName === '') {
@@ -289,16 +305,28 @@
                 $('#descriptionAccomodation').removeClass('invalid-field');
             }
 
-            if (!nutrition || photoCount === 0) {
+            if (photoCount === 0) {
                 isValid = false;
+                $('#notificationAccomodationPhoto').text('Please add accommodation photos.').addClass('text-danger').show();
+            }
+            if (photoCount !== 0) {
+                $('#notificationAccomodationPhoto').text('Please add accommodation photos.').hide();
             }
 
+            if (!nutrition) {
+                $('#notificationAccomodationNutrition').text('Please fill in the "Types Of Nutrition" field.').addClass('text-danger').show();
+                isValid = false;
+            } else {
+                $('#notificationAccomodationNutrition').text('Please fill in the "Types Of Nutrition" field.').hide();
+            }
+            
             if (!isValid) {
-                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger').show();
             }
             return isValid;
         }
     </script>
+</head>
 
     <main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
         <body>
@@ -357,6 +385,7 @@
                                         }
                                     </div>
                                     <input type="hidden" id="photoDataAccomodation" name="photoDataAccomodation" />
+                                <div id="notificationAccomodationPhoto" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                     <div class="form-group">
                                         <input type="file" name="photos" id="photoUploadAccomodation" multiple style="display:none;">
                                         <button type="button" class="btn btn-primary" id="uploadBtnAccomodation">Upload Photos</button>
@@ -498,7 +527,7 @@
                                             }
                                         }
                                     </div>
-
+                                <div id="notificationAccomodationNutrition" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                     <div class="mb-3">
                                         <label for="parking" class="form-label" style="margin-top: 15px;">Parking</label><br>
                                         <div class="form-check form-check-inline">
@@ -719,4 +748,3 @@
             </div>
         </body>
     </main>
-</head>

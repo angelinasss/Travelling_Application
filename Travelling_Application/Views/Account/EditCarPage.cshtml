@@ -140,13 +140,15 @@
                 }
         </style>
         <style>
-            #notification {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
+            #notification,
+            #notificationCarDate,
+            #notificationCarFree,
+            #notificationCarCoverage,
+            #notificationCarDamage,
+            #notificationCarTheft,
+            #notificationCarElectric,
+            #notificationCarMileage,
+            #notificationCarCond,
             #notification1 {
                 display: none;
                 padding: 10px;
@@ -184,66 +186,89 @@
 
             // Проверка каждого обязательного поля
             if (!$('#modelName').val()) {
+                $('#modelName').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#modelName').removeClass('invalid-field');
             }
             if (!$('#carCountry').val()) {
                 isValid = false;
+                $('#carCountry').addClass('invalid-field');
+            }
+            else {
+                $('#carCountry').removeClass('invalid-field');
             }
             if (!$('#carCity').val()) {
+                $('#carCity').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#carCity').removeClass('invalid-field');
             }
             if (!$('#carAddress').val()) {
+                $('#carAddress').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#carAddress').removeClass('invalid-field');
             }
             if (!$('#passengerCapacity').val()) {
+                $('#passengerCapacity').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#passengerCapacity').removeClass('invalid-field');
             }
             if (!$('#description').val()) {
+                $('#description').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#description').removeClass('invalid-field');
             }
             if (!$('#pricePer1hour').val()) {
+                $('#pricePer1hour').addClass('invalid-field');
                 isValid = false;
             }
-
-            // Проверка радиокнопок
-            if (!$('input[name="model.IsAirCondition"]:checked').length) {
-                isValid = false;
-            }
-            if (!$('input[name="model.UnlimitedMileage"]:checked').length) {
-                isValid = false;
-            }
-            if (!$('input[name="model.ElectricCar"]:checked').length) {
-                isValid = false;
-            }
-            if (!$('input[name="model.TheftCoverage"]:checked').length) {
-                isValid = false;
-            }
-            if (!$('input[name="model.CollisionDamageWaiver"]:checked').length) {
-                isValid = false;
-            }
-            if (!$('input[name="model.LiabilityCoverage"]:checked').length) {
-                isValid = false;
-            }
-            if (!$('input[name="model.FreeCancellation"]:checked').length) {
-                isValid = false;
+            else {
+                $('#pricePer1hour').removeClass('invalid-field');
             }
 
             // Проверка дат
             $('.booking-date').each(function () {
                 var startDate = $(this).find('input[name="model.startDates[]"]').val();
                 var endDate = $(this).find('input[name="model.endDates[]"]').val();
-                if (!startDate || !endDate) {
+                if (!startDate) {
                     isValid = false;
-                    return false; // Выход из цикла each
+                    $(this).find('input[name="model.startDates[]"]').addClass('invalid-field');
+                }
+                if (!endDate) {
+                    isValid = false;
+                    $(this).find('input[name="model.endDates[]"]').addClass('invalid-field');
+                }
+                if (startDate) {
+                    $(this).find('input[name="model.startDates[]"]').removeClass('invalid-field');
+                }
+                if (endDate) {
+                    $(this).find('input[name="model.endDates[]"]').removeClass('invalid-field');
+                }
+                if (startDate && endDate) {
+                    if (startDate >= endDate) {
+                        isValid = false;
+                        $(this).find('input[name="model.startDates[]"]').addClass('invalid-field');
+                        $(this).find('input[name="model.endDates[]"]').addClass('invalid-field');
+                        $('#notificationCarDate').text('Start date must be less than end date.').addClass('text-danger').show();
+                    }
+                    else {
+                        $('#notificationCarDate').text('Start date must be less than end date.').hide();
+                    }
                 }
             });
 
             // Вывод уведомления
             if (!isValid) {
                 $('#notification').text('Please fill in all required fields.').addClass('text-danger').show();
-            }
-            else {
-    
             }
 
             return isValid;
@@ -319,7 +344,7 @@
 
                                     <form id="car-form" asp-action="UpdateForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateForm()">
                                         <input type="file" name="file" id="file" style="display: none;" onchange="handleFileSelect(this)">
-                                        <label for="file" class="btn btn-primary" style="margin-right: 180px; margin-top: -59px;">Upload Photo</label>
+                                        <label for="file" class="btn btn-primary" style="margin-right: 180px; margin-top: -65px;">Upload Photo</label>
                           
                                         <!-- Скрытый контейнер для увеличенного изображения -->
                                         <div id="enlarged-photo-container" class="enlarged-photo-container">
@@ -381,6 +406,7 @@
                                                 <label class="form-check-label" for="isAirConditionNo">No</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarCond" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="mb-3">
                                             <label for="transmission" class="form-label" style="margin-top: 15px;">Transmission</label>
                                             <div class="input-group">
@@ -405,6 +431,7 @@
                                                 <label class="form-check-label" for="unlimitedMileageNo">Limited</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarMileage" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="mb-3">
                                             <label for="electricCar" class="form-label" style="margin-top: 15px;">Electric Car</label><br>
                                             <div class="form-check form-check-inline">
@@ -416,6 +443,7 @@
                                                 <label class="form-check-label" for="electricCarNo">No</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarElectric" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="mb-3">
                                             <label for="carCategory" class="form-label" style="margin-top: 15px;">Car Category</label>
                                             <div class="input-group">
@@ -447,6 +475,7 @@
                                                 <label class="form-check-label" for="theftCoverageNo">No</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarTheft" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="mb-3">
                                             <label for="collisionDamageWaiver" class="form-label" style="margin-top: 15px;">Collision Damage Waiver</label><br>
                                             <div class="form-check form-check-inline">
@@ -458,6 +487,7 @@
                                                 <label class="form-check-label" for="collisionDamageWaiverNo">No</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarDamage" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="mb-3">
                                             <label for="liabilityCoverage" class="form-label" style="margin-top: 15px;">Liability Coverage</label><br>
                                             <div class="form-check form-check-inline">
@@ -469,6 +499,7 @@
                                                 <label class="form-check-label" for="liabilityCoverageNo">No</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarCoverage" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="mb-3">
                                             <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
                                             <div class="form-check form-check-inline">
@@ -480,6 +511,7 @@
                                                 <label class="form-check-label" for="freeCancellationNo">No</label>
                                             </div>
                                         </div>
+                                    <div id="notificationCarFree" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                         <div class="form-group">
                                             <label for="description" style="margin-top: 15px;">Car Description</label>
                                             <textarea class="form-control" id="description" name="model.Description" placeholder="Enter the car description" rows="5" style="margin-top: 10px;">@ViewBag.CarDescription</textarea>
@@ -492,23 +524,24 @@
                                         {
                                                 <div class="booking-date" style="margin-top: 15px;">
                                                     <label style="margin-right: 10px;">Start Date:</label>
-                                                <input type="datetime-local" name="model.startDates[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.DatesStart[i].ToString("yyyy-MM-ddTHH:mm")">
+                                                <input type="datetime-local" name="model.startDates[]" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.DatesStart[i].ToString("yyyy-MM-ddTHH:mm")">
                                                     <label style="margin-left: 10px;">Finish Date:</label>
-                                                <input type="datetime-local" name="model.endDates[]" required min="{{minEndDate}}" value="@ViewBag.DatesEnd[i].ToString("yyyy-MM-ddTHH:mm")">
+                                                <input type="datetime-local" name="model.endDates[]" min="{{minEndDate}}" value="@ViewBag.DatesEnd[i].ToString("yyyy-MM-ddTHH:mm")">
                                                 </div>
                                         }
                                         </div>
-                                        <button id="add-booking-date" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                    <div id="notificationCarDate" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
+                                        <button id="add-booking-date" class="btn rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
                                             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
                                                 <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
                                             </svg>
                                         </button>
+                                    <div id="notification" class="text-danger" style="display:none;"></div>
                                         <div class="user-info" style="text-align: center;">
                                             <button id="save-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
                                         <input type="hidden" name="editCarId" value="@ViewBag.editCarId" />
                                     </form>
                                 </div>
-                                <div id="notification" class="text-danger" style="display:none;"></div>
                         </div>
                     </div>
                 </div>
@@ -533,9 +566,9 @@
                     var newBookingDateHtml = `
                                                 <div class="booking-date" style="margin-top: 15px;">
                                                     <label style="margin-right: 10px;">Start Date:</label>
-                                                    <input type="datetime-local" name="model.startDates[]" required min="${formatDate(minStartDate)}">
+                                                    <input type="datetime-local" name="model.startDates[]" min="${formatDate(minStartDate)}">
                                                     <label style="margin-left: 10px;">Finish Date:</label>
-                                                    <input type="datetime-local" name="model.endDates[]" required min="${formatDate(minEndDate)}">
+                                                    <input type="datetime-local" name="model.endDates[]" min="${formatDate(minEndDate)}">
                                                 </div>
                                             `;
 

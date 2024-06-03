@@ -838,6 +838,148 @@ namespace Travelling_Application.Controllers
             return View("BookingsForVerification", model);
         }
 
+        public async Task<IActionResult> ShowFavoriteItems()
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+
+            var favoriteCarIds = await _context.FavoriteCars
+            .Where(c => c.UserId == currentUser.Id)
+            .Select(c => c.CarId)
+            .ToListAsync();
+
+            var favoriteAttractionIds = await _context.FavoriteAttractions
+            .Where(c => c.UserId == currentUser.Id)
+            .Select(c => c.AttractionId)
+            .ToListAsync();
+
+            var favoriteAccomodationIds = await _context.FavoriteAccomodations
+            .Where(c => c.UserId == currentUser.Id)
+            .Select(c => c.AccomodationId)
+            .ToListAsync();
+
+            var favoriteAirTicketIds = await _context.FavoriteAirTickets
+              .Where(c => c.UserId == currentUser.Id)
+              .Select(c => c.AirTicketId)
+              .ToListAsync();
+
+            var favoriteCars = await _context.FavoriteCars
+           .Where(c => c.UserId == currentUser.Id)
+           .ToListAsync();
+
+            var favoriteAttractions = await _context.FavoriteAttractions
+            .Where(c => c.UserId == currentUser.Id)
+            .ToListAsync();
+
+            var favoriteAccomodations = await _context.FavoriteAccomodations
+            .Where(c => c.UserId == currentUser.Id)
+            .ToListAsync();
+
+            var favoriteAirTickets = await _context.FavoriteAirTickets
+              .Where(c => c.UserId == currentUser.Id)
+              .ToListAsync();
+
+            var cars = new List<Car>();
+
+            foreach(var carId in favoriteCarIds)
+            {
+                cars.Add(_context.Car.Find(carId));
+            }
+
+            var attractions = new List<Entertainment>();
+
+            foreach (var attractionId in favoriteAttractionIds)
+            {
+                attractions.Add(_context.Entertainment.Find(attractionId));
+            }
+
+            var airtickets = new List<AirTicket>();
+
+            foreach (var airticketId in favoriteAirTicketIds)
+            {
+                airtickets.Add(_context.AirTicket.Find(airticketId));
+            }
+
+            var accomodations = new List<Accomodation>();
+
+            foreach (var accomodationId in favoriteAccomodationIds)
+            {
+                accomodations.Add(_context.Accomodation.Find(accomodationId));
+            }
+
+            var favoriteAccomodationss = await _context.FavoriteAccomodations
+              .Where(c => c.UserId == currentUser.Id)
+              .ToListAsync();
+
+            var rooms = new List<Room>();
+
+            foreach(var accom in favoriteAccomodationss)
+            {
+                var room = _context.Rooms.FirstOrDefault(r => r.AccomodationId == accom.AccomodationId && r.RoomName == accom.TypeOfRoom);
+
+                rooms.Add(room);
+            }
+
+            var existRooms = new List<bool>();
+
+            int j = 0;
+
+            foreach (var accom in favoriteAccomodationss)
+            {
+                List<DateTime> datesToCheck = new List<DateTime>();
+                for (DateTime date = accom.DateOfDeparture; date < accom.ReturnDate; date = date.AddDays(1))
+                {
+                    datesToCheck.Add(date);
+                }
+
+                existRooms.Add(true);
+                bool allDatesAvailable = datesToCheck.All(date => rooms[j].AvailableDatesRoom.Contains(date));
+
+                if (allDatesAvailable)
+                {
+                   
+                    foreach (var item in datesToCheck)
+                    {
+                        int jj = 0;
+                        foreach (var selectDate in rooms[j].AvailableDatesRoom)
+                        {
+                            if (selectDate == item)
+                            {
+                                break;
+                            }
+                            jj++;
+                        }
+                        if (rooms[j].AmountOfAvailableSameRooms[jj] < accom.Rooms)
+                        {
+                            existRooms[j] = false;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                        existRooms[j] = false;
+                }
+                j++;
+            }
+
+            ViewBag.ExistRooms = existRooms;
+
+            var model = new FavoriteObjects
+            {
+                FavoriteCars = favoriteCars,
+                FavoriteAttractions = favoriteAttractions,
+                FavoriteAccomodations = favoriteAccomodations,
+                FavoriteAirTickets = favoriteAirTickets,
+                Cars = cars,
+                Attractions = attractions,
+                Accomodations = accomodations,
+                Airtickets = airtickets
+            };
+
+            return View("FavoriteItems", model);
+        }
+
         public async Task<IActionResult> ShowBookingItems()
         {
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
@@ -3452,6 +3594,46 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return await ShowBookingItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveCarFromFavorites(int carId)
+        {
+            var car = _context.FavoriteCars.Find(carId);
+            _context.FavoriteCars.Remove(car);
+            await _context.SaveChangesAsync();
+
+            return await ShowFavoriteItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveAttractionFromFavorites(int attractionId)
+        {
+            var attraction = _context.FavoriteAttractions.Find(attractionId);
+            _context.FavoriteAttractions.Remove(attraction);
+            await _context.SaveChangesAsync();
+
+            return await ShowFavoriteItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveAccomodationFromFavorites(int accomodationId)
+        {
+            var accomodation = _context.FavoriteAccomodations.Find(accomodationId);
+            _context.FavoriteAccomodations.Remove(accomodation);
+            await _context.SaveChangesAsync();
+
+            return await ShowFavoriteItems();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveAirticketFromFavorites(int airticketId)
+        {
+            var airticket = _context.FavoriteAirTickets.Find(airticketId);
+            _context.FavoriteAirTickets.Remove(airticket);
+            await _context.SaveChangesAsync();
+
+            return await ShowFavoriteItems();
         }
 
         [HttpPost]

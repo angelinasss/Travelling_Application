@@ -313,7 +313,7 @@
                                                         <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
                                                     </p>
                                                     <h5>Booking Dates:</h5>
-                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.Date.ToString("dd/MM/yyyy") - @Model.BookingCars[iiii].ReturnDate.Date.ToString("dd/MM/yyyy")</span>  
+                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.ToString("dd/MM/yyyy HH:mm") - @Model.BookingCars[iiii].ReturnDate.ToString("dd/MM/yyyy HH:mm")</span>
                                                     <h4>Cause of Reject:</h4>
                                                     <div class="rejected-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 10px;">
                                                         @Model.CarMessages[iiii]

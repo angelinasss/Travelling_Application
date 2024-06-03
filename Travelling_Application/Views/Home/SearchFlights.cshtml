@@ -23,6 +23,22 @@
             margin-bottom: 20px;
         }
 
+         .car-cardd {
+            position: relative;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .car-carddd {
+            position: relative;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
         .car-image {
             width: 100%;
             height: auto;
@@ -131,9 +147,9 @@
         }
 
         .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: #fff;
+            background-color: #60c2e5; /* Светлый цвет фона */
+            border-color: #60c2e5; /* Светлый цвет бордюра */
+            color: #ffffff;
             padding: 10px 20px;
             font-size: 1rem;
             border-radius: 30px;
@@ -214,6 +230,36 @@
         }
 
         .favorite-icon .fa-heart {
+            color: red;
+        }
+
+        .favorite-iconn i {
+            cursor: pointer;
+            font-size: 2rem;
+            color: red;
+        }
+
+        .favorite-iconn .fa-heart-o {
+            color: transparent;
+            -webkit-text-stroke: 2px red;
+        }
+
+        .favorite-iconn .fa-heart {
+            color: red;
+        }
+
+        .favorite-iconnn i {
+            cursor: pointer;
+            font-size: 2rem;
+            color: red;
+        }
+
+        .favorite-iconnn .fa-heart-o {
+            color: transparent;
+            -webkit-text-stroke: 2px red;
+        }
+
+        .favorite-iconnn .fa-heart {
             color: red;
         }
 
@@ -387,7 +433,7 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text"><i class="fas fa-users"></i></span>
                             <input type="number" class="form-control" id="adultsCount" name="adultsCount" placeholder="Passengers" min="1" max="150" value="@ViewBag.AdultsCount">
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="submit" class="btn btn-primar">Search</button>
                         </div>
                     </div>
                 </div>
@@ -414,9 +460,14 @@
                                                 <div class="car-card">
                                                     <div class="row">
                                                         <h3 style="margin-top: 20px;">Economy Class</h3>
-                                                        <div class="favorite-icon" style="position: absolute; top: 10px; right: 10px;">
-                                                            <i class="fa @("fa-heart-o")" data-car-id="@airticket.Id" style="cursor: pointer;"></i>
-                                                        </div>
+                                                        @{
+                                                            if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                            {
+                                                                <div class="favorite-icon" style="position: absolute; top: 10px; left: 435px;">
+                                                                    <i class="fa @("fa-heart-o")" data-airticket-id="@airticket.Id" style="cursor: pointer;"></i>
+                                                                </div>
+                                                            }
+                                                            }
                                                         <div class="col-md-3" style="margin-top: 20px;">
                                                           
                                                             @if (airticket.FreeCancellation)
@@ -571,9 +622,17 @@
                                                         <input type="hidden" name="tripTypee" value="@ViewBag.OneWayTrip" />
                                                             @if (airticket.AmountOfTicketsBC > 0 && airticket.VerifiedByAdminBCTicket)
                                                         {
-                                                            <div class="car-card">
+                                                            <div class="car-cardd">
                                                                 <div class="row">
                                                                     <h3 style="margin-top: 20px;">Business Class</h3>
+                                                                    @{
+                                                                        if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                        {
+                                                                                    <div class="favorite-iconn" style="position: absolute; top: 10px; left: 435px;">
+                                                                                    <i class="fa @("fa-heart-o")" data-airticket-id="@airticket.Id" style="cursor: pointer;"></i>
+                                                                                    </div>
+                                                                        }
+                                                                        }
                                                                     <div class="col-md-3" style="margin-top: 20px;">
                                                                         @if (airticket.FreeCancellation)
                                                                         {
@@ -727,9 +786,17 @@
                                             <input type="hidden" name="tripTypee" value="@ViewBag.OneWayTrip" />
                                                 @if (airticket.AmountOfTicketsFC > 0 && airticket.VerifiedByAdminFCTicket)
                                                 {
-                                                    <div class="car-card">
+                                                    <div class="car-carddd">
                                                         <div class="row">
                                                             <h3 style="margin-top: 20px;">First Class</h3>
+                                                            @{
+                                                            if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                            {
+                                                                <div class="favorite-iconnn" style="position: absolute; top: 10px; left: 435px;">
+                                                                      <i class="fa @("fa-heart-o")" data-airticket-id="@airticket.Id" style="cursor: pointer;"></i>
+                                                                </div>
+                                                            }
+                                                            }
                                                             <div class="col-md-3" style="margin-top: 20px;">
                                                                 @if (airticket.FreeCancellation)
                                                                 {
@@ -984,6 +1051,93 @@
                             error: function (xhr, status, error) {
                                 // Обработка ошибок
                                 console.error('Ошибка: ' + error);
+                            }
+                        });
+                    });
+
+                    $('.favorite-icon i').click(function () {
+                        var $icon = $(this);
+                        var airticketId = $icon.data('airticket-id');
+                        var dateIn = $('#checkInDate').val();
+                        var dateOut = $('#checkOutDate').val();
+                        var passengers = $('#adultsCount').val();
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteAirTicketEC',
+                            type: 'POST',
+                            data: {
+                                airticketId: airticketId,
+                                dateIn: dateIn,
+                                dateOut: dateOut,
+                                passengers: passengers
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconn i').click(function () {
+                        var $icon = $(this);
+                        var airticketId = $icon.data('airticket-id');
+                        var dateIn = $('#checkInDate').val();
+                        var dateOut = $('#checkOutDate').val();
+                        var passengers = $('#adultsCount').val();
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteAirTicketBC',
+                            type: 'POST',
+                            data: {
+                                airticketId: airticketId,
+                                dateIn: dateIn,
+                                dateOut: dateOut,
+                                passengers: passengers
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconnn i').click(function () {
+                        var $icon = $(this);
+                        var airticketId = $icon.data('airticket-id');
+                        var dateIn = $('#checkInDate').val();
+                        var dateOut = $('#checkOutDate').val();
+                        var passengers = $('#adultsCount').val();
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteAirTicketFC',
+                            type: 'POST',
+                            data: {
+                                airticketId: airticketId,
+                                dateIn: dateIn,
+                                dateOut: dateOut,
+                                passengers: passengers
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
                             }
                         });
                     });

@@ -68,29 +68,6 @@
                 margin-top: -0.6cm; /* Устанавливаем отступ сверху, чтобы контент начинался после изображения */
             }
 
-            .btn-primary {
-                background-color: #007bff;
-                border-color: #007bff;
-                color: #fff;
-                padding: 10px 20px;
-                font-size: 1rem;
-                border-radius: 30px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                transition: background-color 0.3s, transform 0.3s;
-            }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-                transform: scale(1.05);
-            }
-
-            .btn-primary:focus,
-            .btn-primary:active {
-                background-color: #004085;
-                border-color: #004085;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            }
-
             .no-results-message {
                 text-align: center;
                 padding: 20px;
@@ -270,7 +247,7 @@
                             <span class="input-group-text"><i class="fas fa-users"></i></span>
                             <input type="number" class="form-control" id="adults" name="adults" placeholder="Adult" min="1" max="50" value="@ViewBag.Adults">
                             <input type="number" class="form-control" id="rooms" name="rooms" placeholder="Room" min="1" max="30" value="@ViewBag.Rooms">
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="submit" class="btn btn-primar">Search</button>
                         </div>
                     </div>
                 </div>
@@ -299,9 +276,14 @@
                                                         </div>
                                                         <div class="col-md-8">
                                                             <div class="accomodation-details">
-                                                                <div class="favorite-icon">
-                                                                    <i class="fa @("fa-heart-o")" data-accomodation-id="@accomodation.Id" style="cursor: pointer;"></i>
-                                                                </div>
+                                                                    @{
+                                                                    if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                    {
+                                                                        <div class="favorite-icon">
+                                                                            <i class="fa @("fa-heart-o")" data-accomodation-id="@accomodation.Id" style="cursor: pointer;"></i>
+                                                                        </div>
+                                                                    }
+                                                                    }
                                                                 <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
                                                                     <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
                                                                 </h3>
@@ -365,9 +347,9 @@
 
                                                                         <div id="notification" class="text-danger" style="display:none;"></div>
 
-                                                                    <div id="favoriteNotification" class="text-danger" style="display:none; color:red; margin-top:10px;"></div>
+                                                                        <div id="favoriteNotification" class="text-danger" style="display:none; color:red; margin-top:10px;"></div>
 
-                                                                    <button id="bookButton_@accomodation.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
+                                                                        <button id="bookButton_@accomodation.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
                                                                     }
                                                                 }
                                                             </div>
@@ -392,9 +374,7 @@
         @section Scripts {
             <script>
                 $(document).ready(function () {
-                    // Перехватываем отправку формы
                     $('.bookAccomodationForm').submit(function (event) {
-                        // Отменяем стандартное поведение отправки формы
                         event.preventDefault();
 
                         if (!validateButtons()) {
@@ -404,29 +384,23 @@
                         var form = $(this);
                         var formData = form.serialize();
 
-                        // Отправляем AJAX-запрос на сервер
                         $.ajax({
                             type: 'POST',
                             url: $(this).attr('action'),
                             data: formData,
                             success: function (response) {
-                                // Изменяем цвет и текст кнопки после успешного запроса
                                 var buttonId = form.find('button[type=submit]').attr('id');
                                 var button = $('#' + buttonId);
                                 button.css('background-color', 'green');
                                 button.text('Booked');
                                 button.prop('disabled', true);
-
-                                // Перенаправление или другие действия при необходимости
-                                // Например, можно перенаправить пользователя:
-                                // window.location.href = response.redirectUrl;
                             },
                             error: function (xhr, status, error) {
-                                // Обработка ошибок
                                 console.error('Ошибка: ' + error);
                             }
                         });
                     });
+
                     $('.favorite-icon i').click(function () {
                         var $icon = $(this);
                         var accomodationId = $icon.data('accomodation-id');

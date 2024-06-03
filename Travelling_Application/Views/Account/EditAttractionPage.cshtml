@@ -143,21 +143,12 @@
                 }
         </style>
         <style>
-            #notification {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notification1 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notificationAttraction {
+            #notification,
+            #notification1,
+            #notificationAttraction,
+            #notificationAttractionLang,
+            #notificationAttractionPhoto,
+            #notificationAttractionFree {
                 display: none;
                 padding: 10px;
                 margin-top: 10px;
@@ -198,11 +189,9 @@
             var description = $('#descriptionAttraction').val();
             var cost = $('#cost').val();
 
-            // Проверка выбранных радиокнопок
-            var freeCancellation = $('#freeCancellationYes').is(':checked');
-            if (!freeCancellation) {
-                freeCancellation = $('#freeCancellationNo').is(':checked');
-            }
+            var freeCancellationYes = $('#freeCancellationYes').is(':checked');
+            var freeCancellationNo = $('#freeCancellationNo').is(':checked');
+            var freeCancellation = freeCancellationYes || freeCancellationNo;
 
             // Проверка выбранных чекбоксов
             var languages = $('input[name="model.Languages[]"]:checked').length > 0;
@@ -215,17 +204,97 @@
             $('.booking-date-attraction').each(function () {
                 var date = $(this).find('input[name="model.AvailableDates[]"]').val();
                 var tickets = $(this).find('input[name="model.AmountOfTickets[]"]').val();
-                if (date === '' || tickets === '') {
+                if (date === '') {
                     dynamicFieldsFilled = false;
-                    return false; // Выход из цикла each
+                    $(this).find('input[name="model.AvailableDates[]"]').addClass('invalid-field');
+                }
+                if (tickets === '') {
+                    dynamicFieldsFilled = false;
+                    $(this).find('input[name="model.AmountOfTickets[]"]').addClass('invalid-field');
+                }
+                if (date !== '') {
+                    $(this).find('input[name="model.AvailableDates[]"]').removeClass('invalid-field');
+                }
+                if (tickets !== '') {
+                    $(this).find('input[name="model.AmountOfTickets[]"]').removeClass('invalid-field');
                 }
             });
             var isValid = true;
+
+            if (attractionName === '') {
+                $('#attractionName').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionName').removeClass('invalid-field');
+            }
+
+            if (attractionCountry === '') {
+                $('#attractionCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionCountry').removeClass('invalid-field');
+            }
+
+            if (attractionCity === '') {
+                $('#attractionCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionCity').removeClass('invalid-field');
+            }
+
+            if (attractionAddress === '') {
+                $('#attractionAddress').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionAddress').removeClass('invalid-field');
+            }
+
+            if (description === '') {
+                $('#descriptionAttraction').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#descriptionAttraction').removeClass('invalid-field');
+            }
+
+            if (cost === '') {
+                $('#cost').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#cost').removeClass('invalid-field');
+            }
+
+            if (!freeCancellation) {
+                $('#notificationAttractionFree').text('Please fill in the "Free Cancellation" field.').addClass('text-danger').show();
+                isValid = false;
+            } else {
+                $('#notificationAttractionFree').text('Please fill in the "Free Cancellation" field.').hide();
+            }
+
+            if (!languages) {
+                $('#notificationAttractionLang').text('Please fill in the "Languages" field.').addClass('text-danger').show();
+                isValid = false;
+            } else {
+                $('#notificationAttractionLang').text('Please fill in the "Languages" field.').hide();
+            }
+
             // Проверка всех условий
             if (attractionName === '' || attractionCountry === '' || attractionCity === '' || attractionAddress === '' || description === '' || cost === '' || !freeCancellation || !languages || photoCount === 0 || !dynamicFieldsFilled) {
                 $('#notificationAttraction').text('Please fill in all required fields.').addClass('text-danger').show();
                 isValid = false;
             }
+            if (photoCount === 0) {
+                $('#notificationAttractionPhoto').text('Please add attraction photos.').addClass('text-danger').show();
+            }
+            if (photoCount !== 0) {
+                $('#notificationAttractionPhoto').text('Please add attraction photos.').hide();
+            }
+
             return isValid;
         }
     </script>
@@ -287,6 +356,7 @@
                                         }
                                     </div>
                                     <input type="hidden" id="photoData" name="photoData" />
+                                    <div id="notificationAttractionPhoto" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                     <div class="form-group">
                                         <input type="file" name="photos" id="photoUpload" multiple style="display:none;">
                                         <button type="button" class="btn btn-primary" id="uploadBtn">Upload Photos</button>
@@ -416,7 +486,7 @@
                                     @{
                                         var selectedCategory = ViewBag.AttractionCategory as string;
                                     }
-
+                                    <div id="notificationAttractionLang" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                     <div class="mb-3">
                                         <label for="attractionCategory" class="form-label" style="margin-top: 15px;">Attraction Category</label>
                                         <div class="input-group">
@@ -466,6 +536,7 @@
                                             <label class="form-check-label" for="freeCancellationNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationAttractionFree" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                     <div class="form-group">
                                         <label for="descriptionAttraction" style="margin-top: 15px;">Attraction Description</label>
                                         <textarea class="form-control" id="descriptionAttraction" name="model.Description" placeholder="Enter the attraction description" rows="5" style="margin-top: 10px;">@ViewBag.AttractionDescription</textarea>
@@ -478,22 +549,22 @@
                                         {
                                             <div class="booking-date-attraction" style="margin-top: 15px;">
                                             <div class="input-group">
-                                                    <input type="date" class="form-control" name="model.AvailableDates[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.Dates[i].ToString("yyyy-MM-dd")">
+                                                    <input type="date" class="form-control" name="model.AvailableDates[]" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.Dates[i].ToString("yyyy-MM-dd")">
                                                     <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000" value="@ViewBag.AmountOfTickets[i].ToString()">
                                             </div>
                                             </div>
                                         }
                                     </div>
-                                    <button id="add-booking-date-attraction" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                    <button id="add-booking-date-attraction" class="btn rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
                                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
                                             <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
                                         </svg>
                                     </button>
+                                    <div id="notificationAttraction" class="text-danger1" style="display:none;"></div>
                                     <div class="attraction-info" style="text-align: center;">
                                         <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-top: 30px;">Save</button>
                                 </form>
                             </div>
-                            <div id="notificationAttraction" class="text-danger1" style="display:none;"></div>
                         </div>
                     </div>
                 </div>
@@ -513,7 +584,7 @@
                                 var newBookingDateHtmlAttr = `
                                                                             <div class="booking-date-attraction" style="margin-top: 15px;">
                                                                                 <div class="input-group">
-                                                                                    <input type="date" name="model.AvailableDates[]" required min="${formatDatee(minDate)}" class="form-control">
+                                                                                    <input type="date" name="model.AvailableDates[]" min="${formatDatee(minDate)}" class="form-control">
                                                                                     <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000">
                                                                                 </div>
                                                                             </div>

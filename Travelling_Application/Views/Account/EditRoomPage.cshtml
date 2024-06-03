@@ -157,20 +157,35 @@
                 }
         </style>
         <style>
-            #notification {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notification1 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
+            #notification,
+            #notificationwashingMachine,
+            #notificationkitchen,
+            #notificationwheelchairAccessibleRoom,
+            #notificationtoiletWithGrabBars,
+            #notificationbathtubWithgrabbars,
+            #notificationbarrierFreeShower,
+            #notificationshowerWithoutEdge,
+            #notificationhighToilet,
+            #notificationlowSink,
+            #notificationbathroomEmergencyButton,
+            #notificationshowerChair,
+            #notificationcoffeeMachine,
+            #notificationcoffeeOrTea,
+            #notificationelectricKettle,
+            #notificationsoundproofing,
+            #notificationpatio,
+            #notificationflatScreenTV,
+            #notificationbalcony,
+            #notificationterrace,
+            #notificationprivatePool,
+            #notificationbath,
+            #notificationplaceToWorkOnALaptop,
+            #notificationairConditioner,
+            #notificationprivateBathroom,
+            #notificationfreeCancellation,
+            #notificationPhoto,
+            #notification1,
+            #notificationAccomodation,
             #notificationRoom {
                 display: none;
                 padding: 10px;
@@ -199,6 +214,29 @@
             .invalid-field {
                 border-color: red !important;
             }
+
+            .btn-primary {
+                background-color: #60c2e5 !important; /* Светлый цвет фона */
+                border-color: #60c2e5 !important; /* Светлый цвет бордюра */
+                color: #ffffff !important;
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                border-radius: 30px !important;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                transition: background-color 0.3s, transform 0.3s !important;
+            }
+
+                .btn-primary:hover {
+                    background-color: #0056b3 !important;
+                    transform: scale(1.05) !important;
+                }
+
+                .btn-primary:focus,
+                .btn-primary:active {
+                    background-color: #004085 !important;
+                    border-color: #004085 !important;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+                }
         </style>
     }
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -263,35 +301,79 @@
                 'privateBathroom',
                 'freeCancellation'
             ];
+            var featuresNot = [
+                'Washing Machine',
+                'Kitchen',
+                'Wheelchair Accessible Room',
+                'Toilet With Grab Bars',
+                'Bathtub With Grabbars',
+                'Barrier Free Shower',
+                'Shower Without Edge',
+                'High Toilet',
+                'Low Sink',
+                'Bathroom Emergency Button',
+                'Shower Chair',
+                'Coffee Machine',
+                'Coffee Or Tea',
+                'Electric Kettle',
+                'Soundproofing',
+                'Patio',
+                'Flat Screen TV',
+                'Balcony',
+                'Terrace',
+                'Private Pool',
+                'Bath',
+                'Place To Work On A Laptop',
+                'Air Conditioner',
+                'Private Bathroom',
+                'Free Cancellation'
+            ];
 
-            var isValid = true;
-
+            var i = 0;
             features.forEach(function (feature) {
                 var yesChecked = $('#' + feature + 'Yes').is(':checked');
                 var noChecked = $('#' + feature + 'No').is(':checked');
 
                 if (!yesChecked && !noChecked) {
                     isValid = false;
+                    $('#notification' + feature).text('Please fill in the "' + featuresNot[i] + '" field.').addClass('text-danger').show();
                 }
+                else {
+                    $('#notification' + feature).text('Please fill in the "' + featuresNot[i] + '" field.').hide();
+                }
+                i++;
             });
-
 
             var dynamicFieldsFilled = true;
             $('.booking-date-room').each(function () {
                 var date = $(this).find('input[name="model.AvailableDatesRoom[]"]').val();
                 var amountOfRooms = $(this).find('input[name="model.AmountOfAvailableSameRooms[]"]').val();
-                if (date === '' || amountOfRooms === '') {
+                if (date === '') {
                     dynamicFieldsFilled = false;
-                    return false; // Выход из цикла each
+                    $(this).find('input[name="model.AvailableDatesRoom[]"]').addClass('invalid-field');
+                }
+                if (amountOfRooms === '') {
+                    dynamicFieldsFilled = false;
+                    $(this).find('input[name="model.AmountOfAvailableSameRooms[]"]').addClass('invalid-field');
+                }
+                if (date !== '') {
+                    $(this).find('input[name="model.AvailableDatesRoom[]"]').removeClass('invalid-field');
+                }
+                if (amountOfRooms !== '') {
+                    $(this).find('input[name="model.AmountOfAvailableSameRooms[]"]').removeClass('invalid-field');
                 }
             });
 
-            if (photoCount === 0 || !dynamicFieldsFilled) {
+            if (photoCount === 0) {
                 isValid = false;
+                $('#notificationPhoto').text('Please add room photos.').addClass('text-danger').show();
+            }
+            if (photoCount !== 0) {
+                $('#notificationPhoto').text('Please add room photos.').hide();
             }
 
-            if (!isValid) {
-                $('#notificationRoom').text('Please fill in all required fields.').addClass('text-danger1').show();
+            if (!isValid || !dynamicFieldsFilled) {
+                $('#notificationRoom').text('Please fill in all required fields.').addClass('text-danger').show();
             }
             return isValid;
         }
@@ -354,6 +436,7 @@
                                         }
                                     </div>
                                     <input type="hidden" id="photoDataRoom" name="photoDataRoom" />
+                                    <div id="notificationPhoto" class="text-danger1" style="display:none; margin-top: 10px; margin-bottom: 10px;"></div>
                                     <div class="form-group">
                                         <input type="file" name="photos" id="photoUploadRoom" multiple style="display:none;">
                                         <button type="button" class="btn btn-primary" id="uploadBtnRoom">Upload Photos</button>
@@ -449,6 +532,7 @@
                                             <label class="form-check-label" for="washingMachineNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationwashingMachine" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="kitchen" class="form-label" style="margin-top: 15px;">Kitchen</label><br>
                                         <div class="form-check form-check-inline">
@@ -460,6 +544,7 @@
                                             <label class="form-check-label" for="kitchenNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationkitchen" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="wheelchairAccessibleRoom" class="form-label" style="margin-top: 15px;">Wheelchair Accessible</label><br>
                                         <div class="form-check form-check-inline">
@@ -471,6 +556,7 @@
                                             <label class="form-check-label" for="wheelchairAccessibleRoomNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationwheelchairAccessibleRoom" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="toiletWithGrabBars" class="form-label" style="margin-top: 15px;">Toilet With Grab Bars</label><br>
                                         <div class="form-check form-check-inline">
@@ -482,6 +568,7 @@
                                             <label class="form-check-label" for="toiletWithGrabBarsNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationtoiletWithGrabBars" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="bathtubWithgrabbars" class="form-label" style="margin-top: 15px;">Bathtub With Grabbars</label><br>
                                         <div class="form-check form-check-inline">
@@ -493,6 +580,7 @@
                                             <label class="form-check-label" for="bathtubWithgrabbarsNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationbathtubWithgrabbars" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="barrierFreeShower" class="form-label" style="margin-top: 15px;">Barrier Free Shower</label><br>
                                         <div class="form-check form-check-inline">
@@ -504,6 +592,7 @@
                                             <label class="form-check-label" for="barrierFreeShowerNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationbarrierFreeShower" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="showerWithoutEdge" class="form-label" style="margin-top: 15px;">Shower Without Edge</label><br>
                                         <div class="form-check form-check-inline">
@@ -515,6 +604,7 @@
                                             <label class="form-check-label" for="showerWithoutEdgeNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationshowerWithoutEdge" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="highToilet" class="form-label" style="margin-top: 15px;">High Toilet</label><br>
                                         <div class="form-check form-check-inline">
@@ -526,6 +616,7 @@
                                             <label class="form-check-label" for="highToiletNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationhighToilet" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="lowSink" class="form-label" style="margin-top: 15px;">Low Sink</label><br>
                                         <div class="form-check form-check-inline">
@@ -537,6 +628,7 @@
                                             <label class="form-check-label" for="lowSinkNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationlowSink" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="bathroomEmergencyButton" class="form-label" style="margin-top: 15px;">Bathroom Emergency Button</label><br>
                                         <div class="form-check form-check-inline">
@@ -548,6 +640,7 @@
                                             <label class="form-check-label" for="bathroomEmergencyButtonNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationbathroomEmergencyButton" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="showerChair" class="form-label" style="margin-top: 15px;">Shower Chair</label><br>
                                         <div class="form-check form-check-inline">
@@ -559,6 +652,7 @@
                                             <label class="form-check-label" for="showerChairNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationshowerChair" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     @{
                                         var selectedNutrition = ViewBag.Nutrition as string;
                                     }
@@ -591,6 +685,7 @@
                                             <label class="form-check-label" for="coffeeMachineNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationcoffeeMachine" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="coffeeOrTea" class="form-label" style="margin-top: 15px;">Coffee Or Tea</label><br>
                                         <div class="form-check form-check-inline">
@@ -602,6 +697,7 @@
                                             <label class="form-check-label" for="coffeeOrTeaNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationcoffeeOrTea" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="electricKettle" class="form-label" style="margin-top: 15px;">Electric Kettle</label><br>
                                         <div class="form-check form-check-inline">
@@ -613,6 +709,7 @@
                                             <label class="form-check-label" for="electricKettleNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationelectricKettle" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     @{
                                         var selectedView = ViewBag.View as string;
                                     }
@@ -644,6 +741,7 @@
                                             <label class="form-check-label" for="soundproofingNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationsoundproofing" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="patio" class="form-label" style="margin-top: 15px;">Patio</label><br>
                                         <div class="form-check form-check-inline">
@@ -655,6 +753,7 @@
                                             <label class="form-check-label" for="patioNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationpatio" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="flatScreenTV" class="form-label" style="margin-top: 15px;">Flat Screen TV</label><br>
                                         <div class="form-check form-check-inline">
@@ -666,6 +765,7 @@
                                             <label class="form-check-label" for="flatScreenTVNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationflatScreenTV" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="balcony" class="form-label" style="margin-top: 15px;">Balcony</label><br>
                                         <div class="form-check form-check-inline">
@@ -677,6 +777,7 @@
                                             <label class="form-check-label" for="balconyNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationbalcony" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="terrace" class="form-label" style="margin-top: 15px;">Terrace</label><br>
                                         <div class="form-check form-check-inline">
@@ -688,6 +789,7 @@
                                             <label class="form-check-label" for="terraceNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationterrace" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="privatePool" class="form-label" style="margin-top: 15px;">Private Pool</label><br>
                                         <div class="form-check form-check-inline">
@@ -699,6 +801,7 @@
                                             <label class="form-check-label" for="privatePoolNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationprivatePool" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="bath" class="form-label" style="margin-top: 15px;">Bath</label><br>
                                         <div class="form-check form-check-inline">
@@ -710,6 +813,7 @@
                                             <label class="form-check-label" for="bathNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationbath" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="placeToWorkOnALaptop" class="form-label" style="margin-top: 15px;">Place To Work On A Laptop</label><br>
                                         <div class="form-check form-check-inline">
@@ -721,6 +825,7 @@
                                             <label class="form-check-label" for="placeToWorkOnALaptopNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationplaceToWorkOnALaptop" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="airConditioner" class="form-label" style="margin-top: 15px;">Air Conditioner</label><br>
                                         <div class="form-check form-check-inline">
@@ -732,6 +837,7 @@
                                             <label class="form-check-label" for="airConditionerNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationairConditioner" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="privateBathroom" class="form-label" style="margin-top: 15px;">Private Bathroom</label><br>
                                         <div class="form-check form-check-inline">
@@ -743,6 +849,7 @@
                                             <label class="form-check-label" for="privateBathroomNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationprivateBathroom" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="mb-3">
                                         <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
                                         <div class="form-check form-check-inline">
@@ -754,6 +861,7 @@
                                             <label class="form-check-label" for="placeToWorkOnALaptopNo">No</label>
                                         </div>
                                     </div>
+                                    <div id="notificationfreeCancellation" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                                     <div class="form-group">
                                         <label for="roomDescription" style="margin-top: 15px;">Room Description</label>
                                         <textarea class="form-control" id="roomDescription" name="model.RoomDescription" placeholder="Enter the room description" rows="5" style="margin-top: 10px;">@ViewBag.RoomDescription</textarea>
@@ -766,13 +874,13 @@
                                         {
                                             <div class="booking-date-room" style="margin-top: 15px;">
                                                 <div class="input-group">
-                                                    <input type="date" class="form-control" name="model.AvailableDatesRoom[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.Dates[i].ToString("yyyy-MM-dd")">
+                                                    <input type="date" class="form-control" name="model.AvailableDatesRoom[]" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@ViewBag.Dates[i].ToString("yyyy-MM-dd")">
                                                     <input type="number" class="form-control" name="model.AmountOfAvailableSameRooms[]" placeholder="Enter amount of same available rooms" min="0" max="100" value="@ViewBag.AmountOfSameRooms[i].ToString()">
                                                 </div>
                                             </div>
                                         }
                                     </div>
-                                    <button id="add-booking-date-room" class="btn btn-primary rounded-circle" style="margin-top: 15px; margin-bottom: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                    <button id="add-booking-date-room" class="btn rounded-circle" style="margin-top: 15px; margin-bottom: 15px; background-color: #fff; border-color: #fff; color: #000;">
                                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
                                             <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
                                         </svg>
@@ -787,7 +895,7 @@
                                                 var newBookingDateHtmlAttr = `
                                                                             <div class="booking-date-room" style="margin-top: 15px;">
                                                                                 <div class="input-group">
-                                                                                    <input type="date" class="form-control" name="model.AvailableDatesRoom[]" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                                                    <input type="date" class="form-control" name="model.AvailableDatesRoom[]" min="@DateTime.Now.ToString("yyyy-MM-dd")">
                                                                                     <input type="number" class="form-control" name="model.AmountOfAvailableSameRooms[]" placeholder="Enter amount of same available rooms" min="0" max="100">
                                                                                 </div>
                                                                             </div>

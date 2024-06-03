@@ -4,42 +4,54 @@
 }
 
 <main class="form-signin w-100 m-auto text-center">
-<form asp-action="Register" asp-controller="Account" asp-anti-forgery="true">
+    <form asp-action="Register" asp-controller="Account" asp-anti-forgery="true" onsubmit="return validateForm()">
         <h1 class="h3 mb-3 fw-normal">Please register</h1>
         <div asp-validation-summary="All" class="text-danger"></div>
-    <div>
-        <div class="form-floating">
-            <input asp-for="UserName" class="form-control" id="floatingInput" placeholder="UserName" />
-            <label asp-for="UserName">UserName</label>
-        </div>
-        <div class="form-floating">
-            <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" />
-            <label asp-for="Password">Password</label>
-        </div>
+        <div>
+            <div class="form-floating">
+                <input asp-for="UserName" class="form-control" id="floatingInput" placeholder="UserName" />
+                <label asp-for="UserName">UserName</label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" />
+                <label asp-for="Password">Password</label>
+            </div>
             <div class="form-floating mb-3">
                 <input asp-for="ConfirmPassword" type="password" class="form-control" id="floatingPassword" placeholder="Password" />
                 <label asp-for="ConfirmPassword">Confirm Password</label>
+            </div>
+
+            <input asp-for="AccountType" type="hidden" />
+
+            <div class="dropdown mb-3">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select your account
+                </button>
+                <ul class="dropdown-menu dropdown-menu-start">
+                    <li><a class="dropdown-item" href="#" onclick="changeDropdownText('Traveller')">Traveller</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeDropdownText('Owner of company')">Owner of company</a></li>
+                </ul>
+            </div>
+
+            <div id="role-error" class="text-danger mb-3" style="display: none;">Role selection is required.</div>
+
+            <script>
+                function changeDropdownText(text) {
+                    document.querySelector('.dropdown button').textContent = text;
+                    document.querySelector('input[name="AccountType"]').value = text;
+                    document.getElementById('role-error').style.display = 'none';
+                }
+
+                function validateForm() {
+                    var accountType = document.querySelector('input[name="AccountType"]').value;
+                    if (!accountType) {
+                        document.getElementById('role-error').style.display = 'block';
+                        return false; // Prevent form submission
+                    }
+                    return true; // Allow form submission
+                }
+            </script>
+            <input type="submit" value="Register" class="btn btn-primary w-100 py-2" />
         </div>
-
-        <input asp-for="AccountType" type="hidden" />
-
-        <div class="dropdown mb-3">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Select your account
-            </button>
-            <ul class="dropdown-menu dropdown-menu-start">   
-                <li><a class="dropdown-item" href="#" onclick="changeDropdownText('Traveller')">Traveller</a></li>
-                <li><a class="dropdown-item" href="#" onclick="changeDropdownText('Owner of company')">Owner of company</a></li>
-            </ul>
-        </div>
-
-        <script>
-            function changeDropdownText(text) {
-                document.querySelector('.dropdown button').textContent = text;
-                document.querySelector('input[name="AccountType"]').value = text;
-            }
-        </script>
-        <input type="submit" value="Register" class="btn btn-primary w-100 py-2" />
-    </div>
-</form>
+    </form>
 </main>

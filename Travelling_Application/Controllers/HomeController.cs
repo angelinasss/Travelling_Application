@@ -271,6 +271,99 @@ namespace Travelling_Application.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> BookAttractionFav(string attractionId, int amountOfTickets, DateTime date)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            int AttractionId = int.Parse(attractionId);
+            var attraction = _context.Entertainment.Find(AttractionId);
+
+            var model = new BookingAttraction
+            {
+                UserId = currentUser.Id,
+                AttractionId = AttractionId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                AmountOfTickets = amountOfTickets,
+                Date = date,
+                CanceledBooking = false
+            };
+            for (int i = 0; i < attraction.AmountOfTickets.Count; i++)
+            {
+                if (attraction.AvailableDates[i] == date)
+                {
+                    var tickets = attraction.AmountOfTickets[i];
+                    attraction.AmountOfTickets[i] = tickets - amountOfTickets;
+                }
+            }
+
+            _context.Entertainment.Update(attraction);
+
+            _context.BookingAttractions.Add(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ShowFavoriteItems");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BookCarFav(int carId, DateTime dateIn, DateTime dateOut)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            var car = _context.Car.Find(carId);
+
+            var model = new BookingCar
+            {
+                UserId = currentUser.Id,
+                CarId = carId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                CanceledBooking = false
+            };
+
+            _context.BookingCars.Add(model);
+
+            int index = -1;
+
+            for (int i = 0; i < car.StartDates.Count; i++)
+            {
+                if (car.StartDates[i] <= dateIn && car.EndDates[i] >= dateOut)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1)
+            {
+                throw new InvalidOperationException("No suitable date range found.");
+            }
+
+            DateTime oldStartDate = car.StartDates[index];
+            DateTime oldEndDate = car.EndDates[index];
+
+            // Обновляем массивы
+            car.StartDates[index] = oldStartDate;
+            car.EndDates[index] = dateIn;
+
+            var newStartDates = car.StartDates.ToList();
+            var newEndDates = car.EndDates.ToList();
+
+            newStartDates.Add(dateOut);
+            newEndDates.Add(oldEndDate);
+
+            car.StartDates = newStartDates;
+            car.EndDates = newEndDates;
+
+            _context.Car.Update(car);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ShowFavoriteItems");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> BookCar(string carId, DateTime dateIn, DateTime dateOut)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -360,6 +453,36 @@ namespace Travelling_Application.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> BookFlightECFav(string airticketId, DateTime dateIn, DateTime dateOut, int passengers)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            int AirticketId = int.Parse(airticketId);
+            var airticket = _context.AirTicket.Find(AirticketId);
+
+            var model = new BookingAirTicket
+            {
+                UserId = currentUser.Id,
+                AirTicketId = AirticketId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Passengers = passengers,
+                TypeClass = "EC",
+                CanceledBooking = false
+            };
+
+            var amountTick = airticket.AmountOfTicketsEC - passengers;
+            airticket.AmountOfTicketsEC = amountTick;
+            _context.AirTicket.Update(airticket);
+            _context.BookingAirTickets.Add(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ShowFavoriteItems");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> BookFlightBC(string airticketId, DateTime dateIn, DateTime dateOut, int passengers, bool tripTypee)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -390,6 +513,36 @@ namespace Travelling_Application.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> BookFlightBCFav(string airticketId, DateTime dateIn, DateTime dateOut, int passengers)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            int AirticketId = int.Parse(airticketId);
+            var airticket = _context.AirTicket.Find(AirticketId);
+
+            var model = new BookingAirTicket
+            {
+                UserId = currentUser.Id,
+                AirTicketId = AirticketId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Passengers = passengers,
+                TypeClass = "BC",
+                CanceledBooking = false
+            };
+
+            var amountTick = airticket.AmountOfTicketsBC;
+            airticket.AmountOfTicketsBC = amountTick - passengers;
+            _context.AirTicket.Update(airticket);
+            _context.BookingAirTickets.Add(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ShowFavoriteItems");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> BookFlightFC(string airticketId, DateTime dateIn, DateTime dateOut, int passengers, bool tripTypee)
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -417,6 +570,36 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("FlightResults", new { cityFrom = airticket.CityFrom, cityTo = airticket.CityTo, checkInDate = dateIn, checkOutDate = dateOut, tripType = tripTypee, adultsCount = passengers });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BookFlightFCFav(string airticketId, DateTime dateIn, DateTime dateOut, int passengers)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            int AirticketId = int.Parse(airticketId);
+            var airticket = _context.AirTicket.Find(AirticketId);
+
+            var model = new BookingAirTicket
+            {
+                UserId = currentUser.Id,
+                AirTicketId = AirticketId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Passengers = passengers,
+                TypeClass = "FC",
+                CanceledBooking = false
+            };
+
+            var amountTick = airticket.AmountOfTicketsFC;
+            airticket.AmountOfTicketsFC = amountTick - passengers;
+            _context.AirTicket.Update(airticket);
+            _context.BookingAirTickets.Add(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ShowFavoriteItems");
         }
 
         [HttpPost]
@@ -459,6 +642,48 @@ namespace Travelling_Application.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("AccomodationResults", new { city = accomodation.City, checkInDate = dateIn, checkOutDate = dateOut, adults, rooms});
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BookAccomodationFav(string accomodationId, DateTime dateIn, DateTime dateOut, int rooms, int adults, string selectedRoom)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            int AccomodationId = int.Parse(accomodationId);
+            var accomodation = _context.Accomodation.Find(AccomodationId);
+            var room = _context.Rooms.FirstOrDefault(r => r.AccomodationId == AccomodationId && r.RoomName == selectedRoom);
+
+            var model = new BookingAccomodation
+            {
+                UserId = currentUser.Id,
+                AccomodationId = AccomodationId,
+                VerifiedBooking = false,
+                RejectedBooking = false,
+                RejectedMessage = string.Empty,
+                DateOfDeparture = dateIn,
+                ReturnDate = dateOut,
+                Adults = rooms,
+                RoomId = room.ID,
+                TypeOfRoom = room.RoomName,
+                CanceledBooking = false
+            };
+
+            _context.BookingAccomodations.Add(model);
+            await _context.SaveChangesAsync();
+
+            int i = 0;
+            foreach (var date in room.AvailableDatesRoom)
+            {
+                if (date >= dateIn && date < dateOut)
+                {
+                    room.AmountOfAvailableSameRooms[i] = room.AmountOfAvailableSameRooms[i] - rooms;
+                }
+                i++;
+            }
+
+            _context.Rooms.Update(room);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ShowFavoriteItems");
         }
 
         [HttpPost]

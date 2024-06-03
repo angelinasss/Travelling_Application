@@ -72,9 +72,9 @@
         }
 
         .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: #fff;
+            background-color: #60c2e5; /* Светлый цвет фона */
+            border-color: #60c2e5; /* Светлый цвет бордюра */
+            color: #ffffff;
             padding: 10px 20px;
             font-size: 1rem;
             border-radius: 30px;
@@ -209,7 +209,7 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text"><i class="fas fa-users"></i></span>
                             <input type="number" class="form-control" id="adultsCount" name="adultsCount" placeholder="Number of persons" min="1" max="150" value="@ViewBag.AdultsCount">
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="submit" class="btn btn-primar">Search</button>
                         </div>
                     </div>
                 </div>
@@ -235,9 +235,14 @@
                                                     </div>
                                                     <div class="col-md-8">
                                                         <div class="attraction-details">
-                                                            <div class="favorite-icon">
-                                                                <i class="fa @("fa-heart-o")" data-attraction-id="@attraction.Id" style="cursor: pointer;"></i>
-                                                            </div>
+                                                            @{
+                                                                if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
+                                                                {
+                                                                    <div class="favorite-icon">
+                                                                        <i class="fa @("fa-heart-o")" data-attraction-id="@attraction.Id" style="cursor: pointer;"></i>
+                                                                    </div>
+                                                                }
+                                                                }
                                                             <h3 class="attraction-title">
                                                                 <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
                                                             </h3>

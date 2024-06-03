@@ -313,7 +313,7 @@
                                                         <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
                                                     </p>
                                                     <h5>Booking Dates:</h5>
-                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.Date.ToString("dd/MM/yyyy") - @Model.BookingCars[iiii].ReturnDate.Date.ToString("dd/MM/yyyy")</span>
+                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.ToString("dd/MM/yyyy HH:mm") - @Model.BookingCars[iiii].ReturnDate.ToString("dd/MM/yyyy HH:mm")</span>
                                                     <h5>Traveller Data:</h5>
                                                     <span class="mini-info-item"> Name: @Model.UsersDataCars[iiii].Name</span>
                                                     <span class="mini-info-item"> Email: @Model.UsersDataCars[iiii].Email</span>

@@ -195,39 +195,49 @@
                 }
 
                 .btn-entity.selected {
-                    background-color: #007bff;
+                    background-color: #60c2e5;
                     color: #fff;
                 }
         </style>
         <style>
-            #notification {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notification1 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notificationAttraction {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notificationAccomodation {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
+            #notification,
+            #notificationFlightFree,
+            #notificationFlightEC,
+            #notificationFlightBC,
+            #notificationFlightFC,
+            #notificationCarDate,
+            #notificationCarFree,
+            #notificationCarCoverage,
+            #notificationCarDamage,
+            #notificationCarTheft,
+            #notificationCarElectric,
+            #notificationCarMileage,
+            #notificationFlightDate,
+            #notificationCarCond,
+            #notification1,
+            #notificationAttraction,
+            #notificationAttractionLang,
+            #notificationAttractionPhoto,
+            #notificationAttractionFree,
+            #notificationAccomodation,
+            #notificationAccomodationparking,
+            #notificationAccomodationfreeWIFI,
+            #notificationAccomodationprivateBeach,
+            #notificationAccomodationSPA,
+            #notificationAccomodationBar,
+            #notificationAccomodationgarden,
+            #notificationAccomodationtransferToAirport,
+            #notificationAccomodationtactileSigns,
+            #notificationAccomodationsmookingRooms,
+            #notificationAccomodationfamilyRooms,
+            #notificationAccomodationcarChargingStation,
+            #notificationAccomodationwheelchairAccessible,
+            #notificationAccomodationfitnessCentre,
+            #notificationAccomodationpetsAllowed,
+            #notificationAccomodationdeliveryFoodToTheRoom,
+            #notificationAccomodationeveryHourFrontDesk,
+            #notificationAccomodationNutrition,
+            #notificationAccomodationPhoto,
             #notificationAirTicket {
                 display: none;
                 padding: 10px;
@@ -262,6 +272,11 @@
             .invalid-field {
                 border-color: red !important;
             }
+
+            .invalid-radio .form-check-input:invalid {
+                outline: 2px solid red;
+            }
+
         </style>
     }
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -271,66 +286,140 @@
 
             // Проверка каждого обязательного поля
             if (!$('#modelName').val()) {
+                $('#modelName').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#modelName').removeClass('invalid-field');
             }
             if (!$('#carCountry').val()) {
                 isValid = false;
+                $('#carCountry').addClass('invalid-field');
+            }
+            else {
+                $('#carCountry').removeClass('invalid-field');
             }
             if (!$('#carCity').val()) {
+                $('#carCity').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#carCity').removeClass('invalid-field');
             }
             if (!$('#carAddress').val()) {
+                $('#carAddress').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#carAddress').removeClass('invalid-field');
             }
             if (!$('#passengerCapacity').val()) {
+                $('#passengerCapacity').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#passengerCapacity').removeClass('invalid-field');
             }
             if (!$('#description').val()) {
+                $('#description').addClass('invalid-field');
                 isValid = false;
             }
+            else {
+                $('#description').removeClass('invalid-field');
+            }
             if (!$('#pricePer1hour').val()) {
+                $('#pricePer1hour').addClass('invalid-field');
                 isValid = false;
+            }
+            else {
+                $('#pricePer1hour').removeClass('invalid-field');
             }
 
             // Проверка радиокнопок
             if (!$('input[name="model.IsAirCondition"]:checked').length) {
                 isValid = false;
+                $('#notificationCarCond').text('Please fill in the "Air Conditioning" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarCond').text('Please fill in the "Air Conditioning" field.').hide();
             }
             if (!$('input[name="model.UnlimitedMileage"]:checked').length) {
                 isValid = false;
+                $('#notificationCarMileage').text('Please fill in the "Mileage" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarMileage').text('Please fill in the "Mileage" field.').hide();
             }
             if (!$('input[name="model.ElectricCar"]:checked').length) {
                 isValid = false;
+                $('#notificationCarElectric').text('Please fill in the "Electric Car" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarElectric').text('Please fill in the "Electric Car" field.').hide();
             }
             if (!$('input[name="model.TheftCoverage"]:checked').length) {
                 isValid = false;
+                $('#notificationCarTheft').text('Please fill in the "Theft Coverage" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarTheft').text('Please fill in the "Theft Coverage" field.').hide();
             }
             if (!$('input[name="model.CollisionDamageWaiver"]:checked').length) {
                 isValid = false;
+                $('#notificationCarDamage').text('Please fill in the "Collision Damage Waiver" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarDamage').text('Please fill in the "Collision Damage Waiver" field.').hide();
             }
             if (!$('input[name="model.LiabilityCoverage"]:checked').length) {
                 isValid = false;
+                $('#notificationCarCoverage').text('Please fill in the "Liability Coverage" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarCoverage').text('Please fill in the "Liability Coverage" field.').hide();
             }
             if (!$('input[name="model.FreeCancellation"]:checked').length) {
                 isValid = false;
+                $('#notificationCarFree').text('Please fill in the "Free Cancellation" field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationCarFree').text('Please fill in the "Free Cancellation" field.').hide();
             }
 
             // Проверка дат
             $('.booking-date').each(function () {
                 var startDate = $(this).find('input[name="model.startDates[]"]').val();
                 var endDate = $(this).find('input[name="model.endDates[]"]').val();
-                if (!startDate || !endDate) {
+                if (!startDate) {
                     isValid = false;
-                    return false; // Выход из цикла each
+                    $(this).find('input[name="model.startDates[]"]').addClass('invalid-field');
+                }
+                if (!endDate) {
+                    isValid = false;
+                    $(this).find('input[name="model.endDates[]"]').addClass('invalid-field');
+                }
+                if (startDate) {
+                    $(this).find('input[name="model.startDates[]"]').removeClass('invalid-field');
+                }
+                if (endDate) {
+                    $(this).find('input[name="model.endDates[]"]').removeClass('invalid-field');
+                }
+                if(startDate && endDate) {
+                    if (startDate >= endDate) {
+                        isValid = false;
+                        $(this).find('input[name="model.startDates[]"]').addClass('invalid-field');
+                        $(this).find('input[name="model.endDates[]"]').addClass('invalid-field');
+                        $('#notificationCarDate').text('Start date must be less than end date.').addClass('text-danger').show();
+                    }
+                    else {
+                        $('#notificationCarDate').text('Start date must be less than end date.').hide();
+                    }
                 }
             });
 
             // Вывод уведомления
             if (!isValid) {
                 $('#notification').text('Please fill in all required fields.').addClass('text-danger').show();
-            }
-            else {
-    
             }
 
             return isValid;
@@ -361,11 +450,9 @@
             var description = $('#descriptionAttraction').val();
             var cost = $('#cost').val();
 
-            // Проверка выбранных радиокнопок
-            var freeCancellation = $('#freeCancellationYes').is(':checked');
-            if (!freeCancellation) {
-                freeCancellation = $('#freeCancellationNo').is(':checked');
-            }
+            var freeCancellationYes = $('#freeCancellationYes').is(':checked');
+            var freeCancellationNo = $('#freeCancellationNo').is(':checked');
+            var freeCancellation = freeCancellationYes || freeCancellationNo;
 
             // Проверка выбранных чекбоксов
             var languages = $('input[name="model.Languages[]"]:checked').length > 0;
@@ -378,17 +465,97 @@
             $('.booking-date-attraction').each(function () {
                 var date = $(this).find('input[name="model.AvailableDates[]"]').val();
                 var tickets = $(this).find('input[name="model.AmountOfTickets[]"]').val();
-                if (date === '' || tickets === '') {
+                if (date === '') {
                     dynamicFieldsFilled = false;
-                    return false; // Выход из цикла each
+                    $(this).find('input[name="model.AvailableDates[]"]').addClass('invalid-field');
+                }
+                if (tickets === '') {
+                    dynamicFieldsFilled = false;
+                    $(this).find('input[name="model.AmountOfTickets[]"]').addClass('invalid-field');
+                }
+                if (date !== '') {
+                    $(this).find('input[name="model.AvailableDates[]"]').removeClass('invalid-field');
+                }
+                if (tickets !== '') {
+                    $(this).find('input[name="model.AmountOfTickets[]"]').removeClass('invalid-field');
                 }
             });
             var isValid = true;
+
+            if (attractionName === '') {
+                $('#attractionName').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionName').removeClass('invalid-field');
+            }
+
+            if (attractionCountry === '') {
+                $('#attractionCountry').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionCountry').removeClass('invalid-field');
+            }
+
+            if (attractionCity === '') {
+                $('#attractionCity').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionCity').removeClass('invalid-field');
+            }
+
+            if (attractionAddress === '') {
+                $('#attractionAddress').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#attractionAddress').removeClass('invalid-field');
+            }
+
+            if (description === '') {
+                $('#descriptionAttraction').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#descriptionAttraction').removeClass('invalid-field');
+            }
+
+            if (cost === '') {
+                $('#cost').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#cost').removeClass('invalid-field');
+            }
+
+            if (!freeCancellation) {
+                $('#notificationAttractionFree').text('Please fill in the "Free Cancellation" field.').addClass('text-danger').show();
+                isValid = false;
+            } else {
+                $('#notificationAttractionFree').text('Please fill in the "Free Cancellation" field.').hide();
+            }
+
+            if (!languages) {
+                $('#notificationAttractionLang').text('Please fill in the "Languages" field.').addClass('text-danger').show();
+                isValid = false;
+            } else {
+                $('#notificationAttractionLang').text('Please fill in the "Languages" field.').hide();
+            }
+
             // Проверка всех условий
             if (attractionName === '' || attractionCountry === '' || attractionCity === '' || attractionAddress === '' || description === '' || cost === '' || !freeCancellation || !languages || photoCount === 0 || !dynamicFieldsFilled) {
                 $('#notificationAttraction').text('Please fill in all required fields.').addClass('text-danger').show();
                 isValid = false;
             }
+            if (photoCount === 0) {
+                $('#notificationAttractionPhoto').text('Please add attraction photos.').addClass('text-danger').show();
+            }
+            if (photoCount !== 0) {
+                $('#notificationAttractionPhoto').text('Please add attraction photos.').hide();
+            }
+
             return isValid;
         }
 
@@ -413,6 +580,7 @@
         function validateAirTicketForm() {
             // Проверка текстовых полей
             var airTicketDepartureCountry = $('#departureCountry').val();
+            var depCountryCode = $('#departureCountryCode').val();
             var airTicketDepartureCity = $('#departureCity').val();
             var airTicketArrivalCountry = $('#arrivalCountry').val();
             var airTicketArrivalCity = $('#arrivalCity').val();
@@ -423,52 +591,51 @@
             var amountOfTicketsEC = $('#amountOfTicketsEC').val();
             var amountOfTicketsBC = $('#amountOfTicketsBC').val();
             var amountOfTicketsFC = $('#amountOfTicketsFC').val();
-            var departureCountryCode = $('#departureCountryCode').val();
             var arrivalCountryCode = $('#arrivalCountryCode').val();
 
-            // Проверка выбранных радиокнопок
-            var freeCancellation = $('#freeCancellationYesAirTicket').is(':checked');
-            if (!freeCancellation) {
-                freeCancellation = $('#freeCancellationNoAirTicket').is(':checked');
+            if (!$('input[name="model.FreeCancellation"]:checked').length) {
+                isValid = false;
+                $('#notificationFlightFree').text('Please fill in the "Free Cancellation" field.').addClass('text-danger').show();
             }
-            var includeLuggageEC = $('#includeLuggageForEconomyClassYes').is(':checked');
-            if (!includeLuggageEC) {
-                includeLuggageEC = $('#includeLuggageForEconomyClassNo').is(':checked');
+            else {
+                $('#notificationFlightFree').text('Please fill in the "Free Cancellation" field.').hide();
             }
-            var includeLuggageBC = $('#includeLuggageForBusinessClassYes').is(':checked');
-            if (!includeLuggageBC) {
-                includeLuggageBC = $('#includeLuggageForBusinessClassNo').is(':checked');
+            if (!$('input[name="model.IncludeLuggageEC"]:checked').length) {
+                isValid = false;
+                $('#notificationFlightEC').text('Please fill in the "Include Luggage" for Economy Class field.').addClass('text-danger').show();
             }
-            var includeLuggageFC = $('#includeLuggageForFirstClassYes').is(':checked');
-            if (!includeLuggageFC) {
-                includeLuggageFC = $('#includeLuggageForFirstClassNo').is(':checked');
+            else {
+                $('#notificationFlightEC').text('Please fill in the "Include Luggage" for Economy Class field.').hide();
+            }
+            if (!$('input[name="model.IncludeLuggageBC"]:checked').length) {
+                isValid = false;
+                $('#notificationFlightBC').text('Please fill in the "Include Luggage" for Business Class field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationFlightBC').text('Please fill in the "Include Luggage" for Business Class field.').hide();
+            }
+            if (!$('input[name="model.IncludeLuggageFC"]:checked').length) {
+                isValid = false;
+                $('#notificationFlightFC').text('Please fill in the "Include Luggage" for First Class field.').addClass('text-danger').show();
+            }
+            else {
+                $('#notificationFlightFC').text('Please fill in the "Include Luggage" for First Class field.').hide();
             }
 
             var isValid = true;
-            if (!freeCancellation || !includeLuggageEC || !includeLuggageBC || !includeLuggageFC) {
-                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger').show();
-                isValid = false;
-            }
-            if (departureCountryCode === '') {
-                $('#departureCountryCode').addClass('invalid-field');
-                isValid = false;
-            }
-            else {
-                $('#departureCountryCode').removeClass('invalid-field');
-            }
-            if (arrivalCountryCode === '') {
-                $('#arrivalCountryCode').addClass('invalid-field');
-                isValid = false;
-            }
-            else {
-                $('#arrivalCountryCode').removeClass('invalid-field');
-            }
             if (airTicketDepartureCountry === '') {
                 $('#departureCountry').addClass('invalid-field');
                 isValid = false;
             }
             else {
                 $('#departureCountry').removeClass('invalid-field');
+            }
+            if (depCountryCode === '') {
+                $('#departureCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCountryCode').removeClass('invalid-field');
             }
             if (airTicketDepartureCity === '') {
                 $('#departureCity').addClass('invalid-field');
@@ -483,6 +650,13 @@
             }
             else {
                 $('#arrivalCountry').removeClass('invalid-field');
+            }
+            if (arrivalCountryCode === '') {
+                $('#arrivalCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCountryCode').removeClass('invalid-field');
             }
             if (airTicketArrivalCity === '') {
                 $('#arrivalCity').addClass('invalid-field');
@@ -540,9 +714,42 @@
             else {
                 $('#amountOfTicketsFC').removeClass('invalid-field');
             }
+
+
+            // Проверка дат
+            $('.booking-date-flight').each(function () {
+                var startDate = $(this).find('input[name="model.DepartureTime[]"]').val();
+                var endDate = $(this).find('input[name="model.ArrivalTime[]"]').val();
+                if (!startDate) {
+                    isValid = false;
+                    $(this).find('input[name="model.DepartureTime[]"]').addClass('invalid-field');
+                }
+                if (!endDate) {
+                    isValid = false;
+                    $(this).find('input[name="model.ArrivalTime[]"]').addClass('invalid-field');
+                }
+                if (startDate) {
+                    $(this).find('input[name="model.DepartureTime[]"]').removeClass('invalid-field');
+                }
+                if (endDate) {
+                    $(this).find('input[name="model.ArrivalTime[]"]').removeClass('invalid-field');
+                }
+                if (startDate && endDate) {
+                    if (startDate >= endDate) {
+                        isValid = false;
+                        $(this).find('input[name="model.DepartureTime[]"]').addClass('invalid-field');
+                        $(this).find('input[name="model.ArrivalTime[]"]').addClass('invalid-field');
+                        $('#notificationFlightDate').text('Start date must be less than end date.').addClass('text-danger').show();
+                    }
+                    else {
+                        $('#notificationFlightDate').text('Departure Time must be less than Arrival Time.').hide();
+                    }
+                }
+            });
+
+
             if (!isValid) {
-                $('#departureCity, #arrivalCountry, #arrivalCity, #flightNumber, #ticketCostEC, #ticketCostBC, #ticketCostFC, #amountOfTicketsEC, #amountOfTicketsBC, #amountOfTicketsFC, #arrivalCountryCode, #departureCountryCode').removeClass('invalid-field');
-                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger1').show();
+                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger').show();
             }
             return isValid;
         }
@@ -600,19 +807,44 @@
                 'everyHourFrontDesk'
             ];
 
-            var isValid = true;
+            var featuresNot = [
+                'Parking',
+                'Free WIFI',
+                'Private Beach',
+                'SPA',
+                'Bar',
+                'Garden',
+                'Transfer To Airport',
+                'Tactile Signs',
+                'Smooking Rooms',
+                'Family Rooms',
+                'Car Charging Station',
+                'Wheelchair Accessible',
+                'Fitness Centre',
+                'Pets Allowed',
+                'Delivery Food To The Room',
+                'Every Hour Front Desk'
+            ];
 
+            var isValid = true;
+            var i = 0;
             features.forEach(function (feature) {
                 var yesChecked = $('#' + feature + 'Yes').is(':checked');
                 var noChecked = $('#' + feature + 'No').is(':checked');
 
                 if (!yesChecked && !noChecked) {
                     isValid = false;
+                    $('#notificationAccomodation' + feature).text('Please fill in the "' + featuresNot[i] + '" field.').addClass('text-danger').show();
                 }
+                else {
+                    $('#notificationAccomodation' + feature).text('Please fill in the "' + featuresNot[i] + '" field.').hide();
+                }
+
+                i++;
             });
 
             if (!isValid) {
-                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger').show();
             }
 
             if (accomodationName === '') {
@@ -665,12 +897,23 @@
                 $('#descriptionAccomodation').removeClass('invalid-field');
             }
 
-            if (!nutrition || photoCount === 0) {
+            if (photoCount === 0) {
                 isValid = false;
+                $('#notificationAccomodationPhoto').text('Please add accommodation photos.').addClass('text-danger').show();
+            }
+            if (photoCount !== 0) {
+                $('#notificationAccomodationPhoto').text('Please add accommodation photos.').hide();
+            }
+
+            if (!nutrition) {
+                $('#notificationAccomodationNutrition').text('Please fill in the "Types Of Nutrition" field.').addClass('text-danger').show();
+                isValid = false;
+            } else {
+                $('#notificationAccomodationNutrition').text('Please fill in the "Types Of Nutrition" field.').hide();
             }
             
             if (!isValid) {
-                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger11').show();
+                $('#notificationAccomodation').text('Please fill in all required fields.').addClass('text-danger').show();
             }
             return isValid;
         }
@@ -705,26 +948,26 @@
                         @{
                             if (User.IsInRole("traveller") || User.IsInRole("Traveller"))
                             {
-                                <a href="/Account/ShowFavoriteItems" class="list-group-item">My Favorite</a>
-                                <a href="/Account/ShowBookingItems" class="list-group-item">My Verified Bookings</a>
-                                <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item">My Bookings Awaiting Verification</a>
-                                <a href="/Account/ShowRejectedBookingItems" class="list-group-item">My Rejected Bookings</a>
+                                                                    <a href="/Account/ShowFavoriteItems" class="list-group-item">My Favorite</a>
+                                                                    <a href="/Account/ShowBookingItems" class="list-group-item">My Verified Bookings</a>
+                                                                    <a href="/Account/ShowUnverifiedBookingItems" class="list-group-item">My Bookings Awaiting Verification</a>
+                                                                    <a href="/Account/ShowRejectedBookingItems" class="list-group-item">My Rejected Bookings</a>
                             }
                             else if (User.IsInRole("owner of company") || User.IsInRole("Owner of company"))
                             {
-                                <a href="/Account/AddObject" class="list-group-item">Add Object</a>
-                                <a href="/Account/VerifiedObjects" class="list-group-item">My Verified Objects</a>
-                                <a href="/Account/UnverifiedObjects" class="list-group-item">My Unverified Objects</a>
-                                <a href="/Account/RejectedObjects" class="list-group-item">My Rejected Objects</a>
-                                <a href="/Account/BookingsForVerification" class="list-group-item">Bookings For Verification</a>
-                                <a href="/Account/VerifiedBookings" class="list-group-item">Verified Bookings</a>
-                                <a href="/Account/RejectedBookings" class="list-group-item">Rejected Bookings</a>
+                                                                    <a href="/Account/AddObject" class="list-group-item">Add Object</a>
+                                                                    <a href="/Account/VerifiedObjects" class="list-group-item">My Verified Objects</a>
+                                                                    <a href="/Account/UnverifiedObjects" class="list-group-item">My Unverified Objects</a>
+                                                                    <a href="/Account/RejectedObjects" class="list-group-item">My Rejected Objects</a>
+                                                                    <a href="/Account/BookingsForVerification" class="list-group-item">Bookings For Verification</a>
+                                                                    <a href="/Account/VerifiedBookings" class="list-group-item">Verified Bookings</a>
+                                                                    <a href="/Account/RejectedBookings" class="list-group-item">Rejected Bookings</a>
                             }
                             else
                             {
-                                <a href="/Account/AllUnverifiedObjects" class="list-group-item">Objects Requiring Verification</a>
-                                <a href="/Account/AllVerifiedObjects" class="list-group-item">Verified Objects</a>
-                                <a href="/Account/AllRejectedObjects" class="list-group-item">Rejected Objects</a>
+                                                                    <a href="/Account/AllUnverifiedObjects" class="list-group-item">Objects Requiring Verification</a>
+                                                                    <a href="/Account/AllVerifiedObjects" class="list-group-item">Verified Objects</a>
+                                                                    <a href="/Account/AllRejectedObjects" class="list-group-item">Rejected Objects</a>
                             }
                         }
                     </div>
@@ -816,6 +1059,7 @@
                                             <label class="form-check-label" for="isAirConditionNo">No</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarCond" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="transmission" class="form-label" style="margin-top: 15px;">Transmission</label>
                                     <div class="input-group">
@@ -836,6 +1080,7 @@
                                             <label class="form-check-label" for="unlimitedMileageNo">Limited</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarMileage" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="electricCar" class="form-label" style="margin-top: 15px;">Electric Car</label><br>
                                     <div class="form-check form-check-inline">
@@ -847,6 +1092,7 @@
                                             <label class="form-check-label" for="electricCarNo">No</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarElectric" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="carCategory" class="form-label" style="margin-top: 15px;">Car Category</label>
                                     <div class="input-group">
@@ -874,6 +1120,7 @@
                                             <label class="form-check-label" for="theftCoverageNo">No</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarTheft" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="collisionDamageWaiver" class="form-label" style="margin-top: 15px;">Collision Damage Waiver</label><br>
                                     <div class="form-check form-check-inline">
@@ -885,6 +1132,7 @@
                                             <label class="form-check-label" for="collisionDamageWaiverNo">No</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarDamage" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="liabilityCoverage" class="form-label" style="margin-top: 15px;">Liability Coverage</label><br>
                                     <div class="form-check form-check-inline">
@@ -896,6 +1144,7 @@
                                             <label class="form-check-label" for="liabilityCoverageNo">No</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarCoverage" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="freeCancellation" class="form-label" style="margin-top: 15px;">Free Cancellation</label><br>
                                     <div class="form-check form-check-inline">
@@ -907,6 +1156,7 @@
                                             <label class="form-check-label" for="freeCancellationNo">No</label>
                                     </div>
                                 </div>
+                                    <div id="notificationCarFree" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="form-group">
                                     <label for="description" style="margin-top: 15px;">Car Description</label>
                                     <textarea class="form-control" id="description" name="model.Description" placeholder="Enter the car description" rows="5" style="margin-top: 10px;"></textarea>
@@ -917,16 +1167,18 @@
                                 <div id="booking-dates">
                                     <div class="booking-date" style="margin-top: 15px;">
                                         <label style="margin-right: 10px;">Start Date:</label>
-                                        <input type="datetime-local" name="model.startDates[]" required min="{{minStartDate}}">
+                                        <input type="datetime-local" name="model.startDates[]" min="{{minStartDate}}">
                                         <label style="margin-left: 10px;">Finish Date:</label>
-                                        <input type="datetime-local" name="model.endDates[]" required min="{{minEndDate}}">
+                                        <input type="datetime-local" name="model.endDates[]" min="{{minEndDate}}">
                                     </div>
                                 </div>
-                                <button id="add-booking-date" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                    <div id="notificationCarDate" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
+                                <button id="add-booking-date" class="btn rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
                                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
                                         <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
                                     </svg>
                                 </button>
+                                    <div id="notification" class="text-danger" style="display:none;"></div>
                                 <div class="user-info" style="text-align: center;">
                                         <button id="save-button" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
 
@@ -936,12 +1188,12 @@
                                     </form>
 
                             </div>
-                                 <div id="notification" class="text-danger" style="display:none;"></div>
                     </div>
                         <div id="entertainment-fields" class="mt-5" style="display: none;">
                             <form id="entertainment-form" asp-action="SaveEntertainmentForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAttractionForm()">
                                 <div id="photoContainer" class="d-flex flex-wrap"></div>
                                 <input type="hidden" id="photoData" name="photoData" />
+                                <div id="notificationAttractionPhoto" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="form-group">
                                     <input type="file" name="photos" id="photoUpload" multiple style="display:none;">
                                     <button type="button" class="btn btn-primary" id="uploadBtn">Upload Photos</button>
@@ -1001,7 +1253,6 @@
                                     <span class="close-btnn" onclick="closePhoto1()">✕</span>
                                     <img id="enlarged-photo1" class="enlarged-photo1">
                                 </div>
-
                                 <div class="form-group">
                                     <label for="attractionName" style="margin-top: 15px;">Attraction Name</label>
                                     <input type="text" name="model.Title" class="form-control" id="attractionName" placeholder="Enter the attraction name" style="margin-top: 10px;">
@@ -1069,6 +1320,7 @@
                                         <label class="form-check-label" for="language">Filipino</label>
                                     </div>
                                 </div>
+                                <div id="notificationAttractionLang" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="mb-3">
                                     <label for="attractionCategory" class="form-label" style="margin-top: 15px;">Attraction Category</label>
                                     <div class="input-group">
@@ -1105,6 +1357,7 @@
                                         <label class="form-check-label" for="freeCancellationNo">No</label>
                                     </div>
                                 </div>
+                                <div id="notificationAttractionFree" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                                 <div class="form-group">
                                     <label for="descriptionAttraction" style="margin-top: 15px;">Attraction Description</label>
                                     <textarea class="form-control" id="descriptionAttraction" name="model.Description" placeholder="Enter the attraction description" rows="5" style="margin-top: 10px;"></textarea>
@@ -1115,16 +1368,17 @@
                                     <div class="booking-date-attraction" style="margin-top: 15px;">
                                         <label for="availableDatesAttraction" style="margin-top: 15px;">Available Dates For Booking & Amount Of Tickets</label>
                                         <div class="input-group">
-                                            <input type="date" class="form-control" name="model.AvailableDates[]" required min="{{minDate}}">
+                                            <input type="date" class="form-control" name="model.AvailableDates[]" min="{{minDate}}">
                                             <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000">
                                         </div>
                                     </div>
                                 </div>
-                                <button id="add-booking-date-attraction" class="btn btn-primary rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
+                                <button id="add-booking-date-attraction" class="btn rounded-circle" style="margin-top: 15px; background-color: #fff; border-color: #fff; color: #000;">
                                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
                                         <path d="M 64 6.0507812 C 49.15 6.0507812 34.3 11.7 23 23 C 0.4 45.6 0.4 82.4 23 105 C 34.3 116.3 49.2 122 64 122 C 78.8 122 93.7 116.3 105 105 C 127.6 82.4 127.6 45.6 105 23 C 93.7 11.7 78.85 6.0507812 64 6.0507812 z M 64 12 C 77.3 12 90.600781 17.099219 100.80078 27.199219 C 121.00078 47.499219 121.00078 80.500781 100.80078 100.80078 C 80.500781 121.10078 47.500781 121.10078 27.300781 100.80078 C 7.0007813 80.500781 6.9992188 47.499219 27.199219 27.199219 C 37.399219 17.099219 50.7 12 64 12 z M 64 42 C 62.3 42 61 43.3 61 45 L 61 61 L 45 61 C 43.3 61 42 62.3 42 64 C 42 65.7 43.3 67 45 67 L 61 67 L 61 83 C 61 84.7 62.3 86 64 86 C 65.7 86 67 84.7 67 83 L 67 67 L 83 67 C 84.7 67 86 65.7 86 64 C 86 62.3 84.7 61 83 61 L 67 61 L 67 45 C 67 43.3 65.7 42 64 42 z"></path>
                                     </svg>
                                 </button>
+                                <div id="notificationAttraction" class="text-danger1" style="display:none;"></div>
                                 <div class="attraction-info" style="text-align: center;">
                                     <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
                             </form>
@@ -1132,12 +1386,12 @@
                                 <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
                             </form>
                         </div>
-                        <div id="notificationAttraction" class="text-danger1" style="display:none;"></div>
+                     
                 </div>
                     <div id="flight-fields" class="mt-5" style="display: none;">
                         <form id="flight-form" asp-action="SaveFlightForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAirTicketForm()">    
                             <div class="form-group">
-                                <label for="departureCountry" style="margin-top: 15px;">Departure Country</label>
+                                <label for="departureCountry" style="margin-top: 5px;">Departure Country</label>
                                 <input type="text" name="model.CountryFrom" class="form-control" id="departureCountry" placeholder="Enter departure country" style="margin-top: 10px;">
                             </div>
                             <div class="form-group">
@@ -1175,15 +1429,17 @@
                                     <label class="form-check-label" for="freeCancellationNo">No</label>
                                 </div>
                             </div>
+                            <div id="notificationFlightFree" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div id="booking-dates-flight">
                                 <div class="booking-date-flight" style="margin-top: 15px;">
                                     <label for="availableDatesFlight" style="margin-top: 15px;">Departure Time & Arrival Time</label>
                                     <div class="input-group">
-                                        <input type="datetime-local" class="form-control" name="model.DepartureTime" required min="{{minDateFlight}}">
-                                        <input type="datetime-local" class="form-control" name="model.ArrivalTime" required min="{{minDateFlight}}">
+                                        <input type="datetime-local" class="form-control" name="model.DepartureTime" min="{{minDateFlight}}">
+                                        <input type="datetime-local" class="form-control" name="model.ArrivalTime" min="{{minDateFlight}}">
                                     </div>
                                 </div>
                             </div>
+                            <div id="notificationFlightDate" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3" style="margin-top: 15px;">
                                 <h4>Economy Class</h4>
                             <label for="amountOfTicketsEC" style="margin-top:15px;">Amount Of AirTickets</label>
@@ -1202,6 +1458,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="notificationFlightEC" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <h4>Business Class</h4>
                                 <label for="amountOfTicketsBC" style="margin-top:15px;">Amount Of AirTickets</label>
@@ -1220,6 +1477,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="notificationFlightBC" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <h4>First Class</h4>
                                 <label for="amountOfTicketsFC" style="margin-top:15px;">Amount Of AirTickets</label>
@@ -1238,6 +1496,8 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="notificationFlightFC" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
+                            <div id="notificationAirTicket" class="text-danger1" style="display:none; margin-top: 20px;"></div>
                             <div class="attraction-info" style="text-align: center;">
                                 <button id="save-button-attraction" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
                         </form>
@@ -1245,12 +1505,13 @@
                             <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
                         </form>
                     </div>
-                    <div id="notificationAirTicket" class="text-danger1" style="display:none; margin-top: 20px;"></div>
+                   
             </div>
                     <div id="accomodation-fields" class="mt-5" style="display: none;">
                         <form id="accomodation-form" asp-action="SaveAccomodationForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAccomodationForm()">
                             <div id="photoContainerAccomodation" class="d-flex flex-wrap"></div>
                             <input type="hidden" id="photoDataAccomodation" name="photoDataAccomodation" />
+                            <div id="notificationAccomodationPhoto" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="form-group">
                                 <input type="file" name="photosAccomodation" id="photoUploadAccomodation" multiple style="display:none;">
                                 <button type="button" class="btn btn-primary" id="uploadBtnAccomodation">Upload Photos</button>
@@ -1359,6 +1620,7 @@
                                     <label class="form-check-label" for="nutritionType">Without Nutrition</label>
                                 </div>
                             </div>
+                            <div id="notificationAccomodationNutrition" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="parking" class="form-label" style="margin-top: 15px;">Parking</label><br>
                                 <div class="form-check form-check-inline">
@@ -1370,6 +1632,7 @@
                                     <label class="form-check-label" for="parkingNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationparking" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                         <label for="swimmingpools" style="margin-top:15px;">Amount Of Swimming Pools</label>
                         <input type="number" class="form-control" name="model.SwimmingPool" id="swimmingpools" placeholder="Enter amount of swimming pools" min="0" max="20" style="margin-top: 10px;">
                         <div class="mb-3">
@@ -1383,6 +1646,7 @@
                                     <label class="form-check-label" for="freeWIFINo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationfreeWIFI" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="privateBeach" class="form-label" style="margin-top: 15px;">Private Beach</label><br>
                                 <div class="form-check form-check-inline">
@@ -1394,6 +1658,7 @@
                                     <label class="form-check-label" for="privateBeachNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationprivateBeach" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="lineOfBeach" class="form-label" style="margin-top: 15px;">Line Of Beach</label>
                                 <div class="input-group">
@@ -1416,6 +1681,7 @@
                                     <label class="form-check-label" for="SPANo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationSPA" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="Bar" class="form-label" style="margin-top: 15px;">Bar</label><br>
                                 <div class="form-check form-check-inline">
@@ -1427,6 +1693,7 @@
                                     <label class="form-check-label" for="BarNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationBar" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <label for="restaurants" style="margin-top:15px;">Amount Of Restaurants</label>
                             <input type="number" class="form-control" name="model.Restaurants" id="restaurants" placeholder="Enter amount of restaurants" min="0" max="10" style="margin-top: 10px;">
                             <div class="mb-3">
@@ -1440,6 +1707,7 @@
                                     <label class="form-check-label" for="gardenNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationgarden" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="transferToAirport" class="form-label" style="margin-top: 15px;">Transfer To Airport</label><br>
                                 <div class="form-check form-check-inline">
@@ -1451,6 +1719,7 @@
                                     <label class="form-check-label" for="transferToAirportNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationtransferToAirport" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="tactileSigns" class="form-label" style="margin-top: 15px;">Tactile Signs</label><br>
                                 <div class="form-check form-check-inline">
@@ -1462,6 +1731,7 @@
                                     <label class="form-check-label" for="tactileSignsNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationtactileSigns" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="smookingRooms" class="form-label" style="margin-top: 15px;">Smooking Rooms</label><br>
                                 <div class="form-check form-check-inline">
@@ -1473,6 +1743,7 @@
                                     <label class="form-check-label" for="smookingRoomsNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationsmookingRooms" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="familyRooms" class="form-label" style="margin-top: 15px;">Family Rooms</label><br>
                                 <div class="form-check form-check-inline">
@@ -1484,6 +1755,7 @@
                                     <label class="form-check-label" for="familyRoomsNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationfamilyRooms" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="carChargingStation" class="form-label" style="margin-top: 15px;">Car Charging Station</label><br>
                                 <div class="form-check form-check-inline">
@@ -1495,6 +1767,7 @@
                                     <label class="form-check-label" for="carChargingStationNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationcarChargingStation" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="wheelchairAccessible" class="form-label" style="margin-top: 15px;">Wheelchair Accessible</label><br>
                                 <div class="form-check form-check-inline">
@@ -1506,6 +1779,7 @@
                                     <label class="form-check-label" for="wheelchairAccessibleNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationwheelchairAccessible" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="fitnessCentre" class="form-label" style="margin-top: 15px;">Fitness Centre</label><br>
                                 <div class="form-check form-check-inline">
@@ -1517,6 +1791,7 @@
                                     <label class="form-check-label" for="fitnessCentreNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationfitnessCentre" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="petsAllowed" class="form-label" style="margin-top: 15px;">Pets Allowed</label><br>
                                 <div class="form-check form-check-inline">
@@ -1528,6 +1803,7 @@
                                     <label class="form-check-label" for="petsAllowedNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationpetsAllowed" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="deliveryFoodToTheRoom" class="form-label" style="margin-top: 15px;">Delivery Food To The Room</label><br>
                                 <div class="form-check form-check-inline">
@@ -1539,6 +1815,7 @@
                                     <label class="form-check-label" for="deliveryFoodToTheRoomNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationdeliveryFoodToTheRoom" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="mb-3">
                                 <label for="everyHourFrontDesk" class="form-label" style="margin-top: 15px;">Every Hour Front Desk</label><br>
                                 <div class="form-check form-check-inline">
@@ -1550,10 +1827,12 @@
                                     <label class="form-check-label" for="everyHourFrontDeskNo">No</label>
                                 </div>
                             </div>
+                        <div id="notificationAccomodationeveryHourFrontDesk" class="text-danger1" style="display:none; margin-bottom: 15px;"></div>
                             <div class="form-group">
                                 <label for="descriptionAccomodation" style="margin-top: 15px;">Accomodation Description</label>
                                 <textarea class="form-control" id="descriptionAccomodation" name="model.Description" placeholder="Enter the accomodation description" rows="5" style="margin-top: 10px;"></textarea>
                             </div>
+                        <div id="notificationAccomodation" class="text-danger1" style="display:none;"></div>
                             <div class="accomodation-info" style="text-align: center;">
                                 <button id="save-button-accomodation" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Save</button>
                             </form>
@@ -1561,7 +1840,6 @@
                             <button type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 30px;">Clear</button>
                         </form>
                     </div>
-                    <div id="notificationAccomodation" class="text-danger11" style="display:none;"></div>
             </div>
         </div>
     </div>    
@@ -1669,7 +1947,7 @@
                             var newBookingDateHtmlAttr = `
                                                     <div class="booking-date-attraction" style="margin-top: 15px;">
                                                         <div class="input-group">
-                                                            <input type="date" name="model.AvailableDates[]" required min="${formatDatee(minDate)}" class="form-control">
+                                                            <input type="date" name="model.AvailableDates[]" min="${formatDatee(minDate)}" class="form-control">
                                                             <input type="number" class="form-control" name="model.AmountOfTickets[]" placeholder="Enter amount of tickets" min="0" max="10000">
                                                         </div>
                                                     </div>

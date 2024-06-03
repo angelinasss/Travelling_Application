@@ -20,7 +20,10 @@
         </style>
         <style>
 
-            #notification1 {
+            #notification,
+            #notificationFlightDate,
+            #notification1,
+            #notificationAirTicket {
                 display: none;
                 padding: 10px;
                 margin-top: 10px;
@@ -45,13 +48,6 @@
                     border-color: #007bff;
                 }
 
-            #notificationAirTicket {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
             .success-notification {
                 background-color: #d4edda;
                 color: #155724;
@@ -74,6 +70,7 @@
         function validateAirTicketForm() {
             // Проверка текстовых полей
             var airTicketDepartureCountry = $('#departureCountry').val();
+            var depCountryCode = $('#departureCountryCode').val();
             var airTicketDepartureCity = $('#departureCity').val();
             var airTicketArrivalCountry = $('#arrivalCountry').val();
             var airTicketArrivalCity = $('#arrivalCity').val();
@@ -84,52 +81,22 @@
             var amountOfTicketsEC = $('#amountOfTicketsEC').val();
             var amountOfTicketsBC = $('#amountOfTicketsBC').val();
             var amountOfTicketsFC = $('#amountOfTicketsFC').val();
-            var departureCountryCode = $('#departureCountryCode').val();
             var arrivalCountryCode = $('#arrivalCountryCode').val();
 
-            // Проверка выбранных радиокнопок
-            var freeCancellation = $('#freeCancellationYesAirTicket').is(':checked');
-            if (!freeCancellation) {
-                freeCancellation = $('#freeCancellationNoAirTicket').is(':checked');
-            }
-            var includeLuggageEC = $('#includeLuggageForEconomyClassYes').is(':checked');
-            if (!includeLuggageEC) {
-                includeLuggageEC = $('#includeLuggageForEconomyClassNo').is(':checked');
-            }
-            var includeLuggageBC = $('#includeLuggageForBusinessClassYes').is(':checked');
-            if (!includeLuggageBC) {
-                includeLuggageBC = $('#includeLuggageForBusinessClassNo').is(':checked');
-            }
-            var includeLuggageFC = $('#includeLuggageForFirstClassYes').is(':checked');
-            if (!includeLuggageFC) {
-                includeLuggageFC = $('#includeLuggageForFirstClassNo').is(':checked');
-            }
-
             var isValid = true;
-            if (!freeCancellation || !includeLuggageEC || !includeLuggageBC || !includeLuggageFC) {
-                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger').show();
-                isValid = false;
-            }
-            if (departureCountryCode === '') {
-                $('#departureCountryCode').addClass('invalid-field');
-                isValid = false;
-            }
-            else {
-                $('#departureCountryCode').removeClass('invalid-field');
-            }
-            if (arrivalCountryCode === '') {
-                $('#arrivalCountryCode').addClass('invalid-field');
-                isValid = false;
-            }
-            else {
-                $('#arrivalCountryCode').removeClass('invalid-field');
-            }
             if (airTicketDepartureCountry === '') {
                 $('#departureCountry').addClass('invalid-field');
                 isValid = false;
             }
             else {
                 $('#departureCountry').removeClass('invalid-field');
+            }
+            if (depCountryCode === '') {
+                $('#departureCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#departureCountryCode').removeClass('invalid-field');
             }
             if (airTicketDepartureCity === '') {
                 $('#departureCity').addClass('invalid-field');
@@ -144,6 +111,13 @@
             }
             else {
                 $('#arrivalCountry').removeClass('invalid-field');
+            }
+            if (arrivalCountryCode === '') {
+                $('#arrivalCountryCode').addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#arrivalCountryCode').removeClass('invalid-field');
             }
             if (airTicketArrivalCity === '') {
                 $('#arrivalCity').addClass('invalid-field');
@@ -201,9 +175,42 @@
             else {
                 $('#amountOfTicketsFC').removeClass('invalid-field');
             }
+
+
+            // Проверка дат
+            $('.booking-date-flight').each(function () {
+                var startDate = $(this).find('input[name="model.DepartureTime[]"]').val();
+                var endDate = $(this).find('input[name="model.ArrivalTime[]"]').val();
+                if (startDate === "") {
+                    isValid = false;
+                    $(this).find('input[name="model.DepartureTime[]"]').addClass('invalid-field');
+                }
+                if (endDate === "") {
+                    isValid = false;
+                    $(this).find('input[name="model.ArrivalTime[]"]').addClass('invalid-field');
+                }
+                if (startDate) {
+                    $(this).find('input[name="model.DepartureTime[]"]').removeClass('invalid-field');
+                }
+                if (endDate) {
+                    $(this).find('input[name="model.ArrivalTime[]"]').removeClass('invalid-field');
+                }
+                if (startDate && endDate) {
+                    if (startDate >= endDate) {
+                        isValid = false;
+                        $(this).find('input[name="model.DepartureTime[]"]').addClass('invalid-field');
+                        $(this).find('input[name="model.ArrivalTime[]"]').addClass('invalid-field');
+                        $('#notificationFlightDate').text('Start date must be less than end date.').addClass('text-danger').show();
+                    }
+                    else {
+                        $('#notificationFlightDate').text('Departure Time must be less than Arrival Time.').hide();
+                    }
+                }
+            });
+
+
             if (!isValid) {
-                $('#departureCity, #arrivalCountry, #arrivalCity, #flightNumber, #ticketCostEC, #ticketCostBC, #ticketCostFC, #amountOfTicketsEC, #amountOfTicketsBC, #amountOfTicketsFC, #arrivalCountryCode, #departureCountryCode').removeClass('invalid-field');
-                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger1').show();
+                $('#notificationAirTicket').text('Please fill in all required fields.').addClass('text-danger').show();
             }
             return isValid;
         }
@@ -290,8 +297,8 @@
                                         <div class="booking-date-flight" style="margin-top: 15px;">
                                             <label for="availableDatesFlight" style="margin-top: 15px;">Departure Time & Arrival Time</label>
                                             <div class="input-group">
-                                                <input type="datetime-local" class="form-control" name="model.DepartureTime" required min="{{minDateFlight}}" value="@ViewBag.DepartureTime.ToString("yyyy-MM-ddTHH:mm")">
-                                                <input type="datetime-local" class="form-control" name="model.ArrivalTime" required min="{{minDateFlight}}" value="@ViewBag.ArrivalTime.ToString("yyyy-MM-ddTHH:mm")">
+                                                <input type="datetime-local" class="form-control" name="model.DepartureTime" min="{{minDateFlight}}" value="@ViewBag.DepartureTime.ToString("yyyy-MM-ddTHH:mm")">
+                                                <input type="datetime-local" class="form-control" name="model.ArrivalTime" min="{{minDateFlight}}" value="@ViewBag.ArrivalTime.ToString("yyyy-MM-ddTHH:mm")">
                                             </div>
                                         </div>
                                     </div>

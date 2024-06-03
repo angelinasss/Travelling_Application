@@ -212,43 +212,7 @@
                 border-radius: 50%;
             }
 
-            #notification {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notification1 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notification2 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-             #notification3 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-             }
-
-            #notification4 {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #notification5 {
-                display: none;
+            .notification {
                 padding: 10px;
                 margin-top: 10px;
                 border-radius: 5px;
@@ -273,122 +237,141 @@
         </style>
      }
     <script>
-        function validateCarRejectedMessage() {
-                    var message = $('#rejectedMessageCar').val();
+        function validateCarRejectedMessage(carId) {
+            var textarea = $('#rejectedMessageCar_' + carId);
 
-                    var isValid = true;
-                    if (message === '') {
-                    $('#rejectedMessageCar').addClass('invalid-field');
-                    isValid = false;
-                    }
-                    else {
-                    $('#rejectedMessageCar').removeClass('invalid-field');
-                    }
-                    if (!isValid) {
-                    $('#notification').text('Specify the reason for the reject').addClass('text-danger1').show();
-                    }
-                    else {
-                        $('#notification').text('Specify the reason for the reject').removeClass('text-danger1').hide();
-                    }
-
-                    return isValid;
-        }
-        function validateAirTicketRejectedMessageEC() {
-            var message = $('#rejectedMessageAirTicketEC').val();
+            // Get the value of the textarea
+            var message = textarea.val();
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAirTicketEC').addClass('invalid-field');
+                $('#rejectedMessageCar_' + carId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAirTicketEC').removeClass('invalid-field');
+                $('#rejectedMessageCar_' + carId).removeClass('invalid-field');
             }
             if (!isValid) {
-                $('#notification1').text('Specify the reason for the reject').addClass('text-danger').show();
+                $('#notification_' + carId).text('Specify the reason for the reject').addClass('text-danger').addClass('notification').show();
             }
             else {
-                $('#notification1').text('Specify the reason for the reject').removeClass('text-danger').hide();
+                $('#notification_' + carId).text('Specify the reason for the reject').removeClass('text-danger').removeClass('notification').hide();
             }
 
             return isValid;
         }
-         function validateAirTicketRejectedMessageBC() {
-            var message = $('#rejectedMessageAirTicketBC').val();
+
+        function validateAirTicketRejectedMessageEC(airticketId) {
+            var textarea = $('#rejectedMessageAirTicketEC_' + airticketId);
+
+            // Get the value of the textarea
+            var message = textarea.val();
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAirTicketBC').addClass('invalid-field');
+                $('#rejectedMessageAirTicketEC_' + airticketId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAirTicketBC').removeClass('invalid-field');
+                $('#rejectedMessageAirTicketEC_' + airticketId).removeClass('invalid-field');
             }
             if (!isValid) {
-                $('#notification2').text('Specify the reason for the reject').addClass('text-danger').show();
+                $('#notificationEC__' + airticketId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
             }
             else {
-                $('#notification2').text('Specify the reason for the reject').removeClass('text-danger').hide();
+                $('#notificationEC__' + airticketId).text('Specify the reason for the reject').removeClass('text-danger').removeClass('notification').hide();
             }
 
             return isValid;
         }
-        function validateAirTicketRejectedMessageFC() {
-            var message = $('#rejectedMessageAirTicketFC').val();
+        function validateAirTicketRejectedMessageBC(airticketId) {
+            var textarea = $('#rejectedMessageAirTicketBC_' + airticketId);
+
+            // Get the value of the textarea
+            var message = textarea.val();
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAirTicketFC').addClass('invalid-field');
+                $('#rejectedMessageAirTicketBC_' + airticketId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAirTicketFC').removeClass('invalid-field');
+                $('#rejectedMessageAirTicketBC_' + airticketId).removeClass('invalid-field');
             }
             if (!isValid) {
-                $('#notification3').text('Specify the reason for the reject').addClass('text-danger').show();
+                $('#notificationBC__' + airticketId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
             }
             else {
-                $('#notification3').text('Specify the reason for the reject').removeClass('text-danger').hide();
+                $('#notificationBC__' + airticketId).text('Specify the reason for the reject').removeClass('text-danger').removeClass('notification').hide();
             }
 
             return isValid;
         }
-        function validateAttractionRejectedMessage() {
-            var message = $('#rejectedMessageAttraction').val();
+        function validateAirTicketRejectedMessageFC(airticketId) {
+            var textarea = $('#rejectedMessageAirTicketFC_' + airticketId);
+
+            // Get the value of the textarea
+            var message = textarea.val();
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAttraction').addClass('invalid-field');
+                $('#rejectedMessageAirTicketFC_' + airticketId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAttraction').removeClass('invalid-field');
+                $('#rejectedMessageAirTicketFC_' + airticketId).removeClass('invalid-field');
             }
             if (!isValid) {
-                $('#notification4').text('Specify the reason for the reject').addClass('text-danger1').show();
+                $('#notificationFC__' + airticketId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
             }
             else {
-                $('#notification4').text('Specify the reason for the reject').removeClass('text-danger1').hide();
+                $('#notificationFC__' + airticketId).text('Specify the reason for the reject').removeClass('text-danger').removeClass('notification').hide();
             }
 
             return isValid;
         }
-        function validateAccomodationRejectedMessage() {
-            var message = $('#rejectedMessageAccomodation').val();
+        function validateAttractionRejectedMessage(attractionId) {
+            var textarea = $('#rejectedMessageAttraction_' + attractionId);
+
+            // Get the value of the textarea
+            var message = textarea.val();
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAccomodation').addClass('invalid-field');
+                $('#rejectedMessageAttraction_' + attractionId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAccomodation').removeClass('invalid-field');
+                $('#rejectedMessageAttraction_' + attractionId).removeClass('invalid-field');
             }
             if (!isValid) {
-                $('#notification5').text('Specify the reason for the reject').addClass('text-danger1').show();
+                $('#notification__' + attractionId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
             }
             else {
-                $('#notification5').text('Specify the reason for the reject').removeClass('text-danger1').hide();
+                $('#notification__' + attractionId).text('Specify the reason for the reject').removeClass('text-danger').removeClass('notification').hide();
+            }
+
+            return isValid;
+        }
+        function validateAccomodationRejectedMessage(accomodationId) {
+            var textarea = $('#rejectedMessageAccomodation_' + accomodationId);
+
+            // Get the value of the textarea
+            var message = textarea.val();
+
+            var isValid = true;
+            if (message === '') {
+                $('#rejectedMessageAccomodation_' + accomodationId).addClass('invalid-field');
+                isValid = false;
+            }
+            else {
+                $('#rejectedMessageAccomodation_' + accomodationId).removeClass('invalid-field');
+            }
+            if (!isValid) {
+                $('#notification___' + accomodationId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
+            }
+            else {
+                $('#notification___' + accomodationId).text('Specify the reason for the reject').removeClass('text-danger').removeClass('notification').hide();
             }
 
             return isValid;
@@ -488,15 +471,15 @@
                                                         }
                                                         else
                                                         {
-                                                            <form asp-action="RejectCar" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateCarRejectedMessage()">
-                                                                <textarea class="form-control" id="rejectedMessageCar" name="RejectedMessageCar" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 72%; margin-left: 75px;"></textarea>
-                                                                <div id="notification" class="text-danger" style="display:none; margin-bottom: 20px; margin-left: 150px; width: 50%;"></div>
+                                                            <form id="rejectCarBooking_@car.Id" asp-action="RejectCar" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateCarRejectedMessage(@car.Id)">
+                                                                <textarea class="form-control" id="rejectedMessageCar_@car.Id" name="RejectedMessageCar" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 72%; margin-left: 75px;"></textarea>
+                                                                <div id="notification_@car.Id" class="text-danger" style="display:none; margin-bottom: 20px; margin-left: 150px; width: 50%;"></div>
                                                                 <input type="hidden" name="rejectCarId" value="@car.Id" />
                                                                 <button class="btn btn-danger" type="submit" style="margin-left: 60px;">Reject</button>
                                                             </form>
                                                             <form asp-action="VerifyCar" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="verifyCarId" value="@car.Id" />
-                                                                <button class="btn btn-success" type="submit" style="margin-right: 90px; margin-top: -65px;">Verify</button>
+                                                                <button class="btn btn-primary" type="submit" style="margin-right: 120px; margin-top: -75px;">Verify</button>
                                                             </form>
                                                         }
                                                     }
@@ -657,20 +640,20 @@
                                                             </form>
                                                             <form asp-action="DeleteAirTicketECUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="deleteAirTicketECId" value="@airticket.Id" />
-                                                                <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
                                                             </form>
                                                         }
                                                         else
                                                         {
-                                                            <form asp-action="RejectAirTicketEC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAirTicketRejectedMessageEC()">
-                                                                <textarea class="form-control" id="rejectedMessageAirTicketEC" name="RejectedMessageAirTicketEC" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 50%; margin-left: 230px;"></textarea>
-                                                                <div id="notification1" style="margin-bottom: 20px; width: 50%; margin-left: 230px;"></div>
+                                                            <form id="rejectAirTicketECBooking_@airticket.Id" asp-action="RejectAirTicketEC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAirTicketRejectedMessageEC(@airticket.Id)">
+                                                                <textarea class="form-control" id="rejectedMessageAirTicketEC_@airticket.Id" name="RejectedMessageAirTicketEC" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 50%; margin-left: 230px;"></textarea>
+                                                                <div id="notificationEC__@airticket.Id" style="margin-bottom: 20px; width: 50%; margin-left: 230px;"></div>
                                                                 <input type="hidden" name="rejectAirTicketId" value="@airticket.Id" />
                                                                 <button class="btn btn-danger" type="submit" style="margin-left: 100px;">Reject</button>
                                                             </form>
                                                             <form asp-action="VerifyAirTicketEC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="verifyAirTicketId" value="@airticket.Id" />
-                                                                <button class="btn btn-success" type="submit" style="margin-top: -67px; margin-left: -50px;">Verify</button>
+                                                                <button class="btn btn-primary" type="submit" style="margin-top: -75px; margin-left: -80px;">Verify</button>
                                                             </form>
                                                         }
                                                     }
@@ -826,20 +809,20 @@
                                                             </form>
                                                             <form asp-action="DeleteAirTicketBCUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="deleteAirTicketBCId" value="@airticket.Id" />
-                                                                <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
                                                             </form>
                                                         }
                                                         else
                                                         {
-                                                            <form asp-action="RejectAirTicketBC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAirTicketRejectedMessageBC()">
-                                                                <textarea class="form-control" id="rejectedMessageAirTicketBC" name="RejectedMessageAirTicketBC" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 50%; margin-left: 230px;"></textarea>
-                                                                <div id="notification2" style="margin-bottom: 20px; width: 50%; margin-left: 230px;"></div>
+                                                            <form id="rejectAirTicketBCBooking_@airticket.Id" asp-action="RejectAirTicketBC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAirTicketRejectedMessageBC(@airticket.Id)">
+                                                                <textarea class="form-control" id="rejectedMessageAirTicketBC_@airticket.Id" name="RejectedMessageAirTicketBC" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 50%; margin-left: 230px;"></textarea>
+                                                                <div id="notificationBC__@airticket.Id" style="margin-bottom: 20px; width: 50%; margin-left: 230px;"></div>
                                                                 <input type="hidden" name="rejectAirTicketId" value="@airticket.Id" />
                                                                 <button class="btn btn-danger" type="submit" style="margin-left: 100px;">Reject</button>
                                                             </form>
                                                             <form asp-action="VerifyAirTicketBC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="verifyAirTicketId" value="@airticket.Id" />
-                                                                <button class="btn btn-success" type="submit" style="margin-top: -67px; margin-left: -50px;">Verify</button>
+                                                                <button class="btn btn-primary" type="submit" style="margin-top: -75px; margin-left: -80px;">Verify</button>
                                                             </form>
                                                         }
                                                     }
@@ -995,20 +978,20 @@
                                                             </form>
                                                             <form asp-action="DeleteAirTicketFCUnverified" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="deleteAirTicketFCId" value="@airticket.Id" />
-                                                                <button class="btn btn-danger" style="width: 80px; height: 35px;" type="submit">Delete</button>
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
                                                             </form>
                                                         }
                                                         else
                                                         {
-                                                            <form asp-action="RejectAirTicketFC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAirTicketRejectedMessageFC()">
-                                                                <textarea class="form-control" id="rejectedMessageAirTicketFC" name="RejectedMessageAirTicketFC" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 50%; margin-left: 230px;"></textarea>
-                                                                <div id="notification3" style="margin-bottom: 20px; width: 50%; margin-left: 230px;"></div>
+                                                            <form id="rejectAirTicketFCBooking_@airticket.Id" asp-action="RejectAirTicketFC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAirTicketRejectedMessageFC(@airticket.Id)">
+                                                                <textarea class="form-control" id="rejectedMessageAirTicketFC_@airticket.Id" name="RejectedMessageAirTicketFC" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 50%; margin-left: 230px;"></textarea>
+                                                                <div id="notificationFC__@airticket.Id" style="margin-bottom: 20px; width: 50%; margin-left: 230px;"></div>
                                                                 <input type="hidden" name="rejectAirTicketId" value="@airticket.Id" />
                                                                 <button class="btn btn-danger" type="submit" style="margin-left: 100px;">Reject</button>
                                                             </form>
                                                             <form asp-action="VerifyAirTicketFC" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="verifyAirTicketId" value="@airticket.Id" />
-                                                                <button class="btn btn-success" type="submit" style="margin-top: -67px; margin-left: -50px;">Verify</button>
+                                                                <button class="btn btn-primary" type="submit" style="margin-top: -75px; margin-left: -80px;">Verify</button>
                                                             </form>
                                                         }
                                                     }
@@ -1066,15 +1049,15 @@
                                                         }
                                                         else
                                                         {
-                                                            <form asp-action="RejectAttraction" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAttractionRejectedMessage()">
-                                                                <textarea class="form-control" id="rejectedMessageAttraction" name="RejectedMessageAttraction" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 72%; margin-left: 75px;"></textarea>
-                                                                <div id="notification4" class="text-danger" style="display:none; margin-bottom: 20px; margin-left: 150px; width: 50%;"></div>
+                                                            <form id="rejectAttractionBooking_@attraction.Id" asp-action="RejectAttraction" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAttractionRejectedMessage(@attraction.Id)">
+                                                                <textarea class="form-control" id="rejectedMessageAttraction_@attraction.Id" name="RejectedMessageAttraction" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 72%; margin-left: 75px;"></textarea>
+                                                                <div id="notification__@attraction.Id" class="text-danger" style="display:none; margin-bottom: 20px; margin-left: 150px; width: 50%;"></div>
                                                                 <input type="hidden" name="rejectAttractionId" value="@attraction.Id" />
                                                                 <button class="btn btn-danger" type="submit" style="margin-left: 60px;">Reject</button>
                                                             </form>
                                                             <form asp-action="VerifyAttraction" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="verifyAttractionId" value="@attraction.Id" />
-                                                                <button class="btn btn-success" type="submit" style="margin-right: 90px; margin-top: -65px;">Verify</button>
+                                                                <button class="btn btn-primary" type="submit" style="margin-right: 120px; margin-top: -75px;">Verify</button>
                                                             </form>
                                                         }
                                                     }
@@ -1158,15 +1141,15 @@
                                                         }
                                                         else
                                                         {
-                                                            <form asp-action="RejectAccomodation" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAccomodationRejectedMessage()">
-                                                                <textarea class="form-control" id="rejectedMessageAccomodation" name="RejectedMessageAccomodation" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 72%; margin-left: 75px;"></textarea>
-                                                                <div id="notification5" class="text-danger" style="display:none; margin-bottom: 20px; margin-left: 150px; width: 50%;"></div>
+                                                            <form id="rejectAccomodationBooking_@accomodation.Id" asp-action="RejectAccomodation" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" method="post" onsubmit="return validateAccomodationRejectedMessage(@accomodation.Id)">
+                                                                <textarea class="form-control" id="rejectedMessageAccomodation_@accomodation.Id" name="RejectedMessageAccomodation" placeholder="If you want to reject this object, enter the reason" rows="4" style="margin-top: 10px; margin-bottom: 20px; width: 72%; margin-left: 75px;"></textarea>
+                                                                <div id="notification___@accomodation.Id" class="text-danger" style="display:none; margin-bottom: 20px; margin-left: 150px; width: 50%;"></div>
                                                                 <input type="hidden" name="rejectAccomodationId" value="@accomodation.Id" />
                                                                 <button class="btn btn-danger" type="submit" style="margin-left: 60px;">Reject</button>
                                                             </form>
                                                             <form asp-action="VerifyAccomodation" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                                 <input type="hidden" name="verifyAccomodationId" value="@accomodation.Id" />
-                                                                <button class="btn btn-success" type="submit" style="margin-right: 90px; margin-top: -65px;">Verify</button>
+                                                                <button class="btn btn-primary" type="submit" style="margin-right: 120px; margin-top: -75px;">Verify</button>
                                                             </form>
                                                         }
                                                     }

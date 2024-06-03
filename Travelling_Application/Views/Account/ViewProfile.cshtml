@@ -4,8 +4,8 @@
 }
 
 <head>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     @section styles {
@@ -16,6 +16,29 @@
                 padding: 0;
                 background-color: #f4f4f4;
             }
+
+            .btn-primary {
+                background-color: #60c2e5 !important; /* Светлый цвет фона */
+                border-color: #60c2e5 !important; /* Светлый цвет бордюра */
+                color: #ffffff !important;
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                border-radius: 30px !important;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                transition: background-color 0.3s, transform 0.3s !important;
+            }
+
+                .btn-primary:hover {
+                    background-color: #0056b3 !important;
+                    transform: scale(1.05) !important;
+                }
+
+                .btn-primary:focus,
+                .btn-primary:active {
+                    background-color: #004085 !important;
+                    border-color: #004085 !important;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+                }
 
             .enlarged-photo-container {
                 display: none;
@@ -99,6 +122,8 @@
                 width: 100%;
             }
 
+           
+
         </style>
     }
 </head>
@@ -143,7 +168,7 @@
                         <div class="car-list" style="margin-top: 20px;">
                             <div class="car-card">
                                 <div class="row">
-                                    <span class="username" style="display: inline-block; vertical-align: middle; font-size: 30px; margin-top: 15px;">@ViewBag.UserName</span>
+                                    <span class="username" style="display: inline-block; vertical-align: middle; font-size: 30px; margin-top: -5px;">@ViewBag.UserName</span>
                                     <div class="user-info" style="text-align: center;">
                                         <div class="photo-container" style="position: relative; display: inline-block;">
                                             <img src="data:image/jpeg;base64,@Convert.ToBase64String(ViewBag.UserPhotoUrl)" class="user-photo" style="margin-right: 20px; margin-bottom: 20px; margin-top: 20px; width: 200px; height: 200px; object-fit: cover;" onclick="openPhoto()" onmouseover="showDeleteButton(event)" onmouseout="hideDeleteButton()">

@@ -246,6 +246,29 @@
                 letter-spacing: 1.5px;
             }
 
+            .btn-primary {
+                background-color: #60c2e5 !important; /* Светлый цвет фона */
+                border-color: #60c2e5 !important; /* Светлый цвет бордюра */
+                color: #ffffff !important;
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                border-radius: 30px !important;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                transition: background-color 0.3s, transform 0.3s !important;
+            }
+
+                .btn-primary:hover {
+                    background-color: #0056b3 !important;
+                    transform: scale(1.05) !important;
+                }
+
+                .btn-primary:focus,
+                .btn-primary:active {
+                    background-color: #004085 !important;
+                    border-color: #004085 !important;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+                }
+
         </style>
     }
     <script>
@@ -281,11 +304,11 @@
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAirTicketEC_').addClass('invalid-field');
+                $('#rejectedMessageAirTicketEC_' + airticketId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAirTicketEC_').removeClass('invalid-field');
+                $('#rejectedMessageAirTicketEC_' + airticketId).removeClass('invalid-field');
             }
             if (!isValid) {
                 $('#notificationEC__' + airticketId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
@@ -304,11 +327,11 @@
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAirTicketBC_').addClass('invalid-field');
+                $('#rejectedMessageAirTicketBC_' + airticketId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAirTicketBC_').removeClass('invalid-field');
+                $('#rejectedMessageAirTicketBC_' + airticketId).removeClass('invalid-field');
             }
             if (!isValid) {
                 $('#notificationBC__' + airticketId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
@@ -327,11 +350,11 @@
 
             var isValid = true;
             if (message === '') {
-                $('#rejectedMessageAirTicketFC_').addClass('invalid-field');
+                $('#rejectedMessageAirTicketFC_' + airticketId).addClass('invalid-field');
                 isValid = false;
             }
             else {
-                $('#rejectedMessageAirTicketFC_').removeClass('invalid-field');
+                $('#rejectedMessageAirTicketFC_' + airticketId).removeClass('invalid-field');
             }
             if (!isValid) {
                 $('#notificationFC__' + airticketId).text('Specify the reason for the reject').addClass('notification').addClass('text-danger').show();
@@ -466,7 +489,7 @@
                                                         <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
                                                     </p>
                                                     <h5>Booking Dates:</h5>
-                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.Date.ToString("dd/MM/yyyy") - @Model.BookingCars[iiii].ReturnDate.Date.ToString("dd/MM/yyyy")</span>
+                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.ToString("dd/MM/yyyy HH:mm") - @Model.BookingCars[iiii].ReturnDate.ToString("dd/MM/yyyy HH:mm")</span>
                                                     <h5>Traveller Data:</h5>
                                                     <span class="mini-info-item"> Name: @Model.UsersDataCars[iiii].Name</span>
                                                     <span class="mini-info-item"> Email: @Model.UsersDataCars[iiii].Email</span>
@@ -479,7 +502,7 @@
                                                     </form>
                                                     <form asp-action="VerifyCarBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                         <input type="hidden" name="verifyCarId" value="@Model.BookingCars[iiii].id" />
-                                                        <button class="btn btn-success" type="submit" style="margin-right: 90px; margin-top: -65px;">Verify</button>
+                                                        <button class="btn btn-primary" type="submit" style="margin-right: 120px; margin-top: -75px;">Verify</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -650,7 +673,7 @@
                                                     </form>
                                                     <form asp-action="VerifyAirTicketECBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                         <input type="hidden" name="verifyAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                        <button class="btn btn-success" type="submit" style="margin-top: -67px; margin-left: -50px;">Verify</button>
+                                                        <button class="btn btn-primary" type="submit" style="margin-top: -75px; margin-left: -80px;">Verify</button>
                                                     </form>
 
 
@@ -811,7 +834,7 @@
                                                     </form>
                                                     <form asp-action="VerifyAirTicketBCBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                         <input type="hidden" name="verifyAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                        <button class="btn btn-success" type="submit" style="margin-top: -67px; margin-left: -50px;">Verify</button>
+                                                        <button class="btn btn-primary" type="submit" style="margin-top: -75px; margin-left: -80px;">Verify</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -970,7 +993,7 @@
                                                     </form>
                                                     <form asp-action="VerifyAirTicketFCBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                         <input type="hidden" name="verifyAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                        <button class="btn btn-success" type="submit" style="margin-top: -67px; margin-left: -50px;">Verify</button>
+                                                        <button class="btn btn-primary" type="submit" style="margin-top: -75px; margin-left: -80px;">Verify</button>
                                                     </form>
                                                  
                                                 </div>
@@ -1033,7 +1056,7 @@
                                                      </form>
                                                     <form asp-action="VerifyAttractionBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                         <input type="hidden" name="verifyAttractionId" value="@Model.BookingAttractions[iii].id" />
-                                                        <button class="btn btn-success" type="submit" style="margin-right: 90px; margin-top: -65px;">Verify</button>
+                                                        <button class="btn btn-primary" type="submit" style="margin-right: 120px; margin-top: -75px;">Verify</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -1119,7 +1142,7 @@
                                                     </form>
                                                     <form asp-action="VerifyAccomodationBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
                                                         <input type="hidden" name="verifyAccomodationId" value="@Model.BookingAccomodation[ii].id" />
-                                                        <button class="btn btn-success" type="submit" style="margin-right: 90px; margin-top: -65px;">Verify</button>
+                                                        <button class="btn btn-primary" type="submit" style="margin-right: 120px; margin-top: -75px;">Verify</button>
                                                     </form>
                                                     
                                                 </div>

@@ -98,10 +98,6 @@
                 padding: 15px;
             }
 
-            .car-title {
-                margin-top: 0;
-            }
-
             .car-price {
                 font-weight: bold;
             }
@@ -110,20 +106,12 @@
                 padding: 15px;
             }
 
-            .attraction-title {
-                margin-top: 0;
-            }
-
             .attraction-price {
                 font-weight: bold;
             }
 
             .accomodation-details {
                 padding: 15px;
-            }
-
-            .accomodation-title {
-                margin-top: 0;
             }
 
             .airticket-price {
@@ -234,6 +222,29 @@
                 border-color: red !important;
             }
 
+            .btn-primary {
+                background-color: #60c2e5 !important; /* Светлый цвет фона */
+                border-color: #60c2e5 !important; /* Светлый цвет бордюра */
+                color: #ffffff !important;
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                border-radius: 30px !important;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                transition: background-color 0.3s, transform 0.3s !important;
+            }
+
+                .btn-primary:hover {
+                    background-color: #0056b3 !important;
+                    transform: scale(1.05) !important;
+                }
+
+                .btn-primary:focus,
+                .btn-primary:active {
+                    background-color: #004085 !important;
+                    border-color: #004085 !important;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+                }
+
         </style>
     }
 </head>
@@ -313,7 +324,7 @@
                                                         <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
                                                     </p>
                                                     <h5>Booking Dates:</h5>
-                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.Date.ToString("dd/MM/yyyy") - @Model.BookingCars[iiii].ReturnDate.Date.ToString("dd/MM/yyyy")</span>
+                                                    <span class="mini-info-item"> @Model.BookingCars[iiii].DateOfDeparture.ToString("dd/MM/yyyy HH:mm") - @Model.BookingCars[iiii].ReturnDate.ToString("dd/MM/yyyy HH:mm")</span>
                                                    
                                                 </div>
                                                 <form asp-action="CancelCarBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block; margin-top: -20px; margin-bottom: 20px;" method="post">
@@ -623,10 +634,12 @@
                                                 </div>
                                                 <h5>Count Of Tickets:</h5>
                                                 <span class="mini-info-item"> @Model.BookingAirTickets[i].Passengers</span>
-                                                <form asp-action="CancelAirTicketBCBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                    <input type="hidden" name="cancelAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                    <button class="btn btn-danger" type="submit">Cancel Booking</button>
-                                                </form>
+                                                <div class="col-md-12 text-center" style="margin-bottom: 20px;">
+                                                    <form asp-action="CancelAirTicketBCBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                        <input type="hidden" name="cancelAirTicketId" value="@Model.BookingAirTickets[i].id" />
+                                                        <button class="btn btn-danger" type="submit">Cancel Booking</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -770,10 +783,12 @@
                                                 </div>
                                                 <h5>Count Of Tickets:</h5>
                                                 <span class="mini-info-item"> @Model.BookingAirTickets[i].Passengers</span>
-                                                <form asp-action="CancelAirTicketFCBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
-                                                    <input type="hidden" name="cancelAirTicketId" value="@Model.BookingAirTickets[i].id" />
-                                                    <button class="btn btn-danger" type="submit">Cancel Booking</button>
-                                                </form>
+                                                <div class="col-md-12 text-center" style="margin-bottom: 20px;">
+                                                    <form asp-action="CancelAirTicketFCBooking" asp-controller="Account" asp-anti-forgery="true" enctype="multipart/form-data" style="display: inline-block;" method="post">
+                                                        <input type="hidden" name="cancelAirTicketId" value="@Model.BookingAirTickets[i].id" />
+                                                        <button class="btn btn-danger" type="submit">Cancel Booking</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     }
