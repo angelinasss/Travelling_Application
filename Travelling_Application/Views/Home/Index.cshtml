@@ -86,14 +86,7 @@
             border-color: #f5c6cb;
             }
 
-            #notification {
-                display: none;
-                padding: 10px;
-                margin-top: 10px;
-                border-radius: 5px;
-            }
-
-            #favoriteNotification {
+            .notification {
                 display: none;
                 padding: 10px;
                 margin-top: 10px;
@@ -123,7 +116,7 @@
         </style>
 
         <script>
-            function validateButtons() {
+        function validateButtons(accomId) {
                 const radios = document.getElementsByName('room');
                 let isChecked = false;
                 for (const radio of radios) {
@@ -133,11 +126,11 @@
                     }
                 }
                 if (!isChecked) {
-                    $('#notification').text('Please choose room for booking.').addClass('text-danger').show();
+                $('#notification_' + accomId).text('Please choose room for booking.').addClass('text-danger').addClass('notification').show();
                     return false; // Prevent form submission
                 }
 
-                $('#notification').text('Please choose room for booking.').removeClass('text-danger').hide();
+            $('#notification_' + accomId).text('Please choose room for booking.').removeClass('text-danger').hide();
 
                 return true; // Allow form submission
             }
@@ -263,7 +256,7 @@
                                         {
                                             @foreach (var accomodation in Model.Results)
                                             {
-                                        <form id="bookAccomodation_@accomodation.Id" method="post" action="/Home/BookAccomodation" onsubmit="return validateButtons()" class="bookAccomodationForm">
+                                        <form id="bookAccomodation_@accomodation.Id" method="post" action="/Home/BookAccomodation" onsubmit="return validateButtons(@accomodation.Id)" class="bookAccomodationForm">
                                                 <input type="hidden" name="accomodationId" value="@accomodation.Id" />
                                                 <input type="hidden" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" />
                                                 <input type="hidden" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-dd")" />
@@ -345,9 +338,9 @@
                                                                             }
                                                                         </div>
 
-                                                                        <div id="notification" class="text-danger" style="display:none;"></div>
+                                                                    <div id="notification_@accomodation.Id" class="text-danger" style="display:none;"></div>
 
-                                                                        <div id="favoriteNotification" class="text-danger" style="display:none; color:red; margin-top:10px;"></div>
+                                                                    <div id="favoriteNotification_@accomodation.Id" class="text-danger" style="display:none;"></div>
 
                                                                         <button id="bookButton_@accomodation.Id" type="submit" class="btn btn-primary" style="margin-right: 20px; margin-top: 10px;">Book</button>
                                                                     }
@@ -403,25 +396,25 @@
 
                     $('.favorite-icon i').click(function () {
                         var $icon = $(this);
-                        var accomodationId = $icon.data('accomodation-id');
+                        var accommodationId = $icon.data('accomodation-id');
                         var dateIn = $('#checkInDate').val();
                         var dateOut = $('#checkOutDate').val();
                         var rooms = $('#rooms').val();
                         var selectedRoom = $('input[name="room"]:checked').val(); // Get the selected room value
 
-                        // Проверяем, выбран ли тип комнаты
+                        // Check if room type is selected
                         if (!selectedRoom) {
-                            $('#favoriteNotification').text('Please choose a room type before adding to favorites.').show();
-                            return; // Прерываем выполнение, если комната не выбрана
+                            $('#favoriteNotification_' + accommodationId).text('Please choose a room type before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                            return; // Stop execution if no room is selected
                         }
 
-                        $('#favoriteNotification').hide(); // Скрываем сообщение об ошибке, если комната выбрана
+                        $('#favoriteNotification_' + accommodationId).text('Please choose a room type before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
 
                         $.ajax({
-                            url: '/Home/AddToFavoriteAccomodation',
+                            url: '/Home/AddToFavoriteAccommodation',
                             type: 'POST',
                             data: {
-                                accomodationId: accomodationId,
+                                accommodationId: accommodationId,
                                 dateIn: dateIn,
                                 dateOut: dateOut,
                                 rooms: rooms,
@@ -439,8 +432,6 @@
                             }
                         });
                     });
-
-
                 });
 
 

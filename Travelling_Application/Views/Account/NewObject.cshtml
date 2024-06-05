@@ -593,6 +593,8 @@
             var amountOfTicketsFC = $('#amountOfTicketsFC').val();
             var arrivalCountryCode = $('#arrivalCountryCode').val();
 
+            var isValid = true;
+
             if (!$('input[name="model.FreeCancellation"]:checked').length) {
                 isValid = false;
                 $('#notificationFlightFree').text('Please fill in the "Free Cancellation" field.').addClass('text-danger').show();
@@ -622,7 +624,6 @@
                 $('#notificationFlightFC').text('Please fill in the "Include Luggage" for First Class field.').hide();
             }
 
-            var isValid = true;
             if (airTicketDepartureCountry === '') {
                 $('#departureCountry').addClass('invalid-field');
                 isValid = false;
@@ -720,11 +721,11 @@
             $('.booking-date-flight').each(function () {
                 var startDate = $(this).find('input[name="model.DepartureTime[]"]').val();
                 var endDate = $(this).find('input[name="model.ArrivalTime[]"]').val();
-                if (!startDate) {
+                if (startDate === "") {
                     isValid = false;
                     $(this).find('input[name="model.DepartureTime[]"]').addClass('invalid-field');
                 }
-                if (!endDate) {
+                if (endDate === "") {
                     isValid = false;
                     $(this).find('input[name="model.ArrivalTime[]"]').addClass('invalid-field');
                 }
@@ -739,7 +740,7 @@
                         isValid = false;
                         $(this).find('input[name="model.DepartureTime[]"]').addClass('invalid-field');
                         $(this).find('input[name="model.ArrivalTime[]"]').addClass('invalid-field');
-                        $('#notificationFlightDate').text('Start date must be less than end date.').addClass('text-danger').show();
+                        $('#notificationFlightDate').text('Departure Time must be less than Arrival Time.').addClass('text-danger').show();
                     }
                     else {
                         $('#notificationFlightDate').text('Departure Time must be less than Arrival Time.').hide();
@@ -1389,7 +1390,7 @@
                      
                 </div>
                     <div id="flight-fields" class="mt-5" style="display: none;">
-                        <form id="flight-form" asp-action="SaveFlightForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAirTicketForm()">    
+                        <form id="flight-form" asp-action="SaveFlightForm" asp-controller="Account" style="display: inline-block;" asp-anti-forgery="true" enctype="multipart/form-data" onsubmit="return validateAirTicketForm()">
                             <div class="form-group">
                                 <label for="departureCountry" style="margin-top: 5px;">Departure Country</label>
                                 <input type="text" name="model.CountryFrom" class="form-control" id="departureCountry" placeholder="Enter departure country" style="margin-top: 10px;">
@@ -1847,7 +1848,7 @@
             @section scripts {
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
-                        $(document).ready(function () {
+                  $(document).ready(function () {
                             $('.btn-entity').click(function () {
                                 $('.btn-entity').removeClass('selected');
                                 $(this).addClass('selected');

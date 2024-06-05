@@ -393,6 +393,8 @@ namespace Travelling_Application.Controllers
 
             await _context.SaveChangesAsync();
 
+            ViewBag.CarPhoto = fileBytes;
+
             // Устанавливаем сообщение об успешном изменении в TempData
             TempData["SuccessMessage"] = "The object Car was successfully saved and sent for moderation.";
 
@@ -507,6 +509,7 @@ namespace Travelling_Application.Controllers
                 VerifiedByAdmin = false,  
                 RejectedByAdmin = false,
                 PublisherId = currentUser.Id,
+                AvailableRoomsNames = new List<string>(),
                 MinCost = 0,
                 RejectedMessage = string.Empty
             };
@@ -841,6 +844,27 @@ namespace Travelling_Application.Controllers
         public async Task<IActionResult> ShowFavoriteItems()
         {
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+            var today = DateTime.Today;
+            var oldCars = _context.FavoriteCars.Where(car => car.DateOfDeparture < today);
+
+            _context.FavoriteCars.RemoveRange(oldCars);
+            _context.SaveChanges();
+
+            var oldAttractions = _context.FavoriteAttractions.Where(attraction => attraction.Date < today);
+
+            _context.FavoriteAttractions.RemoveRange(oldAttractions);
+            _context.SaveChanges();
+
+            var oldRooms = _context.FavoriteAccomodations.Where(accomodation => accomodation.DateOfDeparture < today);
+
+            _context.FavoriteAccomodations.RemoveRange(oldRooms);
+            _context.SaveChanges();
+
+            var oldFlights = _context.FavoriteAirTickets.Where(flight => flight.DateOfDeparture < today);
+
+            _context.FavoriteAirTickets.RemoveRange(oldFlights);
+            _context.SaveChanges();
 
 
             var favoriteCarIds = await _context.FavoriteCars
@@ -2796,7 +2820,7 @@ namespace Travelling_Application.Controllers
 
             await _context.SaveChangesAsync();
 
-            return await AllRejectedObjects();
+            return await AllUnverifiedObjects();
         }
 
         public async Task<IActionResult> VerifyAirTicketFCBooking(int verifyAirTicketId)
@@ -3268,6 +3292,20 @@ namespace Travelling_Application.Controllers
             currentAccomodation.VerifiedByAdmin = false;
             currentAccomodation.RejectedByAdmin = false;
             currentAccomodation.RejectedMessage = string.Empty;
+            if(currentAccomodation.MinCost == 0)
+            {
+                currentAccomodation.MinCost = room.RoomCost;
+            }
+            else
+            {
+                if(currentAccomodation.MinCost > room.RoomCost)
+                {
+                    currentAccomodation.MinCost = room.RoomCost;
+                }
+            }
+
+            _context.Accomodation.Update(currentAccomodation);
+            await _context.SaveChangesAsync();
 
             foreach (var photo in photoBytesList)
             {

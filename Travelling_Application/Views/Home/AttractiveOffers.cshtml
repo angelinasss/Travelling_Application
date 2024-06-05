@@ -1,0 +1,1537 @@
+﻿@{
+    ViewData["Title"] = "Attractive Offers | TravelHaven";
+}
+
+@using Travelling_Application.ViewModels
+@model VerifiedObjectsViewModel
+
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    @section styles {
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+
+            .text-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-color: #f5c6cb;
+            }
+
+            .invalid-field {
+                border-color: red !important;
+            }
+
+            .btn-entity {
+                background-color: #f1f1f1;
+                color: #333;
+                transition: background-color 0.3s, color 0.3s;
+                border: none;
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+                .btn-entity:hover {
+                    background-color: #ddd;
+                    color: #222;
+                }
+
+                .btn-entity.selected {
+                    background-color: #60c2e5;
+                    color: #fff;
+                }
+
+            .list-group-item {
+                font-family: 'Poppins', sans-serif; /* Используем шрифт Poppins */
+                color: #ffffff; /* Белый цвет текста */
+                background-color: #47b0e7; /* Цвет фона, соответствующий шапке сайта */
+                border: none;
+                margin-bottom: 5px;
+                transition: background-color 0.3s ease;
+            }
+
+                .list-group-item:hover {
+                    background-color: #6aaed6; /* Цвет фона при наведении, слегка отличающийся для выделения */
+                }
+
+                .list-group-item.active {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
+
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .car-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            .attraction-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            .accomodation-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            .car-image {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .accomodation-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border-radius: 10px 20px 30px 40px;
+            }
+
+            .attraction-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border-radius: 10px 20px 30px 40px;
+            }
+
+            .car-details {
+                padding: 15px;
+            }
+
+            .info-text {
+                color: red;
+                margin-top: 10px;
+                /* Добавьте другие стили по необходимости */
+            }
+
+            .info-box {
+                color: #d9534f; /* Цвет текста: красный */
+                background-color: #f2dede; /* Цвет фона: светло-красный */
+                border: 1px solid #ebccd1; /* Цвет рамки: светло-красный */
+                padding: 10px; /* Внутренние отступы */
+                margin-top: 10px; /* Внешний отступ сверху */
+                border-radius: 5px; /* Скругленные углы */
+                font-size: 14px; /* Размер шрифта */
+                max-width: 500px; /* Максимальная ширина */
+                text-align: center; /* Выравнивание текста по центру */
+            }
+
+            .car-title {
+                margin-top: 0;
+            }
+
+            .car-price {
+                font-weight: bold;
+            }
+
+            .attraction-details {
+                padding: 15px;
+            }
+
+            .attraction-title {
+                margin-top: 0;
+            }
+
+            .attraction-price {
+                font-weight: bold;
+            }
+
+            .airticket-price {
+                font-weight: bold;
+            }
+
+            .accomodation-details {
+                padding: 15px;
+            }
+
+            .accomodation-title {
+                margin-top: 0;
+            }
+
+            .accomodation-price {
+                font-weight: bold;
+            }
+
+            .car-features {
+                color: #666;
+            }
+
+            .mini-info {
+                margin-top: 5px;
+            }
+
+            .mini-info-item {
+                display: inline-block;
+                margin-right: 10px;
+                padding: 5px 10px;
+                background-color: #f0f0f0;
+                color: #333;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+
+            .form-signin > :last-child {
+                margin-bottom: 56px; /* 56px - высота футера */
+            }
+
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+            }
+
+                /* Hide default HTML checkbox */
+                .switch input {
+                    display: none;
+                }
+
+            /* The slider */
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+                .slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 14px;
+                    width: 14px;
+                    left: 3px;
+                    bottom: 3px;
+                    background-color: white;
+                    -webkit-transition: .4s;
+                    transition: .4s;
+                }
+
+            input:checked + .slider {
+                background-color: #2196F3;
+            }
+
+            input:focus + .slider {
+                box-shadow: 0 0 1px #2196F3;
+            }
+
+            input:checked + .slider:before {
+                -webkit-transform: translateX(19px);
+                -ms-transform: translateX(19px);
+                transform: translateX(19px);
+            }
+
+            /* Rounded sliders */
+            .slider.round {
+                border-radius: 20px;
+            }
+
+                .slider.round:before {
+                    border-radius: 50%;
+                }
+
+            .favorite-icon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: red;
+            }
+
+                .favorite-icon i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-icon .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-icon .fa-heart {
+                    color: red;
+                }
+
+            .favorite-iconn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: red;
+            }
+
+                .favorite-iconn i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-iconn .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-iconn .fa-heart {
+                    color: red;
+                }
+
+            .favorite-iconnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: red;
+            }
+
+                .favorite-iconnn i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-iconnn .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-iconnn .fa-heart {
+                    color: red;
+                }
+
+            .favorite-iconnnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: red;
+            }
+
+                .favorite-iconnnn i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-iconnnn .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-iconnnn .fa-heart {
+                    color: red;
+                }
+
+            .favorite-iconnnnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: red;
+            }
+
+                .favorite-iconnnnn i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-iconnnnn .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-iconnnnn .fa-heart {
+                    color: red;
+                }
+
+            .favorite-iconnnnnn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: red;
+            }
+
+                .favorite-iconnnnnn i {
+                    cursor: pointer;
+                    font-size: 2rem;
+                    color: red;
+                }
+
+                .favorite-iconnnnnn .fa-heart-o {
+                    color: transparent;
+                    -webkit-text-stroke: 2px red;
+                }
+
+                .favorite-iconnnnnn .fa-heart {
+                    color: red;
+                }
+
+            .info-text {
+                color: red;
+                margin-top: 10px;
+                /* Добавьте другие стили по необходимости */
+            }
+
+            .info-box {
+                color: #d9534f; /* Цвет текста: красный */
+                background-color: #f2dede; /* Цвет фона: светло-красный */
+                border: 1px solid #ebccd1; /* Цвет рамки: светло-красный */
+                padding: 10px; /* Внутренние отступы */
+                margin-top: 10px; /* Внешний отступ сверху */
+                border-radius: 5px; /* Скругленные углы */
+                font-size: 14px; /* Размер шрифта */
+                max-width: 300px; /* Максимальная ширина */
+                text-align: center; /* Выравнивание текста по центру */
+            }
+
+            .notification {
+                display: none;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+
+        </style>
+       
+    }
+</head>
+
+<body>
+    <main class="form-signin w-100 m-auto text-center" style="padding-bottom: 30px;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-9" style="margin-left: 160px;">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="bookings-title"><i class="fa-solid fa-fire"></i> Attractive Offers</h3>
+                            <div class="row" style="margin-top: 20px;">
+                                @{
+                                    var entities = new List<string> { "Accommodation", "Flight", "Car", "Attraction" };
+                                }
+                                @foreach (var entity in entities)
+                                {
+                                    <div class="col-md-3">
+                                        <button class="btn btn-entity" data-entity="@entity">@entity</button>
+                                    </div>
+                                }
+                            </div>
+                            <div id="car-fields" class="car-list" style="margin-top: 20px; display:none;">
+                                @{
+                                    int i = 0;
+                                }
+                                @foreach (var car in Model.VerifiedCars)
+                                {
+                                    <input type="hidden" name="carId" value="@car.Id" />
+                                    <input type="hidden" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-ddThh:mm")" />
+                                    <input type="hidden" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-ddThh:mm")" />
+                                    <div class="car-card">
+                                        <div class="favorite-icon">
+                                            <i class="fa fa-heart-o" data-car-id="@car.Id" style="cursor: pointer;"></i>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(car.CarPhoto))" alt="Car Image" class="car-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="car-details">
+                                                    <h3 class="car-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowCarInformation?carId=@car.Id">@car.Title</a>
+                                                    </h3>
+                                                    <p class="car-features" style="text-align: left;">@car.City</p>
+                                                    <div class="row">
+                                                        <div class="text-right">
+                                                            <p class="car-price">Price per day: $@car.Cost</p>
+                                                            @if (car.FreeCancellation)
+                                                            {
+                                                                <p class="text-success">Free cancellation</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <p class="mini-info">
+                                                        @if (car.UnlimitedMileage)
+                                                        {
+                                                            <span class="mini-info-item"><i class="fa fa-road"></i> Unlimited Mileage</span>
+                                                        }
+                                                        <span class="mini-info-item"><i class="fa fa-gear"></i> @car.Transmission</span>
+                                                        <span class="mini-info-item"><i class="fa fa-users"></i> @car.AmountOfPassengers seats</span>
+                                                    </p>
+
+                                                </div>
+                                                @{
+                                                    var carId = car.Id; // assuming you're passing the car model to the view
+                                                }
+
+                                                <form id="bookCar_@carId" method="post" action="/Home/BookCarOffer" class="bookCarForm" onsubmit="return validateBook(@carId)">
+                                                    <input type="hidden" name="carId" value="@carId" />
+                                                    <h5>Select Dates For Booking:</h5>
+                                                    <div class="col-md-13" style="margin-bottom: 30px; margin-top: 10px;">
+                                                        <div class="input-group mb-5" style="height: 45px;">
+                                                            <span class="input-group-text">Date Of Departure</span>
+                                                            <input type="datetime-local" class="form-control" id="checkInDate_@carId" name="checkInDate" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-ddTHH:mm")" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+                                                            <span class="input-group-text">Return Date</span>
+                                                            <input type="datetime-local" class="form-control" id="checkOutDate_@carId" name="checkOutDate" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-ddTHH:mm")" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="bookingMessage_@carId" class="info-box" style="margin-bottom: 15px; margin-top: 5px; margin-left: 150px; display: none;">
+
+                                                    </div>
+
+                                                    <div id="favoriteNot_@carId" class="text-danger" style="display:none;"></div>
+
+                                                    <button id="bookButton_@carId" type="submit" class="btn btn-primary" style="margin-top: 10px; margin-bottom: 15px;">Book</button>
+                                                   
+                                                    <script>
+                                                        function validateBook(carId) {
+                                                            var dateIn = $('#checkInDate_' + carId).val();
+                                                            var dateOut = $('#checkOutDate_' + carId).val();
+
+                                                            var isValid = true;
+
+                                                            if (!dateIn) {
+                                                                $('#checkInDate_' + carId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } else {
+                                                                $('#checkInDate_' + carId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (!dateOut) {
+                                                                $('#checkOutDate_' + carId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } else {
+                                                                $('#checkOutDate_' + carId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (dateIn && dateOut) {
+                                                                var checkInDate = new Date(dateIn);
+                                                                var checkOutDate = new Date(dateOut);
+
+                                                                if (checkInDate >= checkOutDate) {
+                                                                    $('#checkInDate_' + carId).addClass('invalid-field');
+                                                                    $('#checkOutDate_' + carId).addClass('invalid-field');
+                                                                    isValid = false;
+                                                                } else {
+                                                                    $('#checkInDate_' + carId).removeClass('invalid-field');
+                                                                    $('#checkOutDate_' + carId).removeClass('invalid-field');
+                                                                }
+                                                            }
+
+                                                            return isValid;
+                                                        }
+                                                        document.getElementById('bookCar_@carId').addEventListener('submit', function (event) {
+                                                            event.preventDefault();
+                                                            var form = event.target;
+                                                            var carId = '@carId';
+
+                                                            if (validateBook(carId)) {
+                                                                var formData = new FormData(form);
+
+                                                                fetch(form.action, {
+                                                                    method: form.method,
+                                                                    body: formData
+                                                                })
+                                                                    .then(response => response.json())
+                                                                    .then(data => {
+                                                                        var messageDiv = document.getElementById('bookingMessage_' + carId);
+                                                                        var button = document.getElementById('bookButton_' + carId);
+                                                                        if (data.success) {
+                                                                            messageDiv.style.display = 'none';
+                                                                            button.style.backgroundColor = 'green';
+                                                                            button.textContent = 'Booked';
+                                                                            button.disabled = true;
+                                                                            // Perform additional actions if needed when booking is successful
+                                                                        } else {
+                                                                            messageDiv.textContent = data.message;
+                                                                            messageDiv.style.display = 'block';
+                                                                        }
+                                                                    })
+                                                                    .catch(error => {
+                                                                        console.error('Error:', error);
+                                                                    });
+                                                            }
+                                                        });
+                                                        </script>
+                                                    
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    i++;
+                                }
+                            </div>
+
+                            <div id="flight-fields" class="airticket-list" style="margin-top: 20px; display:none;">
+                                @{
+                                    int ii = 0;
+                                }
+
+                                @foreach (var airticket in Model.VerifiedAirTickets)
+                                {
+                                        <div class="car-card">
+                                            <div class="row">
+                                                <h3 style="margin-top: 20px;">Economy Class</h3>
+                                                <div class="favorite-iconn" style="position: absolute; top: 10px; left: 430px;">
+                                                <i class="fa fa-heart-o" data-airticket-id="@airticket.Id" style="cursor: pointer;"></i>
+                                                </div>
+                                                <div class="col-md-3" style="margin-top: 20px;">
+                                                    @if (airticket.FreeCancellation)
+                                                    {
+                                                        <p class="text-success">Free cancellation</p>
+                                                    }
+                                                    <p class="airticket-price" style="font-size: 25px;">$@airticket.CostEC</p>
+                                                    <p style="display: inline-block; margin-right: 10px;">Luggage</p>
+                                                    <label class="switch" style="display: inline-block; vertical-align: middle;">
+                                                        @if (airticket.IncludeLuggageEC)
+                                                        {
+                                                            <input type="checkbox" checked disabled>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" disabled>
+                                                        }
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете слева от линии пути -->
+                                                    <div style="text-align: center; margin-left: -40px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.DepartureTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityFrom</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeek = "@airticket.DepartureTime.DayOfWeek";
+                                                                var monthNumber = "@airticket.DepartureTime.Month";
+                                                                var months = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var month = months[monthNumber - 1];
+
+                                                                var day = "@airticket.DepartureTime.Date.Day";
+
+                                                                document.write(dayOfWeek + ", " + month + day);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6" style="margin-top: 20px; margin-left: -85px;">
+                                                    <div style="text-align: center;">
+                                                        <p style="margin-bottom: -10px; font-size: smaller;">
+                                                            <script>
+                                                                var departureTimeString = "@airticket.DepartureTime";
+                                                                var arrivalTimeString = "@airticket.ArrivalTime";
+
+                                                                // Разбиваем строку на компоненты
+                                                                var parts = arrivalTimeString.split(/[. :]/); // Разделителями являются точка, пробел и двоеточие
+                                                                var parts1 = departureTimeString.split(/[. :]/);
+
+                                                                // Создаем объект Date с компонентами даты и времени
+                                                                var arrivalTime = new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4], parts[5]);
+                                                                var departureTime = new Date(parts1[2], parts1[1] - 1, parts1[0], parts1[3], parts1[4], parts1[5]);
+
+                                                                // Получение разницы в миллисекундах между датами отправления и прибытия
+                                                                var difference = Math.abs(arrivalTime - departureTime);
+
+                                                                // Преобразование разницы в дни, часы и минуты
+                                                                var daysDifference = Math.floor(difference / (1000 * 60 * 60 * 24));
+                                                                var hoursDifference = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                                var minutesDifference = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+                                                                // Форматирование значения "On the way"
+                                                                var onTheWay = "On the way: ";
+                                                                if (daysDifference > 0) {
+                                                                    onTheWay += daysDifference + "d ";
+                                                                }
+                                                                onTheWay += hoursDifference + "h " + minutesDifference + "m";
+
+                                                                document.write(onTheWay);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                    <div class="flight-path" style="position: relative;">
+                                                        <!-- Линия, соединяющая город отправки и город прибытия -->
+                                                        <svg height="100" width="100%">
+                                                            <!-- Путь (извилистая линия) -->
+                                                            <path d="M 50 50
+                                                                 Q 75 25, 100 50
+                                                                 Q 125 75, 150 50
+                                                                 Q 175 25, 200 50
+                                                                 Q 225 75, 250 50
+                                                                 Q 275 25, 300 50
+                                                                 Q 325 75, 350 50
+                                                                 Q 375 25, 400 50"
+                                                                  style="fill:none;stroke:black;stroke-width:2;stroke-dasharray:10,5" />
+                                                            <!-- Круг (город отправки) -->
+                                                            <circle cx="50" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город отправки) -->
+                                                            <text x="50" y="70" text-anchor="middle" fill="black">@airticket.DepartureCountryCode</text>
+                                                            <!-- Круг (город прибытия) -->
+                                                            <circle cx="400" cy="50" r="5" fill="red" />
+                                                            <!-- Текст (город прибытия) -->
+                                                            <text x="400" y="70" text-anchor="middle" fill="black">@airticket.ArrivalCountryCode</text>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2" style="margin-top: 40px;">
+                                                    <!-- Информация о вылете справа от линии пути -->
+                                                    <div style="text-align: center; margin-left: -110px; font-size: 12px; line-height: 0.2;">
+                                                        <p style="font-size: 22px;">
+                                                            <script>
+                                                                var timeString = "@airticket.ArrivalTime.TimeOfDay";
+                                                                var timeParts = timeString.split(':');
+                                                                var hours = timeParts[0];
+                                                                var minutes = timeParts[1];
+                                                                document.write(hours + ":" + minutes);
+                                                            </script>
+                                                        </p>
+                                                        <p style="margin-top: 20px;">@airticket.CityTo</p>
+                                                        <p>
+                                                            <script>
+                                                                var dayOfWeekArrivall = "@airticket.ArrivalTime.DayOfWeek";
+                                                                var monthNumberArrivall = "@airticket.ArrivalTime.Month";
+                                                                var monthsArrivall = ["January ", "February ", "March ", "April ", "May ", "June ", "July ", "August ", "September ", "October ", "November ", "December "];
+
+                                                                var monthArrivall = monthsArrivall[monthNumberArrivall - 1];
+
+                                                                var dayArrivall = "@airticket.ArrivalTime.Date.Day";
+
+                                                                document.write(dayOfWeekArrivall + ", " + monthArrivall + dayArrivall);
+                                                            </script>
+                                                        </p>
+                                                    </div>
+                                                </div>
+      
+                                                <form id="bookEC_@airticket.Id" method="post" action="/Home/BookFlightECOffer" class="bookECForm">
+                                                    <input type="hidden" name="airticketId" value="@airticket.Id" />
+                                                <input type="hidden" name="dateIn" id="departureTime_@airticket.Id" value="@airticket.DepartureTime.ToString("yyyy-MM-dd")" />
+                                                <input type="hidden" name="dateOut" id="arrivalTime_@airticket.Id" value="@airticket.ArrivalTime.ToString("yyyy-MM-dd")" />
+
+                                                <h5>Select Number Of Passengers For Booking:</h5>
+                                                <div class="col-md-5" style="margin-bottom: -10px; margin-top: 10px; margin-left: 265px;">
+                                                    <div class="input-group mb-5" style="height: 45px;">
+                                                        <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                                        <input type="number" class="form-control" id="adultsCount_@airticket.Id" name="passengers" placeholder="Passengers" min="1" max="150" value="@ViewBag.AdultsCount">
+                                                    </div>
+                                                </div>
+
+                                                <div id="bookingMessageAirTicket_@airticket.Id" class="info-box" style="margin-bottom: 20px; margin-top: -15px; margin-left: 310px; display: none;">
+                                                </div>
+
+                                                <div id="favoriteNotAirTicket_@airticket.Id" class="text-danger" style="display:none; margin-top: -20px; margin-bottom: 20px;"></div>
+
+
+                                                    <div class="col-md-12 text-center" style="margin-bottom: 20px;">
+                                                                <button id="bookButtonEC_@airticket.Id" type="submit" class="btn btn-primary" style="margin-top: 10px;">Book</button>
+                                                    </div>
+                                                <script>
+                                                  
+
+                                                    function validateBookAirTicket(airticketId) {
+                                                        var passengers = $('#adultsCount_' + airticketId).val();
+
+                                                        var isValid = true;
+
+                                                        if (passengers == "" || passengers == 0) {
+                                                            $('#adultsCount_' + airticketId).addClass('invalid-field');
+                                                            isValid = false;
+                                                        } else {
+                                                            $('#adultsCount_' + airticketId).removeClass('invalid-field');
+                                                        }
+
+                                                        return isValid;
+                                                    }
+                                                    document.getElementById('bookEC_@airticket.Id').addEventListener('submit', function (event) {
+
+                                                        event.preventDefault();
+                                                        var form = event.target;
+                                                        var airticketId = '@airticket.Id';
+
+                                                        var button = document.getElementById('bookButtonEC_' + airticketId);
+                                                        if (button.disabled) {
+                                                            return;
+                                                        }
+
+                                                        if (validateBookAirTicket(@airticket.Id)) {
+                                                            var formData = new FormData(form);
+
+                                                            fetch(form.action, {
+                                                                method: form.method,
+                                                                body: formData
+                                                            })
+                                                                .then(response => response.json())
+                                                                .then(data => {
+                                                                    var messageDiv = document.getElementById('bookingMessageAirTicket_' + airticketId);
+                                                                    var button = document.getElementById('bookButtonEC_' + airticketId);
+                                                                    if (data.success) {
+                                                                        messageDiv.style.display = 'none';
+                                                                        button.style.backgroundColor = 'green';
+                                                                        button.textContent = 'Booked';
+                                                                        button.disabled = true;
+                                                                        // Perform additional actions if needed when booking is successful
+                                                                    } else {
+                                                                        messageDiv.textContent = data.message;
+                                                                        messageDiv.style.display = 'block';
+                                                                    }
+                                                                })
+                                                                .catch(error => {
+                                                                    console.error('Error:', error);
+                                                                });
+                                                        }
+                                                    });
+
+                                                  
+                                                </script>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    i++;
+                                }
+                            </div>
+
+                            <div id="entertainment-fields" class="attraction-list" style="margin-top: 20px; display:none;">
+                                @{
+                                    int iii = 0;
+                                }
+                                @foreach (var attraction in Model.VerifiedAttractions)
+                                {
+                                    <div class="attraction-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(attraction.MainPhoto))" alt="Attraction Image" class="attraction-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="attraction-details">
+                                                    <div class="favorite-iconnnnn">
+                                                        <i class="fa fa-heart-o" data-attraction-id="@attraction.Id" style="cursor: pointer;"></i>
+                                                    </div>
+                                                    <h3 class="attraction-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowAttractionInformation?attractionId=@attraction.Id">@attraction.Title</a>
+                                                    </h3>
+                                                    <p class="attraction-features" style="text-align: left;">@attraction.City, @attraction.Country</p>
+                                                    <div class="row">
+                                                        <div class="text-right">
+                                                            <p class="attraction-price">Price per 1 person: $@attraction.Cost</p>
+                                                            @if (attraction.FreeCancellation)
+                                                            {
+                                                                <p class="text-success">Free cancellation</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <p class="mini-info">
+                                                        <span class="mini-info-item"><i class="fa-solid fa-clock"></i> @attraction.TimeOfDay</span>
+                                                    </p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            foreach (var language in attraction.Languages)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-language"></i> @language</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <form id="bookAttraction_@attraction.Id" method="post" action="/Home/BookAttractionOffer" class="bookAttractionForm">
+                                                    <input type="hidden" name="attractionId" value="@attraction.Id" />
+                                                    <h5>Select Date & Number Of Persons For Booking:</h5>
+                                                    <div class="col-md-13" style="margin-bottom: 30px; margin-top: 10px;">
+                                                        <div class="input-group mb-5" style="height: 45px;">
+                                                            <span class="input-group-text">Date</span>
+                                                            <input type="date" class="form-control" id="checkInDate_@attraction.Id" name="checkInDate" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                            <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                                            <input type="number" class="form-control" id="amountOfTickets_@attraction.Id" name="adultsCount" placeholder="Number of persons" min="1" max="150" value="@ViewBag.AdultsCount">
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="bookingMessageAttraction_@attraction.Id" class="info-box" style="margin-bottom: 20px; margin-top: -15px; margin-left: 150px; display: none;">
+                                                    </div>
+
+                                                    <div id="favoriteNotAttraction_@attraction.Id" class="text-danger" style="display:none; margin-top: -20px; margin-bottom: 20px;"></div>
+
+                                                    <button id="bookButtonAttraction_@attraction.Id" type="submit" class="btn btn-primary" style="margin-top: -10px; margin-bottom: 15px;">Book</button>
+                                                    <script>
+                                                        function validateBookAttraction(attractionId) {
+                                                            var dateIn = $('#checkInDate_' + attractionId).val();
+                                                            var dateOut = $('#amountOfTickets_' + attractionId).val();
+
+                                                            var isValid = true;
+
+                                                            if (!dateIn) {
+                                                                $('#checkInDate_' + attractionId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } else {
+                                                                $('#checkInDate_' + attractionId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (!dateOut) {
+                                                                $('#amountOfTickets_' + attractionId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } else {
+                                                                $('#amountOfTickets_' + attractionId).removeClass('invalid-field');
+                                                            }
+
+                                                            return isValid;
+                                                        }
+                                                        document.getElementById('bookAttraction_@attraction.Id').addEventListener('submit', function (event) {
+                                                            event.preventDefault();
+                                                            var form = event.target;
+                                                            var attractionId = '@attraction.Id';
+
+                                                            if (validateBookAttraction(@attraction.Id)) {
+                                                                var formData = new FormData(form);
+
+                                                                fetch(form.action, {
+                                                                    method: form.method,
+                                                                    body: formData
+                                                                })
+                                                                    .then(response => response.json())
+                                                                    .then(data => {
+                                                                        var messageDiv = document.getElementById('bookingMessageAttraction_' + @attraction.Id);
+                                                                        var button = document.getElementById('bookButtonAttraction_' + @attraction.Id);
+                                                                        if (data.success) {
+                                                                            messageDiv.style.display = 'none';
+                                                                            button.style.backgroundColor = 'green';
+                                                                            button.textContent = 'Booked';
+                                                                            button.disabled = true;
+                                                                            // Perform additional actions if needed when booking is successful
+                                                                        } else {
+                                                                            messageDiv.textContent = data.message;
+                                                                            messageDiv.style.display = 'block';
+                                                                        }
+                                                                    })
+                                                                    .catch(error => {
+                                                                        console.error('Error:', error);
+                                                                    });
+                                                            }
+                                                        });
+                                                        </script>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    iii++;
+                                }
+                            </div>
+
+                            <div id="accomodation-fields" class="accomodation-list" style="margin-top: 20px; display:none;">
+                                @{
+                                    int iiii = 0;
+                                }
+                                @foreach (var accomodation in Model.VerifiedAccomodation)
+                                {
+                                    <div class="accomodation-card">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="data:image;base64,@(Convert.ToBase64String(accomodation.MainPhoto))" alt="Accomodation Image" class="accomodation-image" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="accomodation-details">
+                                                    <div class="favorite-iconnnnnn">
+                                                        <i class="fa fa-heart-o" data-accomodation-id="@accomodation.Id" style="cursor: pointer;"></i>
+                                                    </div>
+                                                    <h3 class="accomodation-title" style="margin-top: 0; font-size: 1.5rem; text-align: left;">
+                                                        <a href="/Account/ShowAccomodationInformation?accomodationId=@accomodation.Id">@accomodation.Name</a>
+                                                    </h3>
+                                                    <p class="accomodation-features" style="text-align: left;">@accomodation.City, @accomodation.Country</p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            if (accomodation.SwimmingPool > 0)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-person-swimming"></i> @accomodation.SwimmingPool swimming pool</span>
+                                                            }
+                                                            if (accomodation.Restaurants > 0)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-utensils"></i> @accomodation.Restaurants restaurant</span>
+                                                            }
+                                                            if (accomodation.Parking)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-square-parking"></i> Parking</span>
+                                                            }
+                                                            if (accomodation.PrivateBeach)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-umbrella-beach"></i> Private Beach</span>
+                                                            }
+                                                            if (accomodation.SPA)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-spa"></i> SPA</span>
+                                                            }
+                                                            if (accomodation.FitnessCentre)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-dumbbell"></i> Fitness Centre</span>
+                                                            }
+                                                            if (accomodation.PetsAllowed)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-paw"></i> Pets Allowed</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="mini-info">
+                                                        @{
+                                                            foreach (var nutrition in accomodation.TypesOfNutrition)
+                                                            {
+                                                                                        <span class="mini-info-item"><i class="fa-solid fa-bowl-food"></i> @nutrition</span>
+                                                            }
+                                                        }
+                                                    </p>
+                                                    <p class="attraction-price">from $@accomodation.MinCost / 1 night</p>
+                                                </div>
+                                                <form id="bookAccomodation_@accomodation.Id" method="post" action="/Home/BookAccomodationOffer" class="bookAccomodationForm">
+                                                    <input type="hidden" name="accomodationId" value="@accomodation.Id" />
+
+                                                    <h5>Select Dates For Booking:</h5>
+                                                    <div class="col-md-11" style="margin-bottom: 10px; margin-top: 10px;">
+                                                        <div class="input-group mb-5" style="height: 45px;">
+                                                            <span class="input-group-text">Date Of Departure</span>
+                                                            <input type="date" class="form-control" id="checkInDate_@accomodation.Id" name="dateIn" value="@ViewBag.CheckInDate?.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                            <span class="input-group-text">Return Date</span>
+                                                            <input type="date" class="form-control" id="checkOutDate_@accomodation.Id" name="dateOut" value="@ViewBag.CheckOutDate?.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                        </div>
+                                                    </div>
+                                                    <div id="favoriteNotAccomodationDates_@accomodation.Id" class="text-danger" style="display:none; margin-top: -20px; margin-bottom: 30px; margin-left: 50px;"></div>
+                                                    <h5>Indicate Amount Of Rooms & Adults For Booking:</h5>
+                                                    <div class="col-md-5" style="margin-bottom: -10px; margin-top: 10px; margin-left: 175px;">
+                                                        <div class="input-group mb-5" style="height: 45px;">
+                                                            <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                                            <input type="number" class="form-control" id="adults_@accomodation.Id" name="adults" placeholder="Adults" min="1" max="150">
+                                                            <span class="input-group-text"></span>
+                                                            <input type="number" class="form-control" id="rooms_@accomodation.Id" name="rooms" placeholder="Rooms" min="1" max="150">
+                                                        </div>
+                                                    </div>
+                                                    <div id="favoriteNotAdultsRooms_@accomodation.Id" class="text-danger" style="display:none; margin-top: -20px; margin-bottom: 30px; margin-left: 50px;"></div>
+                                                    <h4>Select Room For Booking:</h4>
+                                                    <input type="hidden" id="selectedRoom" name="selectedRoom" value="" />
+
+                                                    <div class="available-rooms" style="margin-bottom: 10px;">
+                                                        @foreach (var roomName in accomodation.AvailableRoomsNames)
+                                                        {
+                                                            <label class="radio-inline" style="margin-right: 10px;">
+                                                                <input type="radio" name="room" value="@roomName" onclick="updateSelectedRoom('@roomName')"> @roomName
+                                                            </label>
+                                                        }
+                                                    </div>
+
+                                                    <div id="favoriteNotification_@accomodation.Id" class="info-box" style="margin-bottom: 15px; margin-top: 15px; margin-left: 150px; display: none;"></div>
+
+                                                    <div id="bookingMessageAccomodation_@accomodation.Id" class="info-box" style="margin-bottom: 15px; margin-top: 15px; margin-left: 150px; display: none;">
+                                                    </div>
+
+                                                    <div id="favoriteNotAccomodation_@accomodation.Id" class="text-danger" style="display:none; margin-top: 15px; margin-bottom: 15px;"></div>
+
+                                           
+                                                     <button id="bookButtonAccomodation_@accomodation.Id" type="submit" class="btn btn-primary" style="margin-top: 10px; margin-bottom: 20px;">Book</button>
+                                                       <script>
+
+                                                        function updateSelectedRoom(roomName) {
+                                                            document.getElementById('selectedRoom').value = roomName;
+                                                        }
+
+                                                        function validateBookAccomodation(accomodationId) {
+                                                            var dateIn = $('#checkInDate_' + accomodationId).val();
+                                                            var dateOut = $('#checkOutDate_' + accomodationId).val();
+                                                            var rooms = $('#rooms_' + accomodationId).val();
+                                                            var adults = $('#adults_' + accomodationId).val();
+                                                            var selectedRoom = $('input[name="room"]:checked').val();
+
+                                                            var isValid = true;
+
+                                                            if (!dateIn) {
+                                                                $('#checkInDate_' + accomodationId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } else {
+                                                                $('#checkInDate_' + accomodationId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (!dateOut) {
+                                                                $('#checkOutDate_' + accomodationId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } else {
+                                                                $('#checkOutDate_' + accomodationId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (dateIn && dateOut) {
+                                                                var checkInDate = new Date(dateIn);
+                                                                var checkOutDate = new Date(dateOut);
+
+                                                                if (checkInDate >= checkOutDate) {
+                                                                    $('#checkInDate_' + accomodationId).addClass('invalid-field');
+                                                                    $('#checkOutDate_' + accomodationId).addClass('invalid-field');
+                                                                    isValid = false;
+                                                                } else {
+                                                                    $('#checkInDate_' + accomodationId).removeClass('invalid-field');
+                                                                    $('#checkOutDate_' + accomodationId).removeClass('invalid-field');
+                                                                }
+                                                            }
+
+                                                            if (rooms == "") {
+                                                                $('#rooms_' + accomodationId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } 
+                                                            else {
+                                                                $('#rooms_' + accomodationId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (adults == "") {
+                                                                $('#adults_' + accomodationId).addClass('invalid-field');
+                                                                isValid = false;
+                                                            } 
+                                                            else {
+                                                                $('#adults_' + accomodationId).removeClass('invalid-field');
+                                                            }
+
+                                                            if (!selectedRoom) {
+                                                                $('#favoriteNotification_' + accomodationId).text('Please choose a room type before booking.').addClass('text-danger').addClass('notification').show();
+                                                                isValid = false;
+                                                            }
+                                                            else {
+                                                                $('#favoriteNotification_' + accomodationId).text('Please choose a room type before booking.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+                                                            }
+
+                                                            return isValid;
+                                                        }
+
+                                                        document.getElementById('bookAccomodation_@accomodation.Id').addEventListener('submit', function (event) {
+                                                            event.preventDefault();
+                                                            var form = event.target;
+                                                            var attractionId = '@accomodation.Id';
+
+                                                            if (validateBookAccomodation(@accomodation.Id)) {
+                                                                var formData = new FormData(form);
+
+                                                                fetch(form.action, {
+                                                                    method: form.method,
+                                                                    body: formData
+                                                                })
+                                                                    .then(response => response.json())
+                                                                    .then(data => {
+                                                                        var messageDiv = document.getElementById('bookingMessageAccomodation_' + @accomodation.Id);
+                                                                        var button = document.getElementById('bookButtonAccomodation_' + @accomodation.Id);
+                                                                        if (data.success) {
+                                                                            messageDiv.style.display = 'none';
+                                                                            button.style.backgroundColor = 'green';
+                                                                            button.textContent = 'Booked';
+                                                                            button.disabled = true;
+                                                                        } else {
+                                                                            messageDiv.textContent = data.message;
+                                                                            messageDiv.style.display = 'block';
+                                                                        }
+                                                                    })
+                                                                    .catch(error => {
+                                                                        console.error('Error:', error);
+                                                                    });
+                                                            }
+                                                        });
+
+                                                       </script>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    iiii++;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @section Scripts {
+            <script>
+              
+                $(document).ready(function () {
+                    $('.btn-entity').click(function () {
+                        $('.btn-entity').removeClass('selected');
+                        $(this).addClass('selected');
+                        var entityName = $(this).data('entity');
+                        if (entityName === "Car") {
+                            $('#car-fields').show();
+                            $('#entertainment-fields').hide();
+                            $('#flight-fields').hide();
+                            $('#accomodation-fields').hide();
+                        }
+                        else if (entityName === "Attraction") {
+                            $('#entertainment-fields').show();
+                            $('#car-fields').hide();
+                            $('#flight-fields').hide();
+                            $('#accomodation-fields').hide();
+                        }
+                        else if (entityName === "Accommodation") {
+                            $('#entertainment-fields').hide();
+                            $('#car-fields').hide();
+                            $('#flight-fields').hide();
+                            $('#accomodation-fields').show();
+                        }
+                        else if (entityName === "Flight") {
+                            $('#entertainment-fields').hide();
+                            $('#car-fields').hide();
+                            $('#flight-fields').show();
+                            $('#accomodation-fields').hide();
+                        } else {
+                            $('#car-fields').hide();
+                            $('#entertainment-fields').hide();
+                            $('#flight-fields').hide();
+                            $('#accomodation-fields').hide();
+                        }
+                    });
+                });
+                $(document).ready(function () {
+
+                    $('.favorite-icon i').click(function () {
+                        var $icon = $(this);
+                        var carId = $icon.data('car-id');
+                        var dateIn = $('#checkInDate_' + carId).val();
+                        var dateOut = $('#checkOutDate_' + carId).val();
+
+
+
+                        // Преобразуем строки в объекты Date
+                        var checkInDate = new Date(dateIn);
+                        var checkOutDate = new Date(dateOut);
+
+                        if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime()) || checkInDate >= checkOutDate) {
+                            $('#favoriteNot_' + carId).text('Please select valid dates before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                            return; // Stop execution if dates are invalid or check-in date is not before check-out date
+                        }
+
+                        // Продолжить выполнение кода, если даты корректны
+
+
+                        $('#favoriteNot_' + carId).text('Please select dates before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteCar',
+                            type: 'POST',
+                            data: {
+                                carId: carId,
+                                dateIn: dateIn,
+                                dateOut: dateOut
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
+                            }
+                        });
+                    });
+
+                    $(document).ready(function () {
+                        $('.favorite-iconn i').click(function () {
+                            var $icon = $(this);
+                            var airticketId = $icon.data('airticket-id');
+                            var checkInDate = $('#departureTime_' + airticketId).val();
+                            var checkOutDate = $('#arrivalTime_' + airticketId).val();
+                            var pass = $('#adultsCount_' + airticketId).val();
+
+                            if (pass == "") {
+                                $('#favoriteNotAirTicket_' + airticketId).text('Please select valid count of passengers before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                                return; // Stop execution if dates are invalid or check-in date is not before check-out date
+                            }
+
+                            $('#favoriteNotAirTicket_' + airticketId).text('Please select valid count of passengers before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+
+                            // Function to format date to "dd/MM/yyyy"
+                            function formatDate(dateString) {
+                                var date = new Date(dateString);
+                                var day = ('0' + date.getDate()).slice(-2);
+                                var month = ('0' + (date.getMonth() + 1)).slice(-2);
+                                var year = date.getFullYear();
+                                return day + '/' + month + '/' + year;
+                            }
+
+                            var dateIn = formatDate(checkInDate);
+                            var dateOut = formatDate(checkOutDate);
+                            var passengers = parseInt(pass); // Преобразовать строку в целое число
+
+
+                            $.ajax({
+                                url: '/Home/AddToFavoriteAirTicketEC',
+                                type: 'POST',
+                                data: {
+                                    airticketId: airticketId,
+                                    dateIn: dateIn,
+                                    dateOut: dateOut,
+                                    passengers: passengers
+                                },
+                                success: function (response) {
+                                    if (response.isFavorite) {
+                                        $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                    } else {
+                                        $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                    }
+                                },
+                                error: function () {
+                                    alert('There was an error updating your favorites. Please try again.');
+                                }
+                            });
+                        });
+                    });
+
+                });
+                $(document).ready(function () {
+                    $('.favorite-iconnnnn i').click(function () {
+                        var $icon = $(this);
+                        var attractionId = $icon.data('attraction-id');
+                        var dateIn = $('#checkInDate_' + attractionId).val();
+                        var amountOfTickets = $('#amountOfTickets_' + attractionId).val();
+
+
+
+                        // Преобразуем строки в объекты Date
+                        var checkInDate = new Date(dateIn);
+
+                        if (isNaN(checkInDate.getTime()) || amountOfTickets == "") {
+                            $('#favoriteNotAttraction_' + attractionId).text('Please select valid date & amount of tickets before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                            return; // Stop execution if dates are invalid or check-in date is not before check-out date
+                        } 
+
+                        $('#favoriteNotAttraction_' + attractionId).text('Please select valid date before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteAttraction',
+                            type: 'POST',
+                            data: {
+                                attractionId: attractionId,
+                                date: dateIn,
+                                amountOfTickets: amountOfTickets
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
+                            }
+                        });
+                     });
+                });
+
+                $(document).ready(function () {
+                    $('.favorite-iconnnnnn i').click(function () {
+                        var $icon = $(this);
+                        var accomodationId = $icon.data('accomodation-id');
+                        var checkInDate = $('#checkInDate_' + accomodationId).val();
+                        var checkOutDate = $('#checkOutDate_' + accomodationId).val();
+                        var ad = $('#adults_' + accomodationId).val();
+                        var roo = $('#rooms_' + accomodationId).val();
+                        var selectedRoom = $('input[name="room"]:checked').val();
+
+                        var isValid = true;
+
+                        if (!selectedRoom) {
+                            $('#favoriteNotAccomodation_' + accomodationId).text('Please choose type of room before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                            isValid = false;
+                        }
+                        else {
+                            $('#favoriteNotAccomodation_' + accomodationId).text('Please choose type of room before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+                        }
+
+                        if (ad == "" || roo == "") {
+                            $('#favoriteNotAdultsRooms_' + accomodationId).text('Please select valid amount of adults & rooms before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                            isValid = false;
+                        }
+                        else {
+                            $('#favoriteNotAdultsRooms_' + accomodationId).text('Please select valid amount of adults & rooms before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+                        }
+
+                        if (!checkInDate || !checkOutDate) {
+                            $('#favoriteNotAccomodationDates_' + accomodationId).text('Please select valid dates before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                            isValid = false;
+                        } else {
+                            $('#favoriteNotAccomodationDates_' + accomodationId).text('Please select valid dates before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+                        }
+
+                        var dateIn = new Date(checkInDate);
+                        var dateOut = new Date(checkOutDate);
+
+                        if (checkInDate && checkOutDate) {
+
+                            if (dateIn >= dateOut) {
+                                $('#favoriteNotAccomodationDates_' + accomodationId).text('Please select valid dates before adding to favorites.').addClass('text-danger').addClass('notification').show();
+                                isValid = false;
+                            } else {
+                                $('#favoriteNotAccomodationDates_' + accomodationId).text('Please select valid dates before adding to favorites.').removeClass('text-danger').removeClass('notification').hide(); // Hide error message if room is selected
+                            }
+                        }
+
+                        if (!isValid) return;
+
+                        var rooms = parseInt(roo); // Преобразовать строку в целое число
+                        var adults = parseInt(ad);
+
+                        $.ajax({
+                            url: '/Home/AddToFavoriteAccomodation',
+                            type: 'POST',
+                            data: {
+                                accomodationId: accomodationId,
+                                dateIn: checkInDate,
+                                dateOut: checkOutDate,
+                                rooms: rooms,
+                                selectedRoom: selectedRoom
+                            },
+                            success: function (response) {
+                                if (response.isFavorite) {
+                                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                                } else {
+                                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                                }
+                            },
+                            error: function () {
+                                alert('There was an error updating your favorites. Please try again.');
+                            }
+                        });
+                    });
+                });
+
+                $(document).ready(function () {
+                    $('.favorite-icon i').click(function () {
+                        var heartIcon = $(this);
+                        var carId = heartIcon.data('car-id');
+                        $.ajax({
+                            url: '/Account/RemoveCarFromFavorites',
+                            type: 'POST',
+                            data: { carId: carId },
+                            success: function (response) {
+                                // Успешно удалено из избранных
+                                console.log(response);
+                                // Изменяем иконку сердечка на неактивную
+                                heartIcon.removeClass('fa-heart').addClass('fa-heart-o').css('pointer-events', 'none');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconn i').click(function () {
+                        var heartIcon = $(this);
+                        var airticketId = heartIcon.data('airticket-id');
+                        $.ajax({
+                            url: '/Account/RemoveAirticketFromFavorites',
+                            type: 'POST',
+                            data: { airticketId: airticketId },
+                            success: function (response) {
+                                console.log(response);
+                                heartIcon.removeClass('fa-heart').addClass('fa-heart-o').css('pointer-events', 'none');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconnn i').click(function () {
+                        var heartIcon = $(this);
+                        var airticketId = heartIcon.data('airticket-id');
+                        $.ajax({
+                            url: '/Account/RemoveAirticketFromFavorites',
+                            type: 'POST',
+                            data: { airticketId: airticketId },
+                            success: function (response) {
+                                console.log(response);
+                                heartIcon.removeClass('fa-heart').addClass('fa-heart-o').css('pointer-events', 'none');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconnnn i').click(function () {
+                        var heartIcon = $(this);
+                        var airticketId = heartIcon.data('airticket-id');
+                        $.ajax({
+                            url: '/Account/RemoveAirticketFromFavorites',
+                            type: 'POST',
+                            data: { airticketId: airticketId },
+                            success: function (response) {
+                                console.log(response);
+                                heartIcon.removeClass('fa-heart').addClass('fa-heart-o').css('pointer-events', 'none');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconnnnn i').click(function () {
+                        var heartIcon = $(this);
+                        var attractionId = heartIcon.data('attraction-id');
+                        $.ajax({
+                            url: '/Account/RemoveAttractionFromFavorites',
+                            type: 'POST',
+                            data: { attractionId: attractionId },
+                            success: function (response) {
+                                console.log(response);
+                                heartIcon.removeClass('fa-heart').addClass('fa-heart-o').css('pointer-events', 'none');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    $('.favorite-iconnnnnn i').click(function () {
+                        var heartIcon = $(this);
+                        var accomodationId = heartIcon.data('accomodation-id');
+                        $.ajax({
+                            url: '/Account/RemoveAccomodationFromFavorites',
+                            type: 'POST',
+                            data: { accomodationId: accomodationId },
+                            success: function (response) {
+                                console.log(response);
+                                heartIcon.removeClass('fa-heart').addClass('fa-heart-o').css('pointer-events', 'none');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+                });
+            </script>
+        }
+    </main>
+</body>
